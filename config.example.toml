@@ -1,0 +1,49 @@
+[qmt]
+port = 58611
+bond_code = "132026.SH"
+stock_code = "600900.SH"
+# Extra instruments are recorded in full but are not traded by M0.
+watch_codes = ["132024.SH"]
+callback_queue_size = 100000
+stale_after_seconds = 3.0
+
+[storage]
+database = "data/zhaiquant.sqlite3"
+commit_every_rows = 100
+commit_every_seconds = 1.0
+store_raw_json = true
+
+[m0]
+rolling_observations = 1200
+minimum_observations = 600
+entry_discount = 0.008
+exit_discount = 0.001
+maximum_sync_seconds = 3.0
+earliest_entry = "09:35:00"
+latest_entry = "14:30:00"
+force_exit = "14:55:00"
+maximum_holding_minutes = 60
+cooldown_minutes = 10
+trading_enabled = true
+
+[[m0.conversion_prices]]
+effective_date = "2020-01-01"
+price = 22.20
+
+[[m0.conversion_prices]]
+effective_date = "2026-02-12"
+price = 21.99
+
+[[m0.conversion_prices]]
+effective_date = "2026-07-17"
+price = 21.20
+
+[paper]
+enabled = true
+notional_cny = 100000.0
+quantity = 100.0
+price_tick = 0.001
+maker_entry_wait_seconds = 60
+maker_exit_wait_seconds = 180
+execution_models = ["E1", "E2", "E3", "E4"]
+fill_modes = ["optimistic", "queue", "conservative"]

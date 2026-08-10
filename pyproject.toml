@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zhaiquant"
+version = "0.1.0"
+description = "MiniQMT tick recorder and M0 paper-trading engine for G三峡EB2"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy==2.5.2",
+  "pandas==3.0.5",
+  "xtquant==250807.1.2",
+]
+
+[project.scripts]
+zhaiquant = "zhaiquant.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
