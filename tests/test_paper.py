@@ -14,6 +14,81 @@ from .helpers import make_tick, test_config
 
 
 class PaperTests(unittest.TestCase):
+    def test_bond_book_hands_are_converted_to_bonds(self) -> None:
+        moment = datetime(2026, 8, 11, 10, 0, tzinfo=SHANGHAI)
+        tick = make_tick(
+            "132026.SH", moment, last=133.0, bid=132.99, ask=133.0,
+            level_volume=5,
+        )
+
+        self.assertEqual(PaperEngine._queue_at_price(tick, "buy", 132.99), 50.0)
+        self.assertAlmostEqual(
+            PaperEngine._book_vwap(tick, "buy", 100.0),
+            (133.0 + 133.01) / 2,
+        )
+        self.assertIsNone(PaperEngine._book_vwap(tick, "buy", 260.0))
+
+    def test_standing_order_reprice_is_throttled(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            config = test_config(
+                Path(temp) / "paper-reprice.sqlite3",
+                models=("E3",), fill_modes=("queue",),
+            )
+            store = SQLiteStore(config)
+            processor = MarketProcessor(config, store)
+            base = datetime(2026, 8, 11, 10, 0, tzinfo=SHANGHAI)
+
+            for seconds, bid in ((0, 130.00), (3, 130.00), (6, 130.00)):
+                moment = base + timedelta(seconds=seconds)
+                processor.process(make_tick(
+                    config.qmt.stock_code, moment,
+                    last=28.0, bid=28.0, ask=28.01, volume=1000,
+                ))
+                processor.process(make_tick(
+                    config.qmt.bond_code, moment,
+                    last=132.0, bid=bid, ask=134.0, volume=1000,
+                ))
+
+            first = store.connection.execute(
+                "SELECT id,limit_price,status FROM paper_orders ORDER BY id"
+            ).fetchall()
+            self.assertEqual(len(first), 1)
+            self.assertEqual(first[0]["status"], "open")
+
+            moment = base + timedelta(seconds=9)
+            processor.process(make_tick(
+                config.qmt.stock_code, moment,
+                last=28.0, bid=28.0, ask=28.01, volume=1000,
+            ))
+            processor.process(make_tick(
+                config.qmt.bond_code, moment,
+                last=132.0, bid=130.02, ask=134.0, volume=1000,
+            ))
+            self.assertEqual(
+                store.connection.execute("SELECT COUNT(*) FROM paper_orders").fetchone()[0], 1
+            )
+
+            moment = base + timedelta(seconds=18)
+            processor.process(make_tick(
+                config.qmt.stock_code, moment,
+                last=28.0, bid=28.0, ask=28.01, volume=1000,
+            ))
+            processor.process(make_tick(
+                config.qmt.bond_code, moment,
+                last=132.0, bid=130.08, ask=134.0, volume=1000,
+            ))
+            orders = store.connection.execute(
+                "SELECT status,cancel_reason,limit_price FROM paper_orders ORDER BY id"
+            ).fetchall()
+            self.assertEqual(len(orders), 2)
+            self.assertEqual(
+                (orders[0]["status"], orders[0]["cancel_reason"]),
+                ("cancelled", "standing_reprice"),
+            )
+            self.assertEqual(orders[1]["status"], "open")
+            self.assertGreater(orders[1]["limit_price"], orders[0]["limit_price"])
+            store.close()
+
     def test_invalid_book_cannot_fill_passive_order(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             config = test_config(

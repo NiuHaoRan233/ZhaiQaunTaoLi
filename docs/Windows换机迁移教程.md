@@ -18,12 +18,15 @@ powershell -ExecutionPolicy Bypass -File .\scripts\backup_data.ps1
 
 代码不需要手工复制，直接从 GitHub 克隆。`logs/` 可选，仅用于保留排错记录。不要复制 `.venv/`，虚拟环境带有旧电脑的绝对路径，换机后应重建。
 
+仓库内的 `.agents/skills/` 也随 Git 一起迁移。Codex 从仓库根目录启动时会自动发现这些项目技能，不需要重新讲解通达信采集步骤，也不需要复制旧电脑的个人技能目录。
+
 ## 2. 新电脑准备
 
 1. 安装券商 MiniQMT，登录后开通和确认 `132026.SH`、`132024.SH`、`600900.SH` 行情权限。
 2. 在 MiniQMT 设置中确认行情端口，默认配置为 `58611`。安装路径可以与旧电脑不同。
-3. 安装 64 位 Python 3.11-3.13 和 Git，并确认 PowerShell 中 `python --version`、`git --version` 可用。
-4. 克隆仓库并安装依赖：
+3. 如需界面采集逐笔委托和成交明细，安装并登录通达信金融终端。安装盘符和目录可以与旧电脑不同；项目技能会按应用名称和窗口重新发现、校准，不依赖 `D:\TDX`。
+4. 安装 64 位 Python 3.11-3.13 和 Git，并确认 PowerShell 中 `python --version`、`git --version` 可用。
+5. 克隆仓库并安装依赖：
 
 ```powershell
 cd C:\Users\你的用户名\Desktop
@@ -79,6 +82,7 @@ Copy-Item "D:\迁移文件\zhaiquant-20260810-151000.sqlite3" ".\data\zhaiquant.
 - `doctor` 显示连接成功，并返回所有采集代码的快照。
 - `status` 能看到旧电脑的历史数据和模拟仓位。
 - 30秒测试正常结束，`latest_session.status` 为 `completed`，回调丢失数为0。
+- 从仓库根目录打开 Codex 后，技能列表可见 `tdx-cb-market-capture`。首次在新电脑运行时，允许它重新识别通达信安装位置和界面坐标。
 
 盘后运行30秒时可能只有启动快照而没有订阅回调，这是正常现象。最终实时订阅必须在交易时段确认：三个代码的 `count` 和 `last_ts` 持续变化。
 

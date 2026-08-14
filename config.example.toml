@@ -4,8 +4,10 @@ bond_code = "132026.SH"
 stock_code = "600900.SH"
 # Extra instruments are recorded in full but are not traded by M0.
 watch_codes = ["132024.SH"]
+instrument_names = { "132026.SH" = "G三峡EB2", "132024.SH" = "26江铜EB" }
 callback_queue_size = 100000
 stale_after_seconds = 3.0
+status_interval_seconds = 15.0
 
 [storage]
 database = "data/zhaiquant.sqlite3"
@@ -41,9 +43,30 @@ price = 21.20
 [paper]
 enabled = true
 notional_cny = 100000.0
-quantity = 100.0
+# Order/fill/position quantities are bonds; MiniQMT bond book volumes are hands (10 bonds).
+quantity_bonds = 100.0
 price_tick = 0.001
 maker_entry_wait_seconds = 60
 maker_exit_wait_seconds = 180
+standing_reprice_ticks = 5
+standing_reprice_seconds = 10.0
 execution_models = ["E1", "E2", "E3", "E4"]
 fill_modes = ["optimistic", "queue", "conservative"]
+
+[maker_paper]
+# Paper only: never sends broker orders. Starts each day with 1,000 bonds plus
+# enough cash for another 1,000, and keeps inventory between 0 and 2,000.
+enabled = false
+bond_codes = ["132026.SH", "132024.SH"]
+initial_inventory_bonds = 1000.0
+maximum_inventory_bonds = 2000.0
+initial_cash_cny = 136800.0
+order_quantity_bonds = 1000.0
+price_tick = 0.001
+fill_modes = ["priority", "queue"]
+earliest_entry = "09:30:00.000"
+latest_entry = "14:56:30.000"
+# Optional independent one-hand paper account for extreme deep-book bargains.
+super_windfall_enabled = false
+super_windfall_quantity_bonds = 10.0
+super_windfall_credit_cny = 2000.0

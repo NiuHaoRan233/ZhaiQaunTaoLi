@@ -17,8 +17,16 @@ class ConfigTests(unittest.TestCase):
             config = load_config(target)
             self.assertEqual(config.qmt.port, 58611)
             self.assertEqual(config.qmt.watch_codes, ("132024.SH",))
+            self.assertEqual(config.qmt.instrument_names["132026.SH"], "G三峡EB2")
+            self.assertEqual(config.qmt.instrument_names["132024.SH"], "26江铜EB")
+            self.assertEqual(
+                config.maker_paper.bond_codes,
+                ("132026.SH", "132024.SH"),
+            )
             self.assertEqual(config.m0.conversion_price_for(date(2026, 8, 10)), 21.20)
             self.assertEqual(config.paper.price_tick, 0.001)
+            self.assertFalse(config.maker_paper.super_windfall_enabled)
+            self.assertEqual(config.maker_paper.super_windfall_quantity_bonds, 10)
             self.assertEqual(config.storage.database, Path(temp).resolve() / "data" / "zhaiquant.sqlite3")
 
 

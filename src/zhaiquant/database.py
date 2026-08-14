@@ -206,6 +206,98 @@ CREATE TABLE IF NOT EXISTS equity_snapshots (
     position_quantity REAL NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS maker_paper_accounts (
+    market_date TEXT NOT NULL,
+    strategy_id TEXT NOT NULL,
+    fill_mode TEXT NOT NULL,
+    initial_inventory REAL NOT NULL,
+    maximum_inventory REAL NOT NULL,
+    initial_cash REAL NOT NULL,
+    cash REAL NOT NULL,
+    inventory REAL NOT NULL,
+    last_market_ts_ms INTEGER NOT NULL DEFAULT 0,
+    last_tick_id INTEGER NOT NULL DEFAULT 0,
+    last_bid REAL NOT NULL DEFAULT 0,
+    last_ask REAL NOT NULL DEFAULT 0,
+    trading_pnl REAL NOT NULL DEFAULT 0,
+    fills INTEGER NOT NULL DEFAULT 0,
+    updated_at_utc TEXT NOT NULL,
+    PRIMARY KEY(market_date, strategy_id)
+);
+
+CREATE TABLE IF NOT EXISTS maker_paper_model_assignments (
+    market_date TEXT NOT NULL,
+    strategy_id TEXT NOT NULL,
+    bond_code TEXT NOT NULL,
+    model_id TEXT NOT NULL,
+    model_version TEXT NOT NULL,
+    execution_mode TEXT NOT NULL,
+    parent_model_id TEXT,
+    assigned_at_utc TEXT NOT NULL,
+    PRIMARY KEY(market_date, strategy_id)
+);
+CREATE INDEX IF NOT EXISTS idx_maker_model_assignments_model
+ON maker_paper_model_assignments(model_id, market_date);
+
+CREATE TABLE IF NOT EXISTS maker_paper_orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT NOT NULL,
+    market_date TEXT NOT NULL,
+    strategy_id TEXT NOT NULL,
+    side TEXT NOT NULL,
+    status TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    lot_id INTEGER,
+    created_market_ts_ms INTEGER NOT NULL,
+    updated_market_ts_ms INTEGER NOT NULL,
+    limit_price REAL NOT NULL,
+    quantity REAL NOT NULL,
+    filled_quantity REAL NOT NULL DEFAULT 0,
+    queue_ahead REAL NOT NULL DEFAULT 0,
+    target_price REAL,
+    cancel_reason TEXT,
+    metadata_json TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_maker_orders_open
+ON maker_paper_orders(market_date, strategy_id, status, side);
+
+CREATE TABLE IF NOT EXISTS maker_paper_lots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT NOT NULL,
+    market_date TEXT NOT NULL,
+    strategy_id TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    opened_market_ts_ms INTEGER NOT NULL,
+    entry_price REAL,
+    original_quantity REAL NOT NULL,
+    remaining_quantity REAL NOT NULL,
+    target_price REAL,
+    status TEXT NOT NULL,
+    updated_market_ts_ms INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_maker_lots_open
+ON maker_paper_lots(market_date, strategy_id, status);
+
+CREATE TABLE IF NOT EXISTS maker_paper_fills (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT NOT NULL,
+    market_date TEXT NOT NULL,
+    strategy_id TEXT NOT NULL,
+    order_id INTEGER,
+    lot_id INTEGER,
+    market_ts_ms INTEGER NOT NULL,
+    received_ts_ns INTEGER NOT NULL,
+    side TEXT NOT NULL,
+    price REAL NOT NULL,
+    quantity REAL NOT NULL,
+    fill_reason TEXT NOT NULL,
+    reference_tick_id INTEGER NOT NULL,
+    cash_after REAL NOT NULL,
+    inventory_after REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_maker_fills_date
+ON maker_paper_fills(market_date, strategy_id, market_ts_ms, id);
+
 CREATE TABLE IF NOT EXISTS app_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     run_id TEXT,
@@ -432,6 +524,79 @@ class SQLiteStore:
         )
         self._changed(1)
 
+    def upsert_maker_account(self, values: dict[str, Any]) -> None:
+        columns = list(values)
+        updates = [column for column in columns if column not in {"market_date", "strategy_id"}]
+        self.connection.execute(
+            f"INSERT INTO maker_paper_accounts({','.join(columns)}) VALUES "
+            f"({','.join('?' for _ in columns)}) "
+            "ON CONFLICT(market_date,strategy_id) DO UPDATE SET "
+            + ",".join(f"{column}=excluded.{column}" for column in updates),
+            [values[column] for column in columns],
+        )
+        self._changed(1)
+
+    def upsert_maker_model_assignment(self, values: dict[str, Any]) -> None:
+        columns = list(values)
+        updates = [
+            column for column in columns
+            if column not in {"market_date", "strategy_id"}
+        ]
+        self.connection.execute(
+            f"INSERT INTO maker_paper_model_assignments({','.join(columns)}) VALUES "
+            f"({','.join('?' for _ in columns)}) "
+            "ON CONFLICT(market_date,strategy_id) DO UPDATE SET "
+            + ",".join(f"{column}=excluded.{column}" for column in updates),
+            [values[column] for column in columns],
+        )
+        self._changed(1)
+
+    def insert_maker_order(self, values: dict[str, Any]) -> int:
+        columns = list(values)
+        cursor = self.connection.execute(
+            f"INSERT INTO maker_paper_orders({','.join(columns)}) VALUES "
+            f"({','.join('?' for _ in columns)})",
+            [values[column] for column in columns],
+        )
+        self._changed(1)
+        return int(cursor.lastrowid)
+
+    def update_maker_order(self, order_id: int, **values: Any) -> None:
+        assignments = ",".join(f"{column}=?" for column in values)
+        self.connection.execute(
+            f"UPDATE maker_paper_orders SET {assignments} WHERE id=?",
+            [*values.values(), order_id],
+        )
+        self._changed(1)
+
+    def insert_maker_lot(self, values: dict[str, Any]) -> int:
+        columns = list(values)
+        cursor = self.connection.execute(
+            f"INSERT INTO maker_paper_lots({','.join(columns)}) VALUES "
+            f"({','.join('?' for _ in columns)})",
+            [values[column] for column in columns],
+        )
+        self._changed(1)
+        return int(cursor.lastrowid)
+
+    def update_maker_lot(self, lot_id: int, **values: Any) -> None:
+        assignments = ",".join(f"{column}=?" for column in values)
+        self.connection.execute(
+            f"UPDATE maker_paper_lots SET {assignments} WHERE id=?",
+            [*values.values(), lot_id],
+        )
+        self._changed(1)
+
+    def insert_maker_fill(self, values: dict[str, Any]) -> int:
+        columns = list(values)
+        cursor = self.connection.execute(
+            f"INSERT INTO maker_paper_fills({','.join(columns)}) VALUES "
+            f"({','.join('?' for _ in columns)})",
+            [values[column] for column in columns],
+        )
+        self._changed(1)
+        return int(cursor.lastrowid)
+
     def app_event(self, level: str, event_type: str, message: str, details: Any = None) -> None:
         self.connection.execute(
             """INSERT INTO app_events(run_id, created_at_utc, level, event_type, message, details_json)
@@ -496,6 +661,20 @@ class SQLiteStore:
                       SUM(CASE WHEN status='closed' AND gross_return>0 THEN 1 ELSE 0 END) AS winning_positions
                FROM paper_positions GROUP BY strategy_id ORDER BY strategy_id"""
         ).fetchall()
+        maker_accounts = self.connection.execute(
+            """SELECT market_date,strategy_id,fill_mode,initial_inventory,
+                      maximum_inventory,initial_cash,cash,inventory,last_bid,last_ask,
+                      trading_pnl,fills,last_market_ts_ms
+               FROM maker_paper_accounts WHERE market_date=? ORDER BY strategy_id""",
+            (date_filter,),
+        ).fetchall()
+        maker_fills = self.connection.execute(
+            """SELECT strategy_id,side,COUNT(*) AS fill_events,
+                      COALESCE(SUM(quantity),0) AS quantity
+               FROM maker_paper_fills WHERE market_date=?
+               GROUP BY strategy_id,side ORDER BY strategy_id,side""",
+            (date_filter,),
+        ).fetchall()
         return {
             "date": date_filter,
             "database": str(self.path),
@@ -506,6 +685,8 @@ class SQLiteStore:
             "m0_quality": dict(m0_quality),
             "latest_session": dict(latest_session) if latest_session else None,
             "paper_strategies": [dict(row) for row in strategies],
+            "maker_paper_accounts": [dict(row) for row in maker_accounts],
+            "maker_paper_fills": [dict(row) for row in maker_fills],
         }
 
     def update_session_health(self, dropped_callbacks: int) -> None:

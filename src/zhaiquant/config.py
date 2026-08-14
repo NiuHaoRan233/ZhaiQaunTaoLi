@@ -24,8 +24,13 @@ class QmtConfig:
     bond_code: str = "132026.SH"
     stock_code: str = "600900.SH"
     watch_codes: tuple[str, ...] = ("132024.SH",)
+    instrument_names: dict[str, str] = field(default_factory=lambda: {
+        "132026.SH": "G三峡EB2",
+        "132024.SH": "26江铜EB",
+    })
     callback_queue_size: int = 100_000
     stale_after_seconds: float = 3.0
+    status_interval_seconds: float = 15.0
 
 
 @dataclass(frozen=True)
@@ -66,12 +71,33 @@ class M0Config:
 class PaperConfig:
     enabled: bool = True
     notional_cny: float = 100_000.0
-    quantity: float = 100.0
+    quantity_bonds: float = 100.0
     price_tick: float = 0.001
     maker_entry_wait_seconds: int = 60
     maker_exit_wait_seconds: int = 180
+    standing_reprice_ticks: int = 5
+    standing_reprice_seconds: float = 10.0
     execution_models: tuple[str, ...] = ("E1", "E2", "E3", "E4")
     fill_modes: tuple[str, ...] = ("optimistic", "queue", "conservative")
+
+
+@dataclass(frozen=True)
+class MakerPaperConfig:
+    """Paper-only inventory account for the maker V0.1 model."""
+
+    enabled: bool = False
+    bond_codes: tuple[str, ...] = ()
+    initial_inventory_bonds: float = 1_000.0
+    maximum_inventory_bonds: float = 2_000.0
+    initial_cash_cny: float = 136_800.0
+    order_quantity_bonds: float = 1_000.0
+    price_tick: float = 0.001
+    fill_modes: tuple[str, ...] = ("priority", "queue")
+    earliest_entry: str = "09:30:00.000"
+    latest_entry: str = "14:56:30.000"
+    super_windfall_enabled: bool = False
+    super_windfall_quantity_bonds: float = 10.0
+    super_windfall_credit_cny: float = 2_000.0
 
 
 @dataclass(frozen=True)
@@ -81,6 +107,7 @@ class AppConfig:
     storage: StorageConfig
     m0: M0Config
     paper: PaperConfig
+    maker_paper: MakerPaperConfig = field(default_factory=MakerPaperConfig)
 
     def to_json(self) -> str:
         data = asdict(self)
@@ -112,6 +139,7 @@ def load_config(path: str | Path = "config.toml") -> AppConfig:
     storage_data = _section(data, "storage")
     m0_data = _section(data, "m0")
     paper_data = _section(data, "paper")
+    maker_paper_data = _section(data, "maker_paper")
 
     database = Path(storage_data.get("database", "data/zhaiquant.sqlite3"))
     if not database.is_absolute():
@@ -131,13 +159,24 @@ def load_config(path: str | Path = "config.toml") -> AppConfig:
         conversion_prices = list(M0Config().conversion_prices)
     conversion_prices.sort(key=lambda item: item.effective_date)
 
+    instrument_names_data = qmt_data.get("instrument_names", {
+        "132026.SH": "G三峡EB2",
+        "132024.SH": "26江铜EB",
+    })
+    if not isinstance(instrument_names_data, dict):
+        raise ConfigError("qmt.instrument_names must be a TOML table")
+
     qmt = QmtConfig(
         port=int(qmt_data.get("port", 58611)),
         bond_code=str(qmt_data.get("bond_code", "132026.SH")),
         stock_code=str(qmt_data.get("stock_code", "600900.SH")),
         watch_codes=tuple(str(item) for item in qmt_data.get("watch_codes", ["132024.SH"])),
+        instrument_names={
+            str(code): str(name) for code, name in instrument_names_data.items()
+        },
         callback_queue_size=int(qmt_data.get("callback_queue_size", 100_000)),
         stale_after_seconds=float(qmt_data.get("stale_after_seconds", 3.0)),
+        status_interval_seconds=float(qmt_data.get("status_interval_seconds", 15.0)),
     )
     storage = StorageConfig(
         database=database,
@@ -162,10 +201,14 @@ def load_config(path: str | Path = "config.toml") -> AppConfig:
     paper = PaperConfig(
         enabled=bool(paper_data.get("enabled", True)),
         notional_cny=float(paper_data.get("notional_cny", 100_000.0)),
-        quantity=float(paper_data.get("quantity", 100.0)),
+        quantity_bonds=float(paper_data.get(
+            "quantity_bonds", paper_data.get("quantity", 100.0)
+        )),
         price_tick=float(paper_data.get("price_tick", 0.001)),
         maker_entry_wait_seconds=int(paper_data.get("maker_entry_wait_seconds", 60)),
         maker_exit_wait_seconds=int(paper_data.get("maker_exit_wait_seconds", 180)),
+        standing_reprice_ticks=int(paper_data.get("standing_reprice_ticks", 5)),
+        standing_reprice_seconds=float(paper_data.get("standing_reprice_seconds", 10.0)),
         execution_models=tuple(str(item).upper() for item in paper_data.get(
             "execution_models", ["E1", "E2", "E3", "E4"]
         )),
@@ -173,25 +216,117 @@ def load_config(path: str | Path = "config.toml") -> AppConfig:
             "fill_modes", ["optimistic", "queue", "conservative"]
         )),
     )
-    _validate(qmt, storage, m0, paper)
-    return AppConfig(config_path, qmt, storage, m0, paper)
+    maker_paper = MakerPaperConfig(
+        enabled=bool(maker_paper_data.get("enabled", False)),
+        bond_codes=tuple(str(item) for item in maker_paper_data.get(
+            "bond_codes", [qmt.bond_code]
+        )),
+        initial_inventory_bonds=float(maker_paper_data.get(
+            "initial_inventory_bonds", 1_000.0
+        )),
+        maximum_inventory_bonds=float(maker_paper_data.get(
+            "maximum_inventory_bonds", 2_000.0
+        )),
+        initial_cash_cny=float(maker_paper_data.get(
+            "initial_cash_cny", 136_800.0
+        )),
+        order_quantity_bonds=float(maker_paper_data.get(
+            "order_quantity_bonds", 1_000.0
+        )),
+        price_tick=float(maker_paper_data.get("price_tick", 0.001)),
+        fill_modes=tuple(str(item).lower() for item in maker_paper_data.get(
+            "fill_modes", ["priority", "queue"]
+        )),
+        earliest_entry=str(maker_paper_data.get(
+            "earliest_entry", "09:30:00.000"
+        )),
+        latest_entry=str(maker_paper_data.get(
+            "latest_entry", "14:56:30.000"
+        )),
+        super_windfall_enabled=bool(maker_paper_data.get(
+            "super_windfall_enabled", False
+        )),
+        super_windfall_quantity_bonds=float(maker_paper_data.get(
+            "super_windfall_quantity_bonds", 10.0
+        )),
+        super_windfall_credit_cny=float(maker_paper_data.get(
+            "super_windfall_credit_cny", 2_000.0
+        )),
+    )
+    _validate(qmt, storage, m0, paper, maker_paper)
+    return AppConfig(config_path, qmt, storage, m0, paper, maker_paper)
 
 
-def _validate(qmt: QmtConfig, storage: StorageConfig, m0: M0Config, paper: PaperConfig) -> None:
+def _validate(
+    qmt: QmtConfig, storage: StorageConfig, m0: M0Config,
+    paper: PaperConfig, maker_paper: MakerPaperConfig,
+) -> None:
     if qmt.port <= 0:
         raise ConfigError("qmt.port must be positive")
+    if qmt.status_interval_seconds <= 0:
+        raise ConfigError("qmt.status_interval_seconds must be positive")
     if not qmt.bond_code or not qmt.stock_code or qmt.bond_code == qmt.stock_code:
         raise ConfigError("qmt bond_code and stock_code must be distinct")
     if any(not code for code in qmt.watch_codes):
         raise ConfigError("qmt.watch_codes cannot contain blank codes")
+    if any(not code or not name for code, name in qmt.instrument_names.items()):
+        raise ConfigError("qmt.instrument_names cannot contain blank codes or names")
     if m0.minimum_observations > m0.rolling_observations:
         raise ConfigError("m0.minimum_observations cannot exceed rolling_observations")
     if not 0 < m0.entry_discount < 0.2 or not 0 <= m0.exit_discount < m0.entry_discount:
         raise ConfigError("m0 entry/exit discounts are invalid")
-    if paper.quantity <= 0 or paper.notional_cny <= 0 or paper.price_tick <= 0:
+    if paper.quantity_bonds <= 0 or paper.notional_cny <= 0 or paper.price_tick <= 0:
         raise ConfigError("paper quantity, notional and price_tick must be positive")
+    if paper.quantity_bonds % 10 != 0:
+        raise ConfigError("paper.quantity_bonds must be a multiple of 10 bonds")
+    if paper.standing_reprice_ticks <= 0 or paper.standing_reprice_seconds < 0:
+        raise ConfigError("paper standing reprice limits are invalid")
     if not set(paper.execution_models).issubset({"E1", "E2", "E3", "E4"}):
         raise ConfigError("paper.execution_models may only contain E1/E2/E3/E4")
     if not set(paper.fill_modes).issubset({"optimistic", "queue", "conservative"}):
         raise ConfigError("paper.fill_modes contains an unknown mode")
+    maker_values = (
+        maker_paper.initial_inventory_bonds,
+        maker_paper.maximum_inventory_bonds,
+        maker_paper.initial_cash_cny,
+        maker_paper.order_quantity_bonds,
+        maker_paper.price_tick,
+    )
+    if any(value <= 0 for value in maker_values):
+        raise ConfigError("maker_paper inventory, cash, quantity and price_tick must be positive")
+    if maker_paper.initial_inventory_bonds > maker_paper.maximum_inventory_bonds:
+        raise ConfigError("maker_paper initial inventory cannot exceed maximum inventory")
+    if any(value % 10 != 0 for value in (
+        maker_paper.initial_inventory_bonds,
+        maker_paper.maximum_inventory_bonds,
+        maker_paper.order_quantity_bonds,
+    )):
+        raise ConfigError("maker_paper bond quantities must be multiples of 10")
+    if not maker_paper.fill_modes or not set(maker_paper.fill_modes).issubset({"priority", "queue"}):
+        raise ConfigError("maker_paper.fill_modes may only contain priority/queue")
+    maker_bond_codes = maker_paper.bond_codes or (qmt.bond_code,)
+    if any(not code for code in maker_bond_codes):
+        raise ConfigError("maker_paper.bond_codes cannot contain blank codes")
+    if len(set(maker_bond_codes)) != len(maker_bond_codes):
+        raise ConfigError("maker_paper.bond_codes cannot contain duplicates")
+    recorded_codes = {qmt.bond_code, *qmt.watch_codes}
+    missing_codes = set(maker_bond_codes) - recorded_codes
+    if missing_codes:
+        raise ConfigError(
+            "maker_paper.bond_codes must be included in qmt.bond_code or "
+            f"qmt.watch_codes: {sorted(missing_codes)}"
+        )
+    if qmt.stock_code in maker_bond_codes:
+        raise ConfigError("maker_paper.bond_codes cannot include qmt.stock_code")
+    if maker_paper.earliest_entry >= maker_paper.latest_entry:
+        raise ConfigError("maker_paper entry window is invalid")
+    if (
+        maker_paper.super_windfall_quantity_bonds <= 0
+        or maker_paper.super_windfall_quantity_bonds % 10 != 0
+        or maker_paper.super_windfall_credit_cny <= 0
+    ):
+        raise ConfigError(
+            "maker_paper super windfall quantity must be a positive multiple "
+            "of 10 bonds and credit must be positive"
+        )
     storage.database.parent.mkdir(parents=True, exist_ok=True)

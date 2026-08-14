@@ -1,0 +1,4 @@
+interface:
+  display_name: "通达信转债数据采集"
+  short_description: "跨电脑采集三峡EB2逐笔委托和成交明细行情数据"
+  default_prompt: "Use $tdx-cb-market-capture to open 通达信 and capture the verified 132026.SH market-data views."

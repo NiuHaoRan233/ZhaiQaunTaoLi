@@ -36,10 +36,12 @@ def test_config(database: Path, *, models=("E1",), fill_modes=("queue",)) -> App
         paper=PaperConfig(
             enabled=True,
             notional_cny=100_000,
-            quantity=10,
+            quantity_bonds=100,
             price_tick=0.01,
             maker_entry_wait_seconds=60,
             maker_exit_wait_seconds=180,
+            standing_reprice_ticks=5,
+            standing_reprice_seconds=10,
             execution_models=models,
             fill_modes=fill_modes,
         ),

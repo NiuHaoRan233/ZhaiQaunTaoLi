@@ -64,6 +64,30 @@ powershell -ExecutionPolicy Bypass -File .\scripts\backup_data.ps1
 - `status`：显示数据量、配对质量、会话状态和模拟成绩。
 - `snapshot`：保存一次当前快照，不运行模拟成交。
 - `backup`：使用SQLite在线备份接口生成可迁移文件。
+- `maker-report`：只读回放本地Level 1数据，输出做市策略V0.1的价格锚、低价接砸和扫尾候选报告。
+
+做市策略V0.1的规则、成交口径和已知限制见
+[做市策略V0.1](docs/做市策略V0.1.md)。
+
+## 做市模拟盘
+
+`[maker_paper]`启用后，`run`会在同一条只读行情流上并行运行做市模拟盘。它只向本地
+SQLite写入虚拟委托与成交，不连接交易接口。默认同时记录两种执行口径：
+
+- `priority`：买价改善一厘成为新买一，按第一顺位估计成交；
+- `queue`：加入原买一，必须先消耗快照中显示的排队量。
+
+可选的`super_windfall`是第三个完全隔离的纸面账户，默认只使用一手（10张）和2,000元虚拟额度，专门预埋到相对近期合理价低至少1.50元的异常深档。它不会调用券商资金，也不占普通做T账户库存；当前只定义买入，退出规则仍待人工校准。
+
+账户每天从1,000张底仓和可再买1,000张的现金开始，库存限制为0至2,000张。查看实时
+结果：
+
+```powershell
+.\.venv\Scripts\python.exe -m zhaiquant --config config.toml status
+```
+
+关注输出中的`maker_paper_accounts`和`maker_paper_fills`。`trading_pnl`会按恢复期初
+1,000张底仓所需的盘口价格对库存差额盯市；它不是券商账户实际盈亏。
 
 ## 现有代码
 

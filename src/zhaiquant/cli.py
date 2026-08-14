@@ -32,6 +32,28 @@ def _parser() -> argparse.ArgumentParser:
     )
     status = commands.add_parser("status", help="Show database collection and paper status")
     status.add_argument("--date", default=None, help="Market date in YYYY-MM-DD")
+    maker = commands.add_parser(
+        "maker-report",
+        help="Replay recorded Level 1 data through the maker V0.1 research model",
+    )
+    maker.add_argument("--date", default=None, help="Market date in YYYY-MM-DD; default latest")
+    maker.add_argument("--output", default=None, help="Optional JSON report destination")
+    dashboard = commands.add_parser(
+        "maker-console",
+        aliases=["maker-dashboard"],
+        help="Show the live, read-only maker paper-trading dashboard",
+    )
+    dashboard.add_argument("--date", default=None, help="Market date in YYYY-MM-DD; default today")
+    dashboard.add_argument(
+        "--bond-code", default=None,
+        help="Maker bond code; default qmt.bond_code",
+    )
+    dashboard.add_argument(
+        "--interval", type=float, default=60.0,
+        help="Maximum visible refresh interval without a fill; default 60 seconds",
+    )
+    dashboard.add_argument("--recent-fills", type=int, default=16, help="Number of recent fills to show")
+    dashboard.add_argument("--once", action="store_true", help="Print one dashboard snapshot and exit")
     backup = commands.add_parser("backup", help="Create a transactionally consistent SQLite backup")
     backup.add_argument("--output", required=True, help="Destination .sqlite3 path")
     backfill = commands.add_parser("backfill", help="Download and store recent QMT tick history without paper fills")
@@ -210,6 +232,61 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "run":
             LiveRunner(config).run(duration_seconds=args.duration_seconds)
             return 0
+        if args.command == "maker-report":
+            from .maker import generate_maker_report, write_report
+
+            report = generate_maker_report(
+                config.storage.database,
+                args.date,
+                config.qmt.bond_code,
+                config.qmt.stock_code,
+            )
+            if args.output:
+                destination = Path(args.output).expanduser().resolve()
+                write_report(report, destination)
+                _print({
+                    "report": str(destination),
+                    "date": report["date"],
+                    "summary": report["summary"],
+                })
+            else:
+                _print(report)
+            return 0
+        if args.command in {"maker-console", "maker-dashboard"}:
+            from .maker import MakerParameters
+            from .maker_dashboard import run_dashboard
+            from .maker_paper import (
+                configured_maker_bond_codes,
+                maker_strategy_ids,
+            )
+
+            market_date = args.date or datetime.now().date().isoformat()
+            bond_code = args.bond_code or config.qmt.bond_code
+            if bond_code not in configured_maker_bond_codes(config):
+                raise ConfigError(
+                    f"Maker paper is not enabled for {bond_code}; configured: "
+                    f"{list(configured_maker_bond_codes(config))}"
+                )
+            return run_dashboard(
+                config.storage.database,
+                bond_code,
+                market_date,
+                stock_code=config.qmt.stock_code,
+                parameters=MakerParameters(
+                    order_quantity_bonds=(
+                        config.maker_paper.order_quantity_bonds
+                    ),
+                    price_tick=config.maker_paper.price_tick,
+                    earliest_entry_time=config.maker_paper.earliest_entry,
+                    latest_entry_time=config.maker_paper.latest_entry,
+                ),
+                bond_name=config.qmt.instrument_names.get(bond_code),
+                interval_seconds=args.interval,
+                once=args.once,
+                recent_fills=args.recent_fills,
+                strategy_ids=maker_strategy_ids(config, bond_code),
+                follow_current_date=args.date is None,
+            )
         store = SQLiteStore(config)
         try:
             if args.command == "status":

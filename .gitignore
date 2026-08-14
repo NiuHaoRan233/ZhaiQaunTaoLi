@@ -10,6 +10,7 @@ config.toml
 data/
 logs/
 backups/
+成交委托数据截图保存/
 *.sqlite3
 *.sqlite3-wal
 *.sqlite3-shm

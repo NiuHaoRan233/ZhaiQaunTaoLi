@@ -13,6 +13,10 @@ from .timeutil import parse_clock, trading_seconds_between
 from .types import SHANGHAI, Tick
 
 
+QMT_BONDS_PER_HAND = 10.0
+BOND_ORDER_LOT = 10.0
+
+
 @dataclass
 class SimOrder:
     db_id: int
@@ -59,6 +63,7 @@ class PaperEngine:
         self.config = config
         self.store = store
         self.accounts = self._accounts()
+        self.fills_this_run = 0
         if recover and self.config.paper.enabled:
             self.recover()
 
@@ -172,8 +177,24 @@ class PaperEngine:
             desired = self._standing_buy_price(observation)
             if desired <= 0:
                 self._cancel_order(account, "standing_price_unavailable", now_ms)
-            elif abs(desired - (order.limit_price or 0.0)) >= self.config.paper.price_tick / 2:
-                self._cancel_order(account, "standing_reprice", now_ms)
+                return
+            current = order.limit_price or 0.0
+            maximum = self._maximum_buy_price(observation)
+            price_move = abs(desired - current)
+            min_move = (
+                self.config.paper.standing_reprice_ticks
+                * self.config.paper.price_tick
+            )
+            old_price_exceeds_limit = maximum > 0 and current > maximum + 1e-9
+            reprice_interval_elapsed = (
+                now_ms - order.created_ms
+                >= self.config.paper.standing_reprice_seconds * 1000
+            )
+            if old_price_exceeds_limit or (
+                price_move + 1e-9 >= min_move and reprice_interval_elapsed
+            ):
+                reason = "standing_risk_reprice" if old_price_exceeds_limit else "standing_reprice"
+                self._cancel_order(account, reason, now_ms)
                 self._create_passive_order(
                     account, observation, "buy", desired, None, observation.signal_id,
                     "standing_bid",
@@ -237,7 +258,7 @@ class PaperEngine:
                     or (change.volume_delta > 0 and tick.last_price <= limit - self.config.paper.price_tick)
                 )
             else:
-                trade_volume = change.volume_delta if (
+                trade_volume = change.volume_delta * QMT_BONDS_PER_HAND if (
                     change.volume_delta > 0 and tick.last_price <= limit
                     and change.inferred_side in {"sell", "unknown"}
                 ) else 0.0
@@ -254,7 +275,7 @@ class PaperEngine:
                     or (change.volume_delta > 0 and tick.last_price >= limit + self.config.paper.price_tick)
                 )
             else:
-                trade_volume = change.volume_delta if (
+                trade_volume = change.volume_delta * QMT_BONDS_PER_HAND if (
                     change.volume_delta > 0 and tick.last_price >= limit
                     and change.inferred_side in {"buy", "unknown"}
                 ) else 0.0
@@ -279,14 +300,20 @@ class PaperEngine:
         return True
 
     def _direct_entry(self, account: Account, observation: M0Observation) -> None:
-        price = self._book_vwap(observation.bond.tick, "buy", self.config.paper.quantity)
+        quantity = self._entry_quantity(observation.bond.tick.ask1)
+        if quantity <= 0:
+            self._record_insufficient_budget(account, observation)
+            return
+        price = self._book_vwap(observation.bond.tick, "buy", quantity)
         if price is None:
             self.store.app_event(
                 "warning", "insufficient_depth", "E1 entry skipped because five-level depth was insufficient",
                 {"strategy_id": account.strategy_id, "market_ts_ms": observation.bond.tick.market_ts_ms},
             )
             return
-        order = self._create_market_order(account, observation, "buy", observation.signal_id, "signal_cross")
+        order = self._create_market_order(
+            account, observation, "buy", observation.signal_id, "signal_cross", quantity
+        )
         self._fill_order(account, observation, price, order.quantity, "market_buy_book_vwap")
 
     def _direct_exit(self, account: Account, observation: M0Observation, reason: str) -> None:
@@ -305,9 +332,14 @@ class PaperEngine:
 
     def _create_market_order(
         self, account: Account, observation: M0Observation, side: str,
-        signal_id: int | None, reason: str,
+        signal_id: int | None, reason: str, quantity: float | None = None,
     ) -> SimOrder:
-        quantity = account.position.quantity if side == "sell" and account.position else self.config.paper.quantity
+        if quantity is None:
+            quantity = (
+                account.position.quantity
+                if side == "sell" and account.position
+                else self._entry_quantity(observation.bond.tick.ask1)
+            )
         tick = observation.bond.tick
         order_id = self.store.create_order({
             "run_id": self.store.run_id,
@@ -327,7 +359,7 @@ class PaperEngine:
             "average_fill_price": None,
             "queue_ahead": 0.0,
             "cancel_reason": None,
-            "metadata_json": json.dumps({"reason": reason}, separators=(",", ":")),
+            "metadata_json": self._order_metadata(reason),
         })
         order = SimOrder(
             order_id, account.strategy_id, account.model, account.fill_mode, side,
@@ -343,6 +375,14 @@ class PaperEngine:
         tick = observation.bond.tick
         expires = tick.market_ts_ms + wait_seconds * 1000 if wait_seconds else None
         queue_ahead = self._queue_at_price(tick, side, price)
+        quantity = (
+            self._entry_quantity(price)
+            if side == "buy"
+            else account.position.quantity
+        )
+        if quantity <= 0:
+            self._record_insufficient_budget(account, observation)
+            return
         order_id = self.store.create_order({
             "run_id": self.store.run_id,
             "strategy_id": account.strategy_id,
@@ -356,17 +396,17 @@ class PaperEngine:
             "updated_market_ts_ms": tick.market_ts_ms,
             "expires_market_ts_ms": expires,
             "limit_price": price,
-            "quantity": self.config.paper.quantity if side == "buy" else account.position.quantity,
+            "quantity": quantity,
             "filled_quantity": 0.0,
             "average_fill_price": None,
             "queue_ahead": queue_ahead,
             "cancel_reason": None,
-            "metadata_json": json.dumps({"reason": reason}, separators=(",", ":")),
+            "metadata_json": self._order_metadata(reason),
         })
         account.order = SimOrder(
             order_id, account.strategy_id, account.model, account.fill_mode, side,
             "limit", tick.market_ts_ms, expires, price,
-            self.config.paper.quantity if side == "buy" else account.position.quantity,
+            quantity,
             signal_id, queue_ahead,
         )
 
@@ -390,6 +430,7 @@ class PaperEngine:
             "fill_reason": reason,
             "reference_tick_id": observation.bond.tick_id,
         })
+        self.fills_this_run += 1
         self.store.update_order(
             order.db_id,
             status="filled",
@@ -463,12 +504,11 @@ class PaperEngine:
         account.order = None
 
     def _standing_buy_price(self, observation: M0Observation) -> float:
-        if observation.fair_buy is None:
-            return 0.0
         tick = observation.bond.tick
-        maximum = observation.fair_buy / (1.0 + self.config.m0.entry_discount)
+        maximum = self._maximum_buy_price(observation)
+        if maximum <= 0:
+            return 0.0
         price_tick = self.config.paper.price_tick
-        maximum = math.floor((maximum + 1e-12) / price_tick) * price_tick
         improved = tick.bid1 + price_tick
         if improved < tick.ask1 and improved <= maximum:
             return round(improved, 6)
@@ -476,13 +516,50 @@ class PaperEngine:
             return tick.bid1
         return round(maximum, 6)
 
+    def _maximum_buy_price(self, observation: M0Observation) -> float:
+        if observation.fair_buy is None:
+            return 0.0
+        price_tick = self.config.paper.price_tick
+        maximum = observation.fair_buy / (1.0 + self.config.m0.entry_discount)
+        return round(math.floor((maximum + 1e-12) / price_tick) * price_tick, 6)
+
+    def _entry_quantity(self, price: float) -> float:
+        if price <= 0:
+            return 0.0
+        affordable = math.floor(
+            self.config.paper.notional_cny / price / BOND_ORDER_LOT
+        ) * BOND_ORDER_LOT
+        return min(self.config.paper.quantity_bonds, affordable)
+
+    def _record_insufficient_budget(
+        self, account: Account, observation: M0Observation,
+    ) -> None:
+        self.store.app_event(
+            "warning", "insufficient_paper_budget",
+            "Paper entry skipped because budget was below one bond lot",
+            {
+                "strategy_id": account.strategy_id,
+                "notional_cny": self.config.paper.notional_cny,
+                "market_ts_ms": observation.bond.tick.market_ts_ms,
+            },
+        )
+
+    @staticmethod
+    def _order_metadata(reason: str) -> str:
+        return json.dumps({
+            "reason": reason,
+            "quantity_unit": "bond",
+            "book_volume_unit": "qmt_hand",
+            "bonds_per_qmt_hand": QMT_BONDS_PER_HAND,
+        }, separators=(",", ":"))
+
     @staticmethod
     def _queue_at_price(tick: Tick, side: str, price: float) -> float:
         prices = tick.bid_prices if side == "buy" else tick.ask_prices
         volumes = tick.bid_volumes if side == "buy" else tick.ask_volumes
         for level_price, level_volume in zip(prices, volumes):
             if abs(level_price - price) < 1e-9:
-                return level_volume
+                return level_volume * QMT_BONDS_PER_HAND
         return 0.0
 
     @staticmethod
@@ -494,12 +571,41 @@ class PaperEngine:
         for price, volume in zip(prices, volumes):
             if price <= 0 or volume <= 0:
                 continue
-            filled = min(remaining, volume)
+            available_bonds = volume * QMT_BONDS_PER_HAND
+            filled = min(remaining, available_bonds)
             total_value += filled * price
             remaining -= filled
             if remaining <= 1e-9:
                 return total_value / quantity
         return None
+
+    def runtime_summary(self, tick: Tick | None) -> dict[str, float | int]:
+        open_orders = sum(account.order is not None for account in self.accounts.values())
+        positions = [
+            account.position for account in self.accounts.values()
+            if account.position is not None
+        ]
+        unrealized_pnl = 0.0
+        if tick is not None and tick.bid1 > 0:
+            unrealized_pnl = sum(
+                position.quantity * (tick.bid1 - position.entry_price)
+                for position in positions
+            )
+        return {
+            "open_orders": open_orders,
+            "open_positions": len(positions),
+            "fills_this_run": self.fills_this_run,
+            "realized_pnl": sum(account.realized_pnl for account in self.accounts.values()),
+            "unrealized_pnl": unrealized_pnl,
+            "order_notional_cny": sum(
+                (account.order.limit_price or 0.0) * account.order.quantity
+                for account in self.accounts.values()
+                if account.order is not None and account.order.side == "buy"
+            ),
+            "position_notional_cny": sum(
+                position.entry_price * position.quantity for position in positions
+            ),
+        }
 
     def _update_position_mark(self, account: Account, tick: Tick) -> None:
         position = account.position
