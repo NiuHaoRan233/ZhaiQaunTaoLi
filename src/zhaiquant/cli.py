@@ -38,6 +38,82 @@ def _parser() -> argparse.ArgumentParser:
     )
     maker.add_argument("--date", default=None, help="Market date in YYYY-MM-DD; default latest")
     maker.add_argument("--output", default=None, help="Optional JSON report destination")
+    tape = commands.add_parser(
+        "tdx-extract-trades",
+        help="OCR verified 通达信 full-day 逐笔成交 screenshots",
+    )
+    tape.add_argument("--input-dir", required=True, help="Directory containing 逐笔成交 PNG pages")
+    tape.add_argument("--date", required=True, help="Actual market date in YYYY-MM-DD")
+    tape.add_argument("--code", required=True, help="Security code, for example 132026.SH")
+    tape.add_argument("--output-dir", required=True, help="Ignored local structured-data directory")
+    orders = commands.add_parser(
+        "tdx-extract-orders",
+        help="OCR verified 通达信 full-day 逐笔委托 screenshots",
+    )
+    orders.add_argument("--input-dir", required=True, help="Directory containing 逐笔委托 PNG pages")
+    orders.add_argument("--date", required=True, help="Actual market date in YYYY-MM-DD")
+    orders.add_argument("--code", required=True, help="Security code, for example 132026.SH")
+    orders.add_argument("--output-dir", required=True, help="Ignored local structured-data directory")
+    audit = commands.add_parser(
+        "tdx-opportunity-report",
+        help="Enumerate every positive ordered B/S tape pair and readable local turns",
+    )
+    audit.add_argument("--trades", required=True, help="Deduplicated TDX trade CSV")
+    audit.add_argument(
+        "--reviews", default=None,
+        help="Optional manually verified correction sidecar for review_required rows",
+    )
+    audit.add_argument("--output", required=True, help="JSON market-opportunity report")
+    inventory_path = commands.add_parser(
+        "tdx-inventory-path",
+        help="Write a non-reusing hindsight inventory-path liquidity ceiling",
+    )
+    inventory_path.add_argument("--trades", required=True, help="Deduplicated TDX trade CSV")
+    inventory_path.add_argument(
+        "--reviews", default=None,
+        help="Optional manually verified correction sidecar for review_required rows",
+    )
+    inventory_path.add_argument("--output", required=True, help="JSON inventory-path report")
+    inventory_path.add_argument(
+        "--initial-hands", type=int, default=100,
+        help="Opening base inventory in hands; default 100 hands = 1,000 bonds",
+    )
+    inventory_path.add_argument(
+        "--maximum-hands", type=int, default=200,
+        help="Maximum inventory in hands; default 200 hands = 2,000 bonds",
+    )
+    inventory_path.add_argument(
+        "--terminal-hands", type=int, default=None,
+        help=(
+            "Optional required closing inventory in hands; default leaves the "
+            "terminal exposure unconstrained and marks it at the last tape price"
+        ),
+    )
+    queue_audit = commands.add_parser(
+        "maker-queue-audit",
+        help="Align queue-model orders with reviewed TDX trades and order events",
+    )
+    queue_audit.add_argument("--trades", required=True, help="Deduplicated TDX trade CSV")
+    queue_audit.add_argument(
+        "--trade-reviews", default=None,
+        help="Optional manually verified trade correction sidecar",
+    )
+    queue_audit.add_argument("--orders", required=True, help="Deduplicated TDX order-event CSV")
+    queue_audit.add_argument(
+        "--order-reviews", default=None,
+        help="Optional manually verified order-event correction sidecar",
+    )
+    queue_audit.add_argument("--date", required=True, help="Market date in YYYY-MM-DD")
+    queue_audit.add_argument("--code", required=True, help="Maker bond code")
+    queue_audit.add_argument("--output", required=True, help="JSON queue audit report")
+    compare = commands.add_parser(
+        "maker-opportunity-audit",
+        help="Read-only replay registered maker models against a TDX opportunity report",
+    )
+    compare.add_argument("--opportunities", required=True, help="TDX market-opportunity JSON")
+    compare.add_argument("--date", required=True, help="Market date in YYYY-MM-DD")
+    compare.add_argument("--code", required=True, help="Maker bond code")
+    compare.add_argument("--output", required=True, help="JSON audit report")
     dashboard = commands.add_parser(
         "maker-console",
         aliases=["maker-dashboard"],
@@ -252,6 +328,222 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 _print(report)
             return 0
+        if args.command == "tdx-extract-trades":
+            from .tdx_tape import extract_trade_screenshots, write_trade_extraction
+
+            raw, deduplicated, summary = extract_trade_screenshots(
+                Path(args.input_dir).expanduser().resolve(),
+                market_date=args.date,
+                code=args.code,
+            )
+            output_dir = Path(args.output_dir).expanduser().resolve()
+            write_trade_extraction(output_dir, raw, deduplicated, summary)
+            _print({"output_dir": str(output_dir), **summary})
+            return 0
+        if args.command == "tdx-extract-orders":
+            from .tdx_tape import extract_order_screenshots, write_order_extraction
+
+            raw, deduplicated, summary = extract_order_screenshots(
+                Path(args.input_dir).expanduser().resolve(),
+                market_date=args.date,
+                code=args.code,
+            )
+            output_dir = Path(args.output_dir).expanduser().resolve()
+            write_order_extraction(output_dir, raw, deduplicated, summary)
+            _print({"output_dir": str(output_dir), **summary})
+            return 0
+        if args.command == "tdx-opportunity-report":
+            from .opportunity_audit import (
+                apply_manual_trade_reviews,
+                discover_theoretical_pairs,
+                load_tdx_trades,
+                summarize_local_turns,
+                write_opportunity_report,
+            )
+
+            trades_path = Path(args.trades).expanduser().resolve()
+            trades = load_tdx_trades(trades_path)
+            reviews_path = (
+                Path(args.reviews).expanduser().resolve() if args.reviews else None
+            )
+            manual_review_rows = 0
+            if reviews_path is not None:
+                trades, manual_review_rows = apply_manual_trade_reviews(
+                    trades, reviews_path,
+                )
+            pairs = discover_theoretical_pairs(trades)
+            local_turns = summarize_local_turns(trades, pairs)
+            destination = Path(args.output).expanduser().resolve()
+            outputs = write_opportunity_report(
+                destination,
+                trades_path=trades_path,
+                pairs=pairs,
+                local_turns=local_turns,
+                excluded_review_rows=sum(item.review_required for item in trades),
+                manual_review_rows=manual_review_rows,
+                manual_reviews_path=reviews_path,
+            )
+            _print({
+                **outputs,
+                "theoretical_pairs": len(pairs),
+                "buy_then_sell_pairs": sum(
+                    item.direction == "buy_then_sell" for item in pairs
+                ),
+                "sell_then_buy_pairs": sum(
+                    item.direction == "sell_then_buy" for item in pairs
+                ),
+                "local_turns": len(local_turns),
+                "minimum_edge": None,
+                "manual_review_rows": manual_review_rows,
+            })
+            return 0
+        if args.command == "tdx-inventory-path":
+            from .opportunity_audit import (
+                apply_manual_trade_reviews,
+                load_tdx_trades,
+                optimize_nonoverlapping_inventory_path,
+                write_inventory_path_report,
+            )
+
+            trades_path = Path(args.trades).expanduser().resolve()
+            trades = load_tdx_trades(trades_path)
+            reviews_path = (
+                Path(args.reviews).expanduser().resolve() if args.reviews else None
+            )
+            manual_review_rows = 0
+            if reviews_path is not None:
+                trades, manual_review_rows = apply_manual_trade_reviews(
+                    trades, reviews_path,
+                )
+            inventory_path = optimize_nonoverlapping_inventory_path(
+                trades,
+                initial_inventory_hands=args.initial_hands,
+                maximum_inventory_hands=args.maximum_hands,
+                terminal_inventory_hands=args.terminal_hands,
+            )
+            destination = Path(args.output).expanduser().resolve()
+            outputs = write_inventory_path_report(
+                destination,
+                trades_path=trades_path,
+                inventory_path=inventory_path,
+                manual_review_rows=manual_review_rows,
+                manual_reviews_path=reviews_path,
+            )
+            _print({
+                **outputs,
+                "gross_cash_profit": inventory_path.gross_cash_profit,
+                "buy_hands": inventory_path.buy_hands,
+                "sell_hands": inventory_path.sell_hands,
+                "actions": len(inventory_path.actions),
+                "causal_signal": False,
+            })
+            return 0
+        if args.command == "maker-queue-audit":
+            from .opportunity_audit import (
+                apply_manual_trade_reviews,
+                audit_queue_orders,
+                load_tdx_trades,
+                replay_registered_models_readonly,
+                write_queue_order_audit,
+            )
+            from .tdx_tape import apply_manual_order_reviews, load_order_events
+
+            trades_path = Path(args.trades).expanduser().resolve()
+            trades = load_tdx_trades(trades_path)
+            trade_reviews_path = (
+                Path(args.trade_reviews).expanduser().resolve()
+                if args.trade_reviews else None
+            )
+            trade_manual_review_rows = 0
+            if trade_reviews_path is not None:
+                trades, trade_manual_review_rows = apply_manual_trade_reviews(
+                    trades, trade_reviews_path,
+                )
+            order_events_path = Path(args.orders).expanduser().resolve()
+            order_events = load_order_events(order_events_path)
+            order_reviews_path = (
+                Path(args.order_reviews).expanduser().resolve()
+                if args.order_reviews else None
+            )
+            order_manual_review_rows = 0
+            if order_reviews_path is not None:
+                order_events, order_manual_review_rows = apply_manual_order_reviews(
+                    order_events, order_reviews_path,
+                )
+            replay = replay_registered_models_readonly(
+                config, market_date=args.date, bond_code=args.code,
+            )
+            audits = audit_queue_orders(replay, trades, order_events)
+            destination = Path(args.output).expanduser().resolve()
+            outputs = write_queue_order_audit(
+                destination,
+                trades_path=trades_path,
+                order_events_path=order_events_path,
+                replay=replay,
+                audits=audits,
+                trade_manual_review_rows=trade_manual_review_rows,
+                order_manual_review_rows=order_manual_review_rows,
+            )
+            status_counts = {
+                status: sum(item.execution_status == status for item in audits)
+                for status in sorted({item.execution_status for item in audits})
+            }
+            _print({
+                **outputs,
+                "audited_queue_cohorts": len(audits),
+                "audited_model_orders": sum(
+                    item.cohort_order_count for item in audits
+                ),
+                "execution_statuses": status_counts,
+                "layer_2_causal_mode_in_status": "not_evaluated",
+                "live_database_mutated": False,
+            })
+            return 0
+        if args.command == "maker-opportunity-audit":
+            from .opportunity_audit import (
+                compare_model_capture,
+                load_opportunity_report,
+                replay_registered_models_readonly,
+                write_model_opportunity_audit,
+            )
+
+            opportunity_source = Path(args.opportunities).expanduser().resolve()
+            opportunity_payload, opportunities = load_opportunity_report(
+                opportunity_source
+            )
+            replay = replay_registered_models_readonly(
+                config, market_date=args.date, bond_code=args.code,
+            )
+            comparisons = compare_model_capture(opportunities, replay)
+            destination = Path(args.output).expanduser().resolve()
+            write_model_opportunity_audit(
+                destination,
+                opportunity_source=opportunity_source,
+                opportunity_definition=opportunity_payload["definition"],
+                replay=replay,
+                comparisons=comparisons,
+            )
+            captured = {
+                strategy: sum(
+                    branch["capture_status"] == "best_pair_both_legs_matched"
+                    for item in comparisons
+                    for branch in item["branch_results"]
+                    if branch["strategy_id"] == strategy
+                )
+                for strategy in {
+                    branch["strategy_id"]
+                    for item in comparisons
+                    for branch in item["branch_results"]
+                }
+            }
+            _print({
+                "report": str(destination),
+                "local_turns": len(comparisons),
+                "best_pair_both_legs_matched_by_strategy": captured,
+                "accounts": replay["accounts"],
+                "live_database_mutated": False,
+            })
+            return 0
         if args.command in {"maker-console", "maker-dashboard"}:
             from .maker import MakerParameters
             from .maker_dashboard import run_dashboard
@@ -272,6 +564,9 @@ def main(argv: list[str] | None = None) -> int:
                 bond_code,
                 market_date,
                 stock_code=config.qmt.stock_code,
+                underlying_stock_codes=(
+                    config.maker_paper.underlying_stock_codes
+                ),
                 parameters=MakerParameters(
                     order_quantity_bonds=(
                         config.maker_paper.order_quantity_bonds

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import unittest
+import json
 import sqlite3
 import tempfile
+import unittest
 from dataclasses import replace
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -11,9 +12,14 @@ from zhaiquant.maker import (
     MakerAnalyzer,
     MakerParameters,
     ReplayTick,
+    _load_ticks,
     generate_maker_report,
 )
-from zhaiquant.types import SHANGHAI
+from zhaiquant.database import SQLiteStore
+from zhaiquant.recorder import TickRecorder
+from zhaiquant.types import SHANGHAI, Tick
+
+from .helpers import make_tick, test_config
 
 
 def replay_tick(
@@ -168,6 +174,61 @@ class MakerTests(unittest.TestCase):
         self.assertEqual(opportunity.tail_bonds, 2_000)
         self.assertAlmostEqual(opportunity.consumed_ratio, 26_000 / 28_000)
         self.assertAlmostEqual(opportunity.priority_exit_price, 136.998)
+
+    def test_immediate_visible_wall_consumption_uses_the_pretrade_snapshot(
+        self,
+    ) -> None:
+        analyzer = MakerAnalyzer("BOND", "STOCK", self.parameters)
+        # An older, larger cluster remains in historical wall memory.  It must
+        # not dilute a later, independently verified one-frame sweep.
+        analyzer.on_tick(replay_tick(
+            "BOND", self.base,
+            last=135.699, bid=135.451, ask=135.700,
+            ask_bonds=20_020, next_ask=135.989,
+        ))
+        analyzer.on_tick(replay_tick(
+            "BOND", self.base + timedelta(seconds=3),
+            last=135.699, bid=135.451, ask=135.700,
+            ask_bonds=9_140, next_ask=135.989,
+        ))
+        opportunities = analyzer.on_tick(replay_tick(
+            "BOND", self.base + timedelta(seconds=6),
+            last=135.700, bid=135.451, ask=135.700,
+            ask_bonds=1_140, next_ask=135.989,
+            trade_bonds=8_000, side="buy",
+        ))
+
+        sweep = [item for item in opportunities if item.kind == "sweep_tail"]
+        self.assertEqual(len(sweep), 1)
+        self.assertEqual(sweep[0].source_wall_bonds, 9_140)
+        self.assertEqual(sweep[0].consumed_bonds, 8_000)
+        self.assertAlmostEqual(sweep[0].consumed_ratio, 8_000 / 9_140)
+        self.assertEqual(sweep[0].tail_bonds, 1_140)
+        self.assertEqual(sweep[0].priority_exit_price, 135.988)
+        self.assertIn(
+            "immediate_visible_cluster_tail_consumption", sweep[0].notes,
+        )
+
+        cancellation_dominated = MakerAnalyzer(
+            "BOND", "STOCK", self.parameters,
+        )
+        cancellation_dominated.on_tick(replay_tick(
+            "BOND", self.base,
+            last=135.699, bid=135.451, ask=135.700,
+            ask_bonds=20_020, next_ask=135.989,
+        ))
+        cancellation_dominated.on_tick(replay_tick(
+            "BOND", self.base + timedelta(seconds=3),
+            last=135.699, bid=135.451, ask=135.700,
+            ask_bonds=9_140, next_ask=135.989,
+        ))
+        rejected = cancellation_dominated.on_tick(replay_tick(
+            "BOND", self.base + timedelta(seconds=6),
+            last=135.700, bid=135.451, ask=135.700,
+            ask_bonds=1_140, next_ask=135.989,
+            trade_bonds=1_000, side="buy",
+        ))
+        self.assertFalse(any(item.kind == "sweep_tail" for item in rejected))
 
     def test_adjacent_offer_cluster_exhaustion_can_trigger_a_large_jump_sweep(
         self,
@@ -442,6 +503,75 @@ class MakerTests(unittest.TestCase):
 
             with self.assertRaisesRegex(RuntimeError, "No recorded ticks"):
                 generate_maker_report(database, "2026-08-12", "BOND", "STOCK")
+
+    def test_replay_prefers_live_tick_over_overlapping_backfill(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            database = Path(temp) / "ticks.sqlite3"
+            config = test_config(database)
+            moment = datetime(2026, 8, 14, 9, 40, 54, tzinfo=SHANGHAI)
+            live_ticks = [
+                make_tick(
+                    "BOND", moment,
+                    last=136.100, bid=136.000, ask=136.100,
+                    volume=1_000, transactions=100,
+                ),
+                make_tick(
+                    "BOND", moment + timedelta(seconds=3),
+                    last=136.000, bid=136.000, ask=136.100,
+                    volume=1_120, transactions=101,
+                ),
+            ]
+
+            live_store = SQLiteStore(config, run_id="live-run")
+            live_store.start_session()
+            live_recorder = TickRecorder(live_store)
+            live_records = [
+                live_recorder.record(tick) for tick in live_ticks
+            ]
+            live_store.end_session("stopped")
+            live_store.close()
+
+            backfill_ticks = []
+            for tick in live_ticks:
+                payload = json.loads(tick.raw_json)
+                payload["pvolume"] = payload["pvolume"] + 1
+                backfill_ticks.append(Tick.from_qmt("BOND", payload))
+            payload = json.loads(live_ticks[-1].raw_json)
+            payload.update({
+                "time": int((moment + timedelta(seconds=6)).timestamp() * 1000),
+                "volume": 1_300,
+                "pvolume": 1_301,
+                "transactionNum": 102,
+            })
+            backfill_ticks.append(Tick.from_qmt("BOND", payload))
+
+            backfill_store = SQLiteStore(config, run_id="backfill-run")
+            backfill_store.start_session()
+            backfill_recorder = TickRecorder(backfill_store)
+            backfill_records = [
+                backfill_recorder.record(tick) for tick in backfill_ticks
+            ]
+            backfill_store.end_session("backfill")
+            backfill_store.close()
+
+            connection = sqlite3.connect(database)
+            connection.row_factory = sqlite3.Row
+            ticks = _load_ticks(
+                connection, "2026-08-14", "BOND", "STOCK",
+                MakerParameters(),
+            )
+            connection.close()
+
+            self.assertEqual(len(ticks), 3)
+            self.assertEqual(
+                [tick.tick_id for tick in ticks[:2]],
+                [record.tick_id for record in live_records],
+            )
+            self.assertEqual(ticks[2].tick_id, backfill_records[2].tick_id)
+            self.assertEqual(
+                [tick.trade_bonds for tick in ticks],
+                [0.0, 1_200.0, 1_800.0],
+            )
 
 
 if __name__ == "__main__":

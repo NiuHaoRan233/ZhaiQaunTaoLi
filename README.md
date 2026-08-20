@@ -1,96 +1,123 @@
-# G三峡EB2 Tick数据库与M0模拟盘
+# 债券套利策略：只读行情、逐笔审计与做市纸面盘
 
-本项目研究 `132026.SH`（G三峡EB2）相对 `600900.SH`（长江电力）的日内盘口机会。
-当前主线不是估算长期内在价值，而是以近期价格状态为锚，捕捉短暂失衡、盘口恢复和买卖价差。
+本仓库从 MiniQMT 只读采集行情，研究两只交换债的日内盘口，并用独立、可追溯的纸面账户运行 M0 和做市策略。项目还包含通达信逐笔数据审计、实时决策看板、行情屏幕 OCR 与债券活跃度观察工具。
 
-项目包含两个可直接运行的任务：
+代码不会连接交易接口，不导入或调用 `xttrader`，不会向券商发送真实委托。所有“订单”“成交”“账户”和“收益”均为本地模拟结果。
 
-1. 从 MiniQMT 持续保存 Level 1 tick、五档盘口及其变化，维护本地 SQLite 数据库。
-2. 在同一行情流上运行 M0 信号以及 E1-E4 四类执行方式的只读模拟盘。
+## 当前研究范围
 
-代码不导入交易接口，不会向券商发送真实委托。
+| 债券 | 对应正股 | 用途 |
+|---|---|---|
+| `132026.SH` G三峡EB2 | `600900.SH` 长江电力 | 行情采集、M0、做市纸面盘和逐笔审计 |
+| `132024.SH` 26江铜EB | `600362.SH` 江西铜业 | 行情采集、做市纸面盘和逐笔审计 |
 
-## 快速开始
+M0 仍只评估主配对 `132026.SH` / `600900.SH`。做市纸面盘同时覆盖两只债券，各债券和各模型使用彼此隔离的账户。
 
-先打开并登录 MiniQMT，然后在 PowerShell 中运行：
+当前生产基线是：
+
+- 第一顺位 `maker_priority_v1_1`
+- 排队成交 `maker_queue_v1_0`
+- 超级捡漏 `maker_windfall_v1_0`
+
+当前持久化实时比较矩阵按以下顺序运行：
+
+1. `maker_priority_v1_37_candidate`
+2. `maker_priority_v1_43_candidate`
+3. `maker_queue_v1_17_candidate`
+
+候选进入实时纸面账户只表示正在收集未讲解日证据，不表示已经晋级生产模型。正式状态和版本血缘以 [做市模型版本记录](docs/做市模型版本记录.md) 为准。
+
+## Windows 快速开始
+
+先安装并登录 MiniQMT，确认只读行情端口可用（默认 `58611`），然后在 PowerShell 中运行：
 
 ```powershell
-cd C:\Users\Administrator\Desktop\重操旧业
+git clone https://github.com/NiuHaoRan233/ZhaiQaunTaoLi.git
+Set-Location -LiteralPath .\ZhaiQaunTaoLi
 powershell -ExecutionPolicy Bypass -File .\scripts\setup_windows.ps1
+```
+
+安装脚本会创建 `.venv`、安装项目、从 `config.example.toml` 生成本地 `config.toml`、运行核心测试并执行 MiniQMT 只读诊断。启动前应检查 `config.toml` 中的证券代码、端口、数据库路径和纸面账户容量。
+
+回灌历史行情并启动实时采集：
+
+```powershell
 .\.venv\Scripts\python.exe -m zhaiquant --config config.toml backfill --days 7
 powershell -ExecutionPolicy Bypass -File .\scripts\run_live.ps1
 ```
 
-另开一个终端检查状态：
+另开终端查看纸面账户或控制台：
 
 ```powershell
 .\.venv\Scripts\python.exe -m zhaiquant --config config.toml status
+.\.venv\Scripts\python.exe -m zhaiquant --config config.toml maker-console
 ```
 
-按 `Ctrl+C` 正常停止，随后创建一致性备份：
+按 `Ctrl+C` 正常停止。SQLite 运行库必须通过在线备份命令备份，不能直接复制带 WAL 的活动数据库：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\backup_data.ps1
+.\.venv\Scripts\python.exe -m zhaiquant --config config.toml backup --output backups\zhaiquant.sqlite3
 ```
 
-## 数据环境
+完整运行和换机说明见 [实时采集与模拟盘运行手册](docs/实时采集与模拟盘运行手册.md) 与 [Windows换机迁移教程](docs/Windows换机迁移教程.md)。
 
-- MiniQMT安装目录：`D:\东北证券NET专业版`
-- 本机行情端口：`58611`
-- Python连接：`xtdata.connect(port=58611)`
-- 默认采集：`132026.SH`、`132024.SH`、`600900.SH`
-- 当前可用：实时行情、Level 1五档盘口、累计成交字段和历史tick快照
-- 当前不可用或尚未确认：交易所Level 2逐笔委托与真实排队位置
+## 主要命令
 
-## 项目文档
+| 命令 | 作用 |
+|---|---|
+| `init-config` | 从示例创建本地配置 |
+| `doctor` | 检查配置、数据库、MiniQMT 连接和四代码快照 |
+| `snapshot` | 保存一次只读行情快照 |
+| `run` | 采集实时行情并推进 M0 与全部纸面模型 |
+| `status` | 查看采集、配对和纸面账户状态 |
+| `backfill` | 回灌历史 tick，不生成纸面成交 |
+| `maker-report` | 用已录制 Level 1 行情生成做市研究报告 |
+| `maker-console` | 显示只读做市控制台；`--once` 可在非刷新时段诊断 |
+| `tdx-extract-trades` / `tdx-extract-orders` | 从已核验的通达信截图提取逐笔成交/委托 |
+| `tdx-opportunity-report` / `tdx-inventory-path` | 构建逐笔机会与事后库存路径上限 |
+| `maker-queue-audit` / `maker-opportunity-audit` | 对照逐笔证据审计排队与做市模型 |
+| `backup` | 使用 SQLite 在线备份接口生成一致性备份 |
 
-- [2026-08-10研究记录](docs/2026-08-10_研究记录.md)
-- [M0局部盘口模型v1.0](docs/M0_局部盘口模型_v1.0.md)
-- [实时采集与模拟盘运行手册](docs/实时采集与模拟盘运行手册.md)
-- [Windows换机迁移教程](docs/Windows换机迁移教程.md)
+各命令参数可用 `--help` 查看。
 
-## 当前决定
+## 仓库结构
 
-- `M0`近期价格均值回归是主信号模型。
-- 复杂条件估值模型降级为研究和风险标签，不拦截M0交易。
-- 后续先接只读实时模拟盘，不向券商发送真实委托。
-- 主信号与执行方式分离，分别测试主动成交、触发后挂单、预埋买单和双边挂单。
+| 路径 | 内容 |
+|---|---|
+| `src/zhaiquant/` | 行情采集、SQLite、M0、做市、纸面账本、控制台与逐笔审计真源 |
+| `tests/` | 核心引擎、配置、持久化、模型和审计回归测试 |
+| `scripts/` | Windows 运行脚本、候选回放与因果审计工具 |
+| `docs/` | 策略长期记忆、正式规格、模型注册表和操作手册 |
+| `策略自我迭代优化/` | 候选模型冻结清单、回放证据、版本报告和分支索引 |
+| `实盘决策看板/` | 只读本地 Web 看板及模拟回看 |
+| `行情屏幕高速读取/` | Windows 行情屏幕 OCR 读取工具 |
+| `债券活跃度观察/` | 只读债券活跃度扫描工具 |
+| `成交委托数据截图保存/` | 本地通达信截图/OCR 工作区；仓库只保存其边界说明 |
 
-## 命令
+文档总入口见 [docs/README.md](docs/README.md)。讨论或修改做市策略前，必须完整阅读：
 
-- `doctor`：检查配置、数据库、MiniQMT连接和所有代码快照。
-- `backfill`：回灌历史tick并幂等重建盘口变化与M0观测。
-- `run`：实时采集并运行模拟盘；同一数据库只允许一个实例。
-- `status`：显示数据量、配对质量、会话状态和模拟成绩。
-- `snapshot`：保存一次当前快照，不运行模拟成交。
-- `backup`：使用SQLite在线备份接口生成可迁移文件。
-- `maker-report`：只读回放本地Level 1数据，输出做市策略V0.1的价格锚、低价接砸和扫尾候选报告。
+1. [主观做市策略手册](docs/主观做市策略手册.md)
+2. [做市策略V0.1](docs/做市策略V0.1.md)
+3. [做市模型版本记录](docs/做市模型版本记录.md)
 
-做市策略V0.1的规则、成交口径和已知限制见
-[做市策略V0.1](docs/做市策略V0.1.md)。
+## 测试
 
-## 做市模拟盘
-
-`[maker_paper]`启用后，`run`会在同一条只读行情流上并行运行做市模拟盘。它只向本地
-SQLite写入虚拟委托与成交，不连接交易接口。默认同时记录两种执行口径：
-
-- `priority`：买价改善一厘成为新买一，按第一顺位估计成交；
-- `queue`：加入原买一，必须先消耗快照中显示的排队量。
-
-可选的`super_windfall`是第三个完全隔离的纸面账户，默认只使用一手（10张）和2,000元虚拟额度，专门预埋到相对近期合理价低至少1.50元的异常深档。它不会调用券商资金，也不占普通做T账户库存；当前只定义买入，退出规则仍待人工校准。
-
-账户每天从1,000张底仓和可再买1,000张的现金开始，库存限制为0至2,000张。查看实时
-结果：
+核心测试：
 
 ```powershell
-.\.venv\Scripts\python.exe -m zhaiquant --config config.toml status
+.\.venv\Scripts\python.exe -m unittest discover -v
 ```
 
-关注输出中的`maker_paper_accounts`和`maker_paper_fills`。`trading_pnl`会按恢复期初
-1,000张底仓所需的盘口价格对库存差额盯市；它不是券商账户实际盈亏。
+独立子工具测试：
 
-## 现有代码
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s 债券活跃度观察 -p "test_*.py" -v
+.\.venv\Scripts\python.exe -m unittest discover -s 实盘决策看板\tests -p "test_*.py" -v
+.\.venv\Scripts\python.exe -m unittest discover -s 行情屏幕高速读取\tests -p "test_*.py" -v
+```
 
-- `backtest_eb2_v02.py`：复杂条件估值的对照回测，不是当前主策略实现。
-- `src/zhaiquant/`：实时数据库、M0和模拟执行引擎。
-- `tests/`：去重、盘口变化、M0、成交和重启恢复测试。
+## 本地数据边界
+
+以下内容是运行状态或私人证据，不进入 Git：`config.toml`、`data/`、`logs/`、`backups/`、`tmp/`、`output/`、SQLite/WAL/SHM、通达信截图与 OCR 结构化结果、看板/屏幕读取运行态、活跃度扫描数据和旧工作资料。
+
+普通做市账户默认以 1,000 张客户底仓开盘，并具有额外买入 1,000 张的纸面能力，因此正常库存范围为 0—2,000 张。1 手交换债等于 10 张；配置、报告与讨论不得混用“手”和“张”。

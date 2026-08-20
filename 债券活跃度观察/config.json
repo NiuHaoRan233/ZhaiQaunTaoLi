@@ -1,0 +1,14 @@
+{
+  "recent_trading_days": 5,
+  "report_top_per_category": 15,
+  "project_config": "../config.toml",
+  "qmt_bond_sector": "沪深债券",
+  "full_score_benchmarks": [
+    "132024.SH",
+    "132026.SH"
+  ],
+  "very_active_ratio": 0.1,
+  "search_categories": [
+    "信用债"
+  ]
+}

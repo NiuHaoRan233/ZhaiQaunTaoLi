@@ -1,0 +1,137 @@
+{
+  "mode": "first_eligible_dual_instrument_dual_model",
+  "freeze_verification": {
+    "manifest": "C:\\Users\\NHR\\Desktop\\债券套利策略\\策略自我迭代优化\\第一顺位\\v1.30_样本外冻结清单_v1.32研究登记后重冻_2026-08-17.json",
+    "candidate_model_id": "maker_priority_v1_30_candidate",
+    "production_comparator_model_id": "maker_priority_v1_1",
+    "instruments": [
+      "132026.SH",
+      "132024.SH"
+    ],
+    "calibration_dates": [
+      "2026-08-04",
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-07",
+      "2026-08-10",
+      "2026-08-11",
+      "2026-08-12",
+      "2026-08-13",
+      "2026-08-14"
+    ],
+    "first_eligible_sample_out_date": "2026-08-17",
+    "opening_account": {
+      "base_inventory_bonds": 1000,
+      "additional_buying_capacity_bonds": 1000,
+      "normal_minimum_inventory_bonds": 0,
+      "normal_maximum_inventory_bonds": 2000,
+      "legacy_cash_seed_is_not_a_quantity_limit": true,
+      "funding_adjustment_is_pnl_neutral": true,
+      "force_end_of_day_base_replenishment": false,
+      "carry_previous_day_terminal_state_into_independent_replay": false
+    },
+    "verified": true,
+    "errors": [],
+    "sources": [
+      {
+        "path": "src/zhaiquant/config.py",
+        "expected_sha256": "597D73F172C58CEA77E53BB9AF8F12691E02DAD221FF965A5D81C7FF947BC493",
+        "actual_sha256": "597D73F172C58CEA77E53BB9AF8F12691E02DAD221FF965A5D81C7FF947BC493",
+        "match": true
+      },
+      {
+        "path": "src/zhaiquant/maker_paper.py",
+        "expected_sha256": "3AF3560D0EEBE2F56E15EDD8C9518BD319D0CC3E9B3CCC7E993D20397FDE6F8C",
+        "actual_sha256": "3AF3560D0EEBE2F56E15EDD8C9518BD319D0CC3E9B3CCC7E993D20397FDE6F8C",
+        "match": true
+      },
+      {
+        "path": "src/zhaiquant/maker.py",
+        "expected_sha256": "FB6E236D4F53EC19166D96693E54D35D4EBD20D7C1A78B2573A1F14E4706518C",
+        "actual_sha256": "FB6E236D4F53EC19166D96693E54D35D4EBD20D7C1A78B2573A1F14E4706518C",
+        "match": true
+      },
+      {
+        "path": "src/zhaiquant/opportunity_audit.py",
+        "expected_sha256": "61BC466B86D6ED59BE9348B508F7D70996E9A6237049FF46D2BA1284F5A17C02",
+        "actual_sha256": "61BC466B86D6ED59BE9348B508F7D70996E9A6237049FF46D2BA1284F5A17C02",
+        "match": true
+      },
+      {
+        "path": "src/zhaiquant/maker_dashboard.py",
+        "expected_sha256": "5D75D74B21246A593BD390CBB61570D32F10DFA79C9F620D6573D1E2F99CFF17",
+        "actual_sha256": "5D75D74B21246A593BD390CBB61570D32F10DFA79C9F620D6573D1E2F99CFF17",
+        "match": true
+      },
+      {
+        "path": "src/zhaiquant/qmt_feed.py",
+        "expected_sha256": "DF21DBF99D3AAF43E93C7F1C2303C5078DEA2C63B57B424196BF16C513078BF4",
+        "actual_sha256": "DF21DBF99D3AAF43E93C7F1C2303C5078DEA2C63B57B424196BF16C513078BF4",
+        "match": true
+      },
+      {
+        "path": "src/zhaiquant/cli.py",
+        "expected_sha256": "ABED84746D51E7F94860F660114F86256F73658AF096F591B34CBA55BE543793",
+        "actual_sha256": "ABED84746D51E7F94860F660114F86256F73658AF096F591B34CBA55BE543793",
+        "match": true
+      },
+      {
+        "path": "config.example.toml",
+        "expected_sha256": "17D5B618F01A7FBB14D1B3FE0A27D995464936A0FF81693E88E5256B094519AF",
+        "actual_sha256": "17D5B618F01A7FBB14D1B3FE0A27D995464936A0FF81693E88E5256B094519AF",
+        "match": true
+      },
+      {
+        "path": "tests/test_config.py",
+        "expected_sha256": "59F69F1DE293270E10B18B11ADA8A677FC7B650828438107F93437B21932B84D",
+        "actual_sha256": "59F69F1DE293270E10B18B11ADA8A677FC7B650828438107F93437B21932B84D",
+        "match": true
+      },
+      {
+        "path": "tests/test_maker_paper.py",
+        "expected_sha256": "ABDD128B709959360A189CA880A615991BC71ADB08BBA3B6D3D3CB6BD1E86F7E",
+        "actual_sha256": "ABDD128B709959360A189CA880A615991BC71ADB08BBA3B6D3D3CB6BD1E86F7E",
+        "match": true
+      },
+      {
+        "path": "scripts/audit_priority_sample_out.py",
+        "expected_sha256": "D7CC3511C77377338B56A9C20FE7DE1B60147557958BD58E286EE08DDDD3815A",
+        "actual_sha256": "D7CC3511C77377338B56A9C20FE7DE1B60147557958BD58E286EE08DDDD3815A",
+        "match": true
+      },
+      {
+        "path": "tests/test_priority_sample_out.py",
+        "expected_sha256": "C08330FF294EAF96E8F4994CC0EEA0E084C0421E87774926CD80F4B19B2D931D",
+        "actual_sha256": "C08330FF294EAF96E8F4994CC0EEA0E084C0421E87774926CD80F4B19B2D931D",
+        "match": true
+      }
+    ]
+  },
+  "selection": {
+    "selected_market_date": null,
+    "selected_coverage": null,
+    "rejected_dates": [],
+    "coverage_gate": {
+      "minimum_distinct_ticks": 100,
+      "latest_acceptable_first_regular_tick": "09:35:00",
+      "earliest_acceptable_last_regular_tick": "14:55:00",
+      "both_instruments_required": true,
+      "replay_instruments": [
+        "132026.SH",
+        "132024.SH"
+      ],
+      "supporting_market_codes": [
+        "600900.SH",
+        "600362.SH"
+      ],
+      "underlying_stock_codes": {
+        "132026.SH": "600900.SH",
+        "132024.SH": "600362.SH"
+      }
+    }
+  },
+  "status": "waiting_for_new_data",
+  "message": "No post-freeze date has full-day coverage for both frozen instruments; no replay was run.",
+  "matrix": [],
+  "instrument_comparisons": []
+}

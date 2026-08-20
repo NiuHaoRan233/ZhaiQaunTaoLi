@@ -5,13 +5,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "zhaiquant"
 version = "0.1.0"
-description = "MiniQMT tick recorder and M0 paper-trading engine for G三峡EB2"
+description = "Read-only MiniQMT recorder, exchangeable-bond research, and paper-only maker engine"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "numpy==2.5.2",
   "pandas==3.0.5",
   "xtquant==250807.1.2",
+]
+
+[project.optional-dependencies]
+ocr = [
+  "rapidocr-onnxruntime==1.4.4",
 ]
 
 [project.scripts]

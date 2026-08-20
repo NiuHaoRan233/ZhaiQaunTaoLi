@@ -1,0 +1,5611 @@
+{
+  "market_date": "2026-08-14",
+  "bond_code": "132026.SH",
+  "model_id": "maker_priority_v1_37_candidate",
+  "source_database": "C:\\Users\\NHR\\Desktop\\债券套利策略\\data\\zhaiquant.sqlite3",
+  "source_database_opened_readonly": true,
+  "temporary_replay_database": true,
+  "diagnostics_source": "C:\\Users\\NHR\\Desktop\\债券套利策略\\策略自我迭代优化\\第一顺位\\v1.37_三峡0814分支诊断",
+  "selection_status": "causal_mode_in_review_required",
+  "explicit_turn_ids": [],
+  "minimum_edge": 0.18,
+  "selected_rows": 13,
+  "opportunities": [
+    {
+      "turn_id": "2026-08-14_132026.SH_T008",
+      "direction": "buy_then_sell",
+      "maximum_edge": 0.399,
+      "maximum_matchable_hands": 100,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "10:02:19",
+      "best_open_price": 136.6,
+      "best_close_time": "10:04:12",
+      "best_close_price": 136.999,
+      "open_causal_frames": {
+        "target_time": "10:02:19",
+        "seconds_from_previous_bond_frame": 4,
+        "seconds_to_next_bond_frame": 2,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786672935000,
+          "market_time": "10:02:15.000",
+          "tick_id": 76483,
+          "last_price": 136.679,
+          "bid1": 136.369,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.6,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.369,
+              1000.0
+            ],
+            [
+              136.368,
+              1000.0
+            ],
+            [
+              136.33,
+              1000.0
+            ],
+            [
+              136.053,
+              2000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.6,
+              1000.0
+            ],
+            [
+              136.69,
+              380.0
+            ],
+            [
+              136.999,
+              1680.0
+            ],
+            [
+              137.377,
+              1000.0
+            ],
+            [
+              137.378,
+              2000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.484,
+            "reference_low": 136.369,
+            "reference_high": 136.6,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "stable",
+            "state_score": 0,
+            "state_confidence": 0.42,
+            "recent_buy_bonds": 1000.0,
+            "recent_sell_bonds": 0,
+            "midpoint_change": 0.02,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.309,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "前三档卖盘最大断档0.309元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.4845,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.23099999999999454,
+            "bid_support_bonds": 3000.0,
+            "ask_supply_bonds": 1380.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786672941000,
+          "market_time": "10:02:21.000",
+          "tick_id": 76486,
+          "last_price": 136.6,
+          "bid1": 136.611,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.69,
+          "ask1_bonds": 380.0,
+          "bids": [
+            [
+              136.611,
+              1000.0
+            ],
+            [
+              136.369,
+              1000.0
+            ],
+            [
+              136.368,
+              1000.0
+            ],
+            [
+              136.33,
+              1000.0
+            ],
+            [
+              136.053,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.69,
+              380.0
+            ],
+            [
+              136.999,
+              1680.0
+            ],
+            [
+              137.377,
+              1000.0
+            ],
+            [
+              137.378,
+              2000.0
+            ],
+            [
+              137.38,
+              3140.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.65,
+            "reference_low": 136.611,
+            "reference_high": 136.69,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "rising",
+            "state_score": 4,
+            "state_confidence": 0.95,
+            "recent_buy_bonds": 2000.0,
+            "recent_sell_bonds": 0,
+            "midpoint_change": 0.176,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.378,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动买入约2,000张，明显强于卖出",
+              "近1分钟买卖中点上移0.176元",
+              "买一近1分钟抬升0.261元",
+              "前三档卖盘最大断档0.378元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.6505,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.07900000000000773,
+            "bid_support_bonds": 1000.0,
+            "ask_supply_bonds": 380.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "10:04:12",
+        "seconds_from_previous_bond_frame": 0,
+        "seconds_to_next_bond_frame": 6,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786673052000,
+          "market_time": "10:04:12.000",
+          "tick_id": 76541,
+          "last_price": 136.999,
+          "bid1": 136.712,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.999,
+          "ask1_bonds": 680.0,
+          "bids": [
+            [
+              136.712,
+              1000.0
+            ],
+            [
+              136.711,
+              1000.0
+            ],
+            [
+              136.693,
+              620.0
+            ],
+            [
+              136.053,
+              4000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.999,
+              680.0
+            ],
+            [
+              137.377,
+              1000.0
+            ],
+            [
+              137.378,
+              2000.0
+            ],
+            [
+              137.38,
+              3140.0
+            ],
+            [
+              137.4,
+              2000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 2,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.856,
+            "reference_low": 136.712,
+            "reference_high": 136.999,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_rise",
+            "state_score": 2,
+            "state_confidence": 0.7,
+            "recent_buy_bonds": 2380.0,
+            "recent_sell_bonds": 0,
+            "midpoint_change": 0.01,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.378,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动买入约2,380张，明显强于卖出",
+              "前三档卖盘最大断档0.378元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.8555,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.28700000000000614,
+            "bid_support_bonds": 2620.0,
+            "ask_supply_bonds": 680.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786673058000,
+          "market_time": "10:04:18.000",
+          "tick_id": 76544,
+          "last_price": 136.999,
+          "bid1": 136.73,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.999,
+          "ask1_bonds": 680.0,
+          "bids": [
+            [
+              136.73,
+              1000.0
+            ],
+            [
+              136.712,
+              1000.0
+            ],
+            [
+              136.693,
+              620.0
+            ],
+            [
+              136.053,
+              4000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.999,
+              680.0
+            ],
+            [
+              137.377,
+              1000.0
+            ],
+            [
+              137.378,
+              2000.0
+            ],
+            [
+              137.38,
+              3140.0
+            ],
+            [
+              137.4,
+              2000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.856,
+            "reference_low": 136.73,
+            "reference_high": 136.999,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_rise",
+            "state_score": 2,
+            "state_confidence": 0.7,
+            "recent_buy_bonds": 2380.0,
+            "recent_sell_bonds": 0,
+            "midpoint_change": 0.018,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.378,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动买入约2,380张，明显强于卖出",
+              "前三档卖盘最大断档0.378元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.8555,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.26900000000000546,
+            "bid_support_bonds": 2620.0,
+            "ask_supply_bonds": 680.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T011",
+      "direction": "sell_then_buy",
+      "maximum_edge": 0.208,
+      "maximum_matchable_hands": 100,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "10:14:17",
+      "best_open_price": 136.799,
+      "best_close_time": "10:15:03",
+      "best_close_price": 136.591,
+      "open_causal_frames": {
+        "target_time": "10:14:17",
+        "seconds_from_previous_bond_frame": 83,
+        "seconds_to_next_bond_frame": 130,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786673574000,
+          "market_time": "10:12:54.000",
+          "tick_id": 78839,
+          "last_price": 136.569,
+          "bid1": 136.296,
+          "bid1_bonds": 2000.0,
+          "ask1": 136.799,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              136.296,
+              2000.0
+            ],
+            [
+              136.295,
+              2000.0
+            ],
+            [
+              136.291,
+              1000.0
+            ],
+            [
+              136.12,
+              2000.0
+            ],
+            [
+              136.119,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.799,
+              2000.0
+            ],
+            [
+              136.8,
+              4000.0
+            ],
+            [
+              137.379,
+              1000.0
+            ],
+            [
+              137.38,
+              3140.0
+            ],
+            [
+              137.4,
+              2000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.548,
+            "reference_low": 136.296,
+            "reference_high": 136.799,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_rise",
+            "state_score": 2,
+            "state_confidence": 0.7,
+            "recent_buy_bonds": 2000.0,
+            "recent_sell_bonds": 0,
+            "midpoint_change": 0.012,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.579,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动买入约2,000张，明显强于卖出",
+              "前三档卖盘最大断档0.579元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.5475,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.5029999999999859,
+            "bid_support_bonds": 8000.0,
+            "ask_supply_bonds": 6000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 249,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 136.296,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "10:12:51"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786673787000,
+          "market_time": "10:16:27.000",
+          "tick_id": 78841,
+          "last_price": 136.708,
+          "bid1": 136.671,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.799,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.671,
+              1000.0
+            ],
+            [
+              136.67,
+              3000.0
+            ],
+            [
+              136.12,
+              4000.0
+            ],
+            [
+              136.119,
+              1000.0
+            ],
+            [
+              136.1,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.799,
+              1000.0
+            ],
+            [
+              136.8,
+              4000.0
+            ],
+            [
+              137.379,
+              3000.0
+            ],
+            [
+              137.38,
+              3140.0
+            ],
+            [
+              137.4,
+              2000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.735,
+            "reference_low": 136.671,
+            "reference_high": 136.799,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "rising",
+            "state_score": 3,
+            "state_confidence": 0.9,
+            "recent_buy_bonds": 0,
+            "recent_sell_bonds": 0,
+            "midpoint_change": 0.188,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.579,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近1分钟买卖中点上移0.188元",
+              "买一近1分钟抬升0.375元",
+              "前三档卖盘最大断档0.579元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.735,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.12800000000001432,
+            "bid_support_bonds": 4000.0,
+            "ask_supply_bonds": 5000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 250,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 136.297,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "10:12:54"
+          },
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "10:15:03",
+        "seconds_from_previous_bond_frame": 129,
+        "seconds_to_next_bond_frame": 84,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786673574000,
+          "market_time": "10:12:54.000",
+          "tick_id": 78839,
+          "last_price": 136.569,
+          "bid1": 136.296,
+          "bid1_bonds": 2000.0,
+          "ask1": 136.799,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              136.296,
+              2000.0
+            ],
+            [
+              136.295,
+              2000.0
+            ],
+            [
+              136.291,
+              1000.0
+            ],
+            [
+              136.12,
+              2000.0
+            ],
+            [
+              136.119,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.799,
+              2000.0
+            ],
+            [
+              136.8,
+              4000.0
+            ],
+            [
+              137.379,
+              1000.0
+            ],
+            [
+              137.38,
+              3140.0
+            ],
+            [
+              137.4,
+              2000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.548,
+            "reference_low": 136.296,
+            "reference_high": 136.799,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_rise",
+            "state_score": 2,
+            "state_confidence": 0.7,
+            "recent_buy_bonds": 2000.0,
+            "recent_sell_bonds": 0,
+            "midpoint_change": 0.012,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.579,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动买入约2,000张，明显强于卖出",
+              "前三档卖盘最大断档0.579元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.5475,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.5029999999999859,
+            "bid_support_bonds": 8000.0,
+            "ask_supply_bonds": 6000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 249,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 136.296,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "10:12:51"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786673787000,
+          "market_time": "10:16:27.000",
+          "tick_id": 78841,
+          "last_price": 136.708,
+          "bid1": 136.671,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.799,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.671,
+              1000.0
+            ],
+            [
+              136.67,
+              3000.0
+            ],
+            [
+              136.12,
+              4000.0
+            ],
+            [
+              136.119,
+              1000.0
+            ],
+            [
+              136.1,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.799,
+              1000.0
+            ],
+            [
+              136.8,
+              4000.0
+            ],
+            [
+              137.379,
+              3000.0
+            ],
+            [
+              137.38,
+              3140.0
+            ],
+            [
+              137.4,
+              2000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.735,
+            "reference_low": 136.671,
+            "reference_high": 136.799,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "rising",
+            "state_score": 3,
+            "state_confidence": 0.9,
+            "recent_buy_bonds": 0,
+            "recent_sell_bonds": 0,
+            "midpoint_change": 0.188,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.579,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近1分钟买卖中点上移0.188元",
+              "买一近1分钟抬升0.375元",
+              "前三档卖盘最大断档0.579元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.735,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.12800000000001432,
+            "bid_support_bonds": 4000.0,
+            "ask_supply_bonds": 5000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 250,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 136.297,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "10:12:54"
+          },
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T046",
+      "direction": "buy_then_sell",
+      "maximum_edge": 0.337,
+      "maximum_matchable_hands": 138,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "10:34:48",
+      "best_open_price": 136.548,
+      "best_close_time": "10:38:51",
+      "best_close_price": 136.885,
+      "open_causal_frames": {
+        "target_time": "10:34:48",
+        "seconds_from_previous_bond_frame": 0,
+        "seconds_to_next_bond_frame": 3,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786674888000,
+          "market_time": "10:34:48.000",
+          "tick_id": 79714,
+          "last_price": 136.548,
+          "bid1": 136.559,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.811,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.559,
+              1000.0
+            ],
+            [
+              136.053,
+              4000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ],
+            [
+              136.05,
+              1000.0
+            ],
+            [
+              134.001,
+              11000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.811,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ],
+            [
+              136.968,
+              1000.0
+            ],
+            [
+              137.012,
+              1000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.685,
+            "reference_low": 136.559,
+            "reference_high": 136.811,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_fall",
+            "state_score": -2,
+            "state_confidence": 0.82,
+            "recent_buy_bonds": 3000.0,
+            "recent_sell_bonds": 7000.0,
+            "midpoint_change": -0.071,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.155,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": true,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约7,000张，明显强于买入",
+              "买一显示量很小且与买二大幅断档，当前退出窗口可能随时消失",
+              "前三档卖盘最大断档0.155元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.685,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.25200000000000955,
+            "bid_support_bonds": 1000.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 469,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 136.054,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "10:34:39"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786674891000,
+          "market_time": "10:34:51.000",
+          "tick_id": 79717,
+          "last_price": 136.548,
+          "bid1": 136.053,
+          "bid1_bonds": 4000.0,
+          "ask1": 136.811,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.053,
+              4000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ],
+            [
+              136.05,
+              1000.0
+            ],
+            [
+              134.001,
+              11000.0
+            ],
+            [
+              134.0,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.811,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ],
+            [
+              136.968,
+              1000.0
+            ],
+            [
+              137.012,
+              1000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.432,
+            "reference_low": 136.053,
+            "reference_high": 136.811,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "falling",
+            "state_score": -3,
+            "state_confidence": 0.95,
+            "recent_buy_bonds": 3000.0,
+            "recent_sell_bonds": 7000.0,
+            "midpoint_change": -0.324,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.155,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约7,000张，明显强于买入",
+              "近1分钟买卖中点下移0.324元",
+              "买一近1分钟后退0.648元",
+              "前三档卖盘最大断档0.155元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.43200000000002,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.7580000000000098,
+            "bid_support_bonds": 6000.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "10:38:51",
+        "seconds_from_previous_bond_frame": 0,
+        "seconds_to_next_bond_frame": 3,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786675131000,
+          "market_time": "10:38:51.000",
+          "tick_id": 79884,
+          "last_price": 136.578,
+          "bid1": 136.652,
+          "bid1_bonds": 3000.0,
+          "ask1": 136.885,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              136.652,
+              3000.0
+            ],
+            [
+              136.646,
+              1000.0
+            ],
+            [
+              136.053,
+              4000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ],
+            [
+              136.05,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.885,
+              2000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ],
+            [
+              136.888,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ],
+            [
+              136.968,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.769,
+            "reference_low": 136.652,
+            "reference_high": 136.885,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 1380.0,
+            "recent_sell_bonds": 8000.0,
+            "midpoint_change": 0.012,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.002,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约8,000张，明显强于买入"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.76850000000002,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.23299999999997567,
+            "bid_support_bonds": 4000.0,
+            "ask_supply_bonds": 6000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786675134000,
+          "market_time": "10:38:54.000",
+          "tick_id": 79887,
+          "last_price": 136.885,
+          "bid1": 136.652,
+          "bid1_bonds": 2000.0,
+          "ask1": 136.885,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.652,
+              2000.0
+            ],
+            [
+              136.646,
+              1000.0
+            ],
+            [
+              136.053,
+              4000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ],
+            [
+              136.05,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.885,
+              1000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ],
+            [
+              136.888,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ],
+            [
+              136.968,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.769,
+            "reference_low": 136.652,
+            "reference_high": 136.885,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 2380.0,
+            "recent_sell_bonds": 8000.0,
+            "midpoint_change": 0.012,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.002,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约8,000张，明显强于买入"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.76850000000002,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.23299999999997567,
+            "bid_support_bonds": 3000.0,
+            "ask_supply_bonds": 5000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T047",
+      "direction": "sell_then_buy",
+      "maximum_edge": 0.216,
+      "maximum_matchable_hands": 100,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "10:38:51",
+      "best_open_price": 136.885,
+      "best_close_time": "10:40:57",
+      "best_close_price": 136.669,
+      "open_causal_frames": {
+        "target_time": "10:38:51",
+        "seconds_from_previous_bond_frame": 0,
+        "seconds_to_next_bond_frame": 3,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786675131000,
+          "market_time": "10:38:51.000",
+          "tick_id": 79884,
+          "last_price": 136.578,
+          "bid1": 136.652,
+          "bid1_bonds": 3000.0,
+          "ask1": 136.885,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              136.652,
+              3000.0
+            ],
+            [
+              136.646,
+              1000.0
+            ],
+            [
+              136.053,
+              4000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ],
+            [
+              136.05,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.885,
+              2000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ],
+            [
+              136.888,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ],
+            [
+              136.968,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.769,
+            "reference_low": 136.652,
+            "reference_high": 136.885,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 1380.0,
+            "recent_sell_bonds": 8000.0,
+            "midpoint_change": 0.012,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.002,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约8,000张，明显强于买入"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.76850000000002,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.23299999999997567,
+            "bid_support_bonds": 4000.0,
+            "ask_supply_bonds": 6000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786675134000,
+          "market_time": "10:38:54.000",
+          "tick_id": 79887,
+          "last_price": 136.885,
+          "bid1": 136.652,
+          "bid1_bonds": 2000.0,
+          "ask1": 136.885,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.652,
+              2000.0
+            ],
+            [
+              136.646,
+              1000.0
+            ],
+            [
+              136.053,
+              4000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ],
+            [
+              136.05,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.885,
+              1000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ],
+            [
+              136.888,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ],
+            [
+              136.968,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.769,
+            "reference_low": 136.652,
+            "reference_high": 136.885,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 2380.0,
+            "recent_sell_bonds": 8000.0,
+            "midpoint_change": 0.012,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.002,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约8,000张，明显强于买入"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.76850000000002,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.23299999999997567,
+            "bid_support_bonds": 3000.0,
+            "ask_supply_bonds": 5000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "10:40:57",
+        "seconds_from_previous_bond_frame": 3,
+        "seconds_to_next_bond_frame": 3,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786675254000,
+          "market_time": "10:40:54.000",
+          "tick_id": 79985,
+          "last_price": 136.688,
+          "bid1": 136.669,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.688,
+          "ask1_bonds": 380.0,
+          "bids": [
+            [
+              136.669,
+              1000.0
+            ],
+            [
+              136.053,
+              4000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ],
+            [
+              136.05,
+              1000.0
+            ],
+            [
+              134.001,
+              11000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.688,
+              380.0
+            ],
+            [
+              136.734,
+              1000.0
+            ],
+            [
+              136.746,
+              1000.0
+            ],
+            [
+              136.885,
+              2000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 620.0,
+          "transaction_delta": 1,
+          "inferred_side": "sell",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.719,
+            "reference_low": 136.669,
+            "reference_high": 136.719,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_fall",
+            "state_score": -2,
+            "state_confidence": 0.7,
+            "recent_buy_bonds": 1380.0,
+            "recent_sell_bonds": 8000.0,
+            "midpoint_change": -0.056,
+            "short_ask_change": -0.058,
+            "largest_ask_gap": 0.046,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": true,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约8,000张，明显强于买入",
+              "买一显示量很小且与买二大幅断档，当前退出窗口可能随时消失"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.719,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.019000000000005457,
+            "bid_support_bonds": 1000.0,
+            "ask_supply_bonds": 5380.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786675260000,
+          "market_time": "10:41:00.000",
+          "tick_id": 79988,
+          "last_price": 136.669,
+          "bid1": 136.053,
+          "bid1_bonds": 4000.0,
+          "ask1": 136.688,
+          "ask1_bonds": 380.0,
+          "bids": [
+            [
+              136.053,
+              4000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ],
+            [
+              136.05,
+              1000.0
+            ],
+            [
+              134.001,
+              11000.0
+            ],
+            [
+              134.0,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.688,
+              380.0
+            ],
+            [
+              136.734,
+              1000.0
+            ],
+            [
+              136.746,
+              1000.0
+            ],
+            [
+              136.885,
+              2000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "sell",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.718,
+            "reference_low": 136.053,
+            "reference_high": 136.718,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "falling",
+            "state_score": -3,
+            "state_confidence": 0.9,
+            "recent_buy_bonds": 1380.0,
+            "recent_sell_bonds": 7000.0,
+            "midpoint_change": -0.356,
+            "short_ask_change": -0.058,
+            "largest_ask_gap": 0.046,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约7,000张，明显强于买入",
+              "近1分钟买卖中点下移0.356元",
+              "买一近1分钟后退0.637元"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.71800000000002,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.6350000000000193,
+            "bid_support_bonds": 6000.0,
+            "ask_supply_bonds": 5380.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T049",
+      "direction": "buy_then_sell",
+      "maximum_edge": 0.394,
+      "maximum_matchable_hands": 100,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "10:45:15",
+      "best_open_price": 136.351,
+      "best_close_time": "10:47:21",
+      "best_close_price": 136.745,
+      "open_causal_frames": {
+        "target_time": "10:45:15",
+        "seconds_from_previous_bond_frame": 0,
+        "seconds_to_next_bond_frame": 3,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786675515000,
+          "market_time": "10:45:15.000",
+          "tick_id": 80163,
+          "last_price": 136.459,
+          "bid1": 136.351,
+          "bid1_bonds": 2000.0,
+          "ask1": 136.745,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.351,
+              2000.0
+            ],
+            [
+              136.35,
+              1860.0
+            ],
+            [
+              136.127,
+              1000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ],
+            [
+              134.001,
+              11000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.745,
+              1000.0
+            ],
+            [
+              136.746,
+              1000.0
+            ],
+            [
+              136.885,
+              1000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.548,
+            "reference_low": 136.351,
+            "reference_high": 136.745,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_rise",
+            "state_score": 1,
+            "state_confidence": 0.74,
+            "recent_buy_bonds": 1140.0,
+            "recent_sell_bonds": 4000.0,
+            "midpoint_change": 0.309,
+            "short_ask_change": -0.001,
+            "largest_ask_gap": 0.139,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约4,000张，明显强于买入",
+              "近1分钟买卖中点上移0.309元",
+              "买一近1分钟抬升0.222元"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.548,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.39400000000000546,
+            "bid_support_bonds": 3860.0,
+            "ask_supply_bonds": 4000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786675518000,
+          "market_time": "10:45:18.000",
+          "tick_id": 80166,
+          "last_price": 136.351,
+          "bid1": 136.351,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.745,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.351,
+              1000.0
+            ],
+            [
+              136.35,
+              1860.0
+            ],
+            [
+              136.127,
+              1000.0
+            ],
+            [
+              136.052,
+              1000.0
+            ],
+            [
+              134.001,
+              11000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.745,
+              1000.0
+            ],
+            [
+              136.746,
+              1000.0
+            ],
+            [
+              136.885,
+              1000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "sell",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.548,
+            "reference_low": 136.351,
+            "reference_high": 136.745,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_rise",
+            "state_score": 1,
+            "state_confidence": 0.74,
+            "recent_buy_bonds": 1140.0,
+            "recent_sell_bonds": 5000.0,
+            "midpoint_change": 0.3,
+            "short_ask_change": -0.001,
+            "largest_ask_gap": 0.139,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约5,000张，明显强于买入",
+              "近1分钟买卖中点上移0.300元",
+              "买一近1分钟抬升0.204元"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.548,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.39400000000000546,
+            "bid_support_bonds": 2860.0,
+            "ask_supply_bonds": 4000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "10:47:21",
+        "seconds_from_previous_bond_frame": 12,
+        "seconds_to_next_bond_frame": 3,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786675629000,
+          "market_time": "10:47:09.000",
+          "tick_id": 80242,
+          "last_price": 136.351,
+          "bid1": 136.352,
+          "bid1_bonds": 2000.0,
+          "ask1": 136.745,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.352,
+              2000.0
+            ],
+            [
+              136.351,
+              2000.0
+            ],
+            [
+              136.35,
+              1860.0
+            ],
+            [
+              136.128,
+              2000.0
+            ],
+            [
+              136.127,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.745,
+              1000.0
+            ],
+            [
+              136.746,
+              1000.0
+            ],
+            [
+              136.885,
+              1000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.548,
+            "reference_low": 136.352,
+            "reference_high": 136.745,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "stable",
+            "state_score": 0,
+            "state_confidence": 0.42,
+            "recent_buy_bonds": 1140.0,
+            "recent_sell_bonds": 1000.0,
+            "midpoint_change": 0.0,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.139,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "方向证据不足，暂不假设趋势"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.5485,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.3930000000000007,
+            "bid_support_bonds": 5860.0,
+            "ask_supply_bonds": 4000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 510,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 136.353,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "10:45:42"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786675644000,
+          "market_time": "10:47:24.000",
+          "tick_id": 80253,
+          "last_price": 136.745,
+          "bid1": 136.352,
+          "bid1_bonds": 2000.0,
+          "ask1": 136.746,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.352,
+              2000.0
+            ],
+            [
+              136.351,
+              2000.0
+            ],
+            [
+              136.35,
+              1860.0
+            ],
+            [
+              136.128,
+              2000.0
+            ],
+            [
+              136.127,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.746,
+              1000.0
+            ],
+            [
+              136.885,
+              1000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.549,
+            "reference_low": 136.352,
+            "reference_high": 136.746,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_rise",
+            "state_score": 1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 2140.0,
+            "recent_sell_bonds": 1000.0,
+            "midpoint_change": 0.001,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.139,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动买入约2,140张，明显强于卖出"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.549,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.39400000000000546,
+            "bid_support_bonds": 5860.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 510,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 136.353,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "10:45:42"
+          },
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T050",
+      "direction": "sell_then_buy",
+      "maximum_edge": 0.345,
+      "maximum_matchable_hands": 100,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "10:47:21",
+      "best_open_price": 136.745,
+      "best_close_time": "10:48:08",
+      "best_close_price": 136.4,
+      "open_causal_frames": {
+        "target_time": "10:47:21",
+        "seconds_from_previous_bond_frame": 12,
+        "seconds_to_next_bond_frame": 3,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786675629000,
+          "market_time": "10:47:09.000",
+          "tick_id": 80242,
+          "last_price": 136.351,
+          "bid1": 136.352,
+          "bid1_bonds": 2000.0,
+          "ask1": 136.745,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.352,
+              2000.0
+            ],
+            [
+              136.351,
+              2000.0
+            ],
+            [
+              136.35,
+              1860.0
+            ],
+            [
+              136.128,
+              2000.0
+            ],
+            [
+              136.127,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.745,
+              1000.0
+            ],
+            [
+              136.746,
+              1000.0
+            ],
+            [
+              136.885,
+              1000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.548,
+            "reference_low": 136.352,
+            "reference_high": 136.745,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "stable",
+            "state_score": 0,
+            "state_confidence": 0.42,
+            "recent_buy_bonds": 1140.0,
+            "recent_sell_bonds": 1000.0,
+            "midpoint_change": 0.0,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.139,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "方向证据不足，暂不假设趋势"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.5485,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.3930000000000007,
+            "bid_support_bonds": 5860.0,
+            "ask_supply_bonds": 4000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 510,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 136.353,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "10:45:42"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786675644000,
+          "market_time": "10:47:24.000",
+          "tick_id": 80253,
+          "last_price": 136.745,
+          "bid1": 136.352,
+          "bid1_bonds": 2000.0,
+          "ask1": 136.746,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.352,
+              2000.0
+            ],
+            [
+              136.351,
+              2000.0
+            ],
+            [
+              136.35,
+              1860.0
+            ],
+            [
+              136.128,
+              2000.0
+            ],
+            [
+              136.127,
+              1000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.746,
+              1000.0
+            ],
+            [
+              136.885,
+              1000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ],
+            [
+              136.966,
+              1000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.549,
+            "reference_low": 136.352,
+            "reference_high": 136.746,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_rise",
+            "state_score": 1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 2140.0,
+            "recent_sell_bonds": 1000.0,
+            "midpoint_change": 0.001,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.139,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动买入约2,140张，明显强于卖出"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.549,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.39400000000000546,
+            "bid_support_bonds": 5860.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 510,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 136.353,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "10:45:42"
+          },
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "10:48:08",
+        "seconds_from_previous_bond_frame": 2,
+        "seconds_to_next_bond_frame": 1,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786675686000,
+          "market_time": "10:48:06.000",
+          "tick_id": 80288,
+          "last_price": 136.528,
+          "bid1": 136.4,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.517,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.4,
+              1000.0
+            ],
+            [
+              136.352,
+              3000.0
+            ],
+            [
+              136.351,
+              2000.0
+            ],
+            [
+              136.35,
+              860.0
+            ],
+            [
+              136.128,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.517,
+              1000.0
+            ],
+            [
+              136.596,
+              1000.0
+            ],
+            [
+              136.612,
+              1000.0
+            ],
+            [
+              136.613,
+              1000.0
+            ],
+            [
+              136.635,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "sell",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.566,
+            "reference_low": 136.4,
+            "reference_high": 136.566,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_fall",
+            "state_score": -2,
+            "state_confidence": 0.7,
+            "recent_buy_bonds": 2140.0,
+            "recent_sell_bonds": 2000.0,
+            "midpoint_change": -0.09,
+            "short_ask_change": -0.146,
+            "largest_ask_gap": 0.079,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "卖一近1分钟主动下压0.228元",
+              "近30秒卖一从阶段高位下压0.146元"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.56625,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.11699999999999022,
+            "bid_support_bonds": 6860.0,
+            "ask_supply_bonds": 5000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786675689000,
+          "market_time": "10:48:09.000",
+          "tick_id": 80290,
+          "last_price": 136.4,
+          "bid1": 136.4,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.596,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.4,
+              1000.0
+            ],
+            [
+              136.352,
+              2000.0
+            ],
+            [
+              136.351,
+              2000.0
+            ],
+            [
+              136.35,
+              860.0
+            ],
+            [
+              136.128,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.596,
+              1000.0
+            ],
+            [
+              136.612,
+              1000.0
+            ],
+            [
+              136.613,
+              1000.0
+            ],
+            [
+              136.635,
+              1000.0
+            ],
+            [
+              136.746,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 2000.0,
+          "transaction_delta": 2,
+          "inferred_side": "sell",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.562,
+            "reference_low": 136.4,
+            "reference_high": 136.596,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 2140.0,
+            "recent_sell_bonds": 4000.0,
+            "midpoint_change": -0.05,
+            "short_ask_change": -0.067,
+            "largest_ask_gap": 0.016,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约4,000张，明显强于买入"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.562,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.19599999999999795,
+            "bid_support_bonds": 5860.0,
+            "ask_supply_bonds": 5000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T051",
+      "direction": "buy_then_sell",
+      "maximum_edge": 0.196,
+      "maximum_matchable_hands": 500,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "10:48:08",
+      "best_open_price": 136.4,
+      "best_close_time": "10:49:37",
+      "best_close_price": 136.596,
+      "open_causal_frames": {
+        "target_time": "10:48:08",
+        "seconds_from_previous_bond_frame": 2,
+        "seconds_to_next_bond_frame": 1,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786675686000,
+          "market_time": "10:48:06.000",
+          "tick_id": 80288,
+          "last_price": 136.528,
+          "bid1": 136.4,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.517,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.4,
+              1000.0
+            ],
+            [
+              136.352,
+              3000.0
+            ],
+            [
+              136.351,
+              2000.0
+            ],
+            [
+              136.35,
+              860.0
+            ],
+            [
+              136.128,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.517,
+              1000.0
+            ],
+            [
+              136.596,
+              1000.0
+            ],
+            [
+              136.612,
+              1000.0
+            ],
+            [
+              136.613,
+              1000.0
+            ],
+            [
+              136.635,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "sell",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.566,
+            "reference_low": 136.4,
+            "reference_high": 136.566,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_fall",
+            "state_score": -2,
+            "state_confidence": 0.7,
+            "recent_buy_bonds": 2140.0,
+            "recent_sell_bonds": 2000.0,
+            "midpoint_change": -0.09,
+            "short_ask_change": -0.146,
+            "largest_ask_gap": 0.079,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "卖一近1分钟主动下压0.228元",
+              "近30秒卖一从阶段高位下压0.146元"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.56625,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.11699999999999022,
+            "bid_support_bonds": 6860.0,
+            "ask_supply_bonds": 5000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786675689000,
+          "market_time": "10:48:09.000",
+          "tick_id": 80290,
+          "last_price": 136.4,
+          "bid1": 136.4,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.596,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.4,
+              1000.0
+            ],
+            [
+              136.352,
+              2000.0
+            ],
+            [
+              136.351,
+              2000.0
+            ],
+            [
+              136.35,
+              860.0
+            ],
+            [
+              136.128,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.596,
+              1000.0
+            ],
+            [
+              136.612,
+              1000.0
+            ],
+            [
+              136.613,
+              1000.0
+            ],
+            [
+              136.635,
+              1000.0
+            ],
+            [
+              136.746,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 2000.0,
+          "transaction_delta": 2,
+          "inferred_side": "sell",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.562,
+            "reference_low": 136.4,
+            "reference_high": 136.596,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 2140.0,
+            "recent_sell_bonds": 4000.0,
+            "midpoint_change": -0.05,
+            "short_ask_change": -0.067,
+            "largest_ask_gap": 0.016,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约4,000张，明显强于买入"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.562,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.19599999999999795,
+            "bid_support_bonds": 5860.0,
+            "ask_supply_bonds": 5000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "10:49:37",
+        "seconds_from_previous_bond_frame": 13,
+        "seconds_to_next_bond_frame": 2,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786675764000,
+          "market_time": "10:49:24.000",
+          "tick_id": 80346,
+          "last_price": 136.438,
+          "bid1": 136.457,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.547,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.457,
+              1000.0
+            ],
+            [
+              136.456,
+              1000.0
+            ],
+            [
+              136.437,
+              1000.0
+            ],
+            [
+              136.41,
+              1000.0
+            ],
+            [
+              136.351,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.547,
+              1000.0
+            ],
+            [
+              136.548,
+              1000.0
+            ],
+            [
+              136.55,
+              1000.0
+            ],
+            [
+              136.557,
+              1000.0
+            ],
+            [
+              136.596,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.493,
+            "reference_low": 136.457,
+            "reference_high": 136.547,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 3140.0,
+            "recent_sell_bonds": 6380.0,
+            "midpoint_change": 0.019,
+            "short_ask_change": -0.002,
+            "largest_ask_gap": 0.002,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约6,380张，明显强于买入"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.49325,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.09000000000000341,
+            "bid_support_bonds": 6000.0,
+            "ask_supply_bonds": 5000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786675779000,
+          "market_time": "10:49:39.000",
+          "tick_id": 80355,
+          "last_price": 136.596,
+          "bid1": 136.457,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.745,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.457,
+              1000.0
+            ],
+            [
+              136.456,
+              1000.0
+            ],
+            [
+              136.437,
+              1000.0
+            ],
+            [
+              136.41,
+              1000.0
+            ],
+            [
+              136.351,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.745,
+              1000.0
+            ],
+            [
+              136.746,
+              1000.0
+            ],
+            [
+              136.885,
+              1000.0
+            ],
+            [
+              136.886,
+              1000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 5000.0,
+          "transaction_delta": 5,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.494,
+            "reference_low": 136.457,
+            "reference_high": 136.745,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_rise",
+            "state_score": 1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 7000.0,
+            "recent_sell_bonds": 6380.0,
+            "midpoint_change": 0.107,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.139,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近1分钟买卖中点上移0.107元"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.4935,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.2880000000000109,
+            "bid_support_bonds": 6000.0,
+            "ask_supply_bonds": 4000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T066",
+      "direction": "buy_then_sell",
+      "maximum_edge": 0.304,
+      "maximum_matchable_hands": 100,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "11:12:22",
+      "best_open_price": 136.477,
+      "best_close_time": "11:15:24",
+      "best_close_price": 136.781,
+      "open_causal_frames": {
+        "target_time": "11:12:22",
+        "seconds_from_previous_bond_frame": 1,
+        "seconds_to_next_bond_frame": 2,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786677141000,
+          "market_time": "11:12:21.000",
+          "tick_id": 81216,
+          "last_price": 136.762,
+          "bid1": 136.476,
+          "bid1_bonds": 2000.0,
+          "ask1": 136.781,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              136.476,
+              2000.0
+            ],
+            [
+              136.458,
+              2000.0
+            ],
+            [
+              136.4,
+              1000.0
+            ],
+            [
+              136.35,
+              1860.0
+            ],
+            [
+              136.053,
+              4000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.781,
+              2000.0
+            ],
+            [
+              136.782,
+              1000.0
+            ],
+            [
+              136.824,
+              1000.0
+            ],
+            [
+              136.908,
+              1000.0
+            ],
+            [
+              136.972,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.629,
+            "reference_low": 136.476,
+            "reference_high": 136.781,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 1000.0,
+            "recent_sell_bonds": 4000.0,
+            "midpoint_change": 0.018,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.042,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约4,000张，明显强于买入"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.6285,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.3050000000000068,
+            "bid_support_bonds": 6860.0,
+            "ask_supply_bonds": 6000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786677144000,
+          "market_time": "11:12:24.000",
+          "tick_id": 81219,
+          "last_price": 136.477,
+          "bid1": 136.477,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.781,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              136.477,
+              1000.0
+            ],
+            [
+              136.476,
+              2000.0
+            ],
+            [
+              136.4,
+              1000.0
+            ],
+            [
+              136.35,
+              1860.0
+            ],
+            [
+              136.053,
+              4000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.781,
+              2000.0
+            ],
+            [
+              136.782,
+              1000.0
+            ],
+            [
+              136.824,
+              1000.0
+            ],
+            [
+              136.908,
+              1000.0
+            ],
+            [
+              136.972,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "sell",
+          "side_confidence": "tick_rule",
+          "assessment": {
+            "reference_price": 136.629,
+            "reference_low": 136.477,
+            "reference_high": 136.781,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 1000.0,
+            "recent_sell_bonds": 5000.0,
+            "midpoint_change": 0.019,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.042,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约5,000张，明显强于买入"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.62900000000002,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.30400000000000205,
+            "bid_support_bonds": 5860.0,
+            "ask_supply_bonds": 6000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "11:15:24",
+        "seconds_from_previous_bond_frame": 15,
+        "seconds_to_next_bond_frame": 3,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786677309000,
+          "market_time": "11:15:09.000",
+          "tick_id": 81308,
+          "last_price": 136.539,
+          "bid1": 136.521,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.781,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              136.521,
+              1000.0
+            ],
+            [
+              136.52,
+              2000.0
+            ],
+            [
+              136.351,
+              1000.0
+            ],
+            [
+              136.35,
+              1860.0
+            ],
+            [
+              136.053,
+              4000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.781,
+              2000.0
+            ],
+            [
+              136.782,
+              1000.0
+            ],
+            [
+              136.824,
+              1000.0
+            ],
+            [
+              136.908,
+              1000.0
+            ],
+            [
+              136.972,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 136.669,
+            "reference_low": 136.521,
+            "reference_high": 136.781,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 0,
+            "recent_sell_bonds": 2380.0,
+            "midpoint_change": -0.009,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.042,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约2,380张，明显强于买入"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.669,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.2599999999999909,
+            "bid_support_bonds": 5860.0,
+            "ask_supply_bonds": 6000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786677327000,
+          "market_time": "11:15:27.000",
+          "tick_id": 81320,
+          "last_price": 136.781,
+          "bid1": 136.521,
+          "bid1_bonds": 1000.0,
+          "ask1": 136.781,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              136.521,
+              1000.0
+            ],
+            [
+              136.52,
+              2000.0
+            ],
+            [
+              136.351,
+              1000.0
+            ],
+            [
+              136.35,
+              1860.0
+            ],
+            [
+              136.053,
+              4000.0
+            ]
+          ],
+          "asks": [
+            [
+              136.781,
+              1000.0
+            ],
+            [
+              136.782,
+              1000.0
+            ],
+            [
+              136.824,
+              1000.0
+            ],
+            [
+              136.908,
+              1000.0
+            ],
+            [
+              136.972,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 136.651,
+            "reference_low": 136.521,
+            "reference_high": 136.781,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.5,
+            "recent_buy_bonds": 1000.0,
+            "recent_sell_bonds": 2380.0,
+            "midpoint_change": -0.009,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.042,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约2,380张，明显强于买入"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 136.651,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.2599999999999909,
+            "bid_support_bonds": 5860.0,
+            "ask_supply_bonds": 5000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 647,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 136.522,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "11:15:09"
+          },
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T099",
+      "direction": "buy_then_sell",
+      "maximum_edge": 0.39,
+      "maximum_matchable_hands": 100,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "13:27:53",
+      "best_open_price": 135.599,
+      "best_close_time": "13:28:14",
+      "best_close_price": 135.989,
+      "open_causal_frames": {
+        "target_time": "13:27:53",
+        "seconds_from_previous_bond_frame": 2,
+        "seconds_to_next_bond_frame": 1,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786685271000,
+          "market_time": "13:27:51.000",
+          "tick_id": 83025,
+          "last_price": 135.599,
+          "bid1": 135.421,
+          "bid1_bonds": 2000.0,
+          "ask1": 135.599,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              135.421,
+              2000.0
+            ],
+            [
+              135.42,
+              2000.0
+            ],
+            [
+              135.41,
+              2000.0
+            ],
+            [
+              135.4,
+              9000.0
+            ],
+            [
+              135.221,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.599,
+              1000.0
+            ],
+            [
+              135.6,
+              1000.0
+            ],
+            [
+              135.8,
+              1000.0
+            ],
+            [
+              136.99,
+              9000.0
+            ],
+            [
+              136.999,
+              8000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 135.41,
+            "reference_low": 135.41,
+            "reference_high": 135.599,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_rise",
+            "state_score": 2,
+            "state_confidence": 0.94,
+            "recent_buy_bonds": 7000.0,
+            "recent_sell_bonds": 14620.0,
+            "midpoint_change": 0.11,
+            "short_ask_change": -0.001,
+            "largest_ask_gap": 0.2,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约14,620张，明显强于买入",
+              "近1分钟买卖中点上移0.110元",
+              "买一近1分钟抬升0.221元",
+              "前三档卖盘最大断档0.200元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.41,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.17799999999999727,
+            "bid_support_bonds": 17000.0,
+            "ask_supply_bonds": 2000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786685274000,
+          "market_time": "13:27:54.000",
+          "tick_id": 83028,
+          "last_price": 135.6,
+          "bid1": 135.6,
+          "bid1_bonds": 1000.0,
+          "ask1": 135.8,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              135.6,
+              1000.0
+            ],
+            [
+              135.599,
+              1000.0
+            ],
+            [
+              135.421,
+              2000.0
+            ],
+            [
+              135.42,
+              2000.0
+            ],
+            [
+              135.41,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.8,
+              1000.0
+            ],
+            [
+              136.99,
+              9000.0
+            ],
+            [
+              136.999,
+              8000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ],
+            [
+              137.201,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 2000.0,
+          "transaction_delta": 2,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 135.41,
+            "reference_low": 135.41,
+            "reference_high": 135.8,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_rise",
+            "state_score": 2,
+            "state_confidence": 0.94,
+            "recent_buy_bonds": 9000.0,
+            "recent_sell_bonds": 14620.0,
+            "midpoint_change": 0.299,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 1.19,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近5分钟主动卖出约14,620张，明显强于买入",
+              "近1分钟买卖中点上移0.299元",
+              "买一近1分钟抬升0.399元",
+              "前三档卖盘最大断档1.190元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.41,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.20000000000001705,
+            "bid_support_bonds": 8000.0,
+            "ask_supply_bonds": 1000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": null,
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "13:28:14",
+        "seconds_from_previous_bond_frame": 2,
+        "seconds_to_next_bond_frame": 1,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786685292000,
+          "market_time": "13:28:12.000",
+          "tick_id": 83042,
+          "last_price": 135.8,
+          "bid1": 135.601,
+          "bid1_bonds": 2000.0,
+          "ask1": 135.99,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.601,
+              2000.0
+            ],
+            [
+              135.6,
+              1000.0
+            ],
+            [
+              135.421,
+              2000.0
+            ],
+            [
+              135.42,
+              2000.0
+            ],
+            [
+              135.41,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.99,
+              2000.0
+            ],
+            [
+              135.999,
+              4000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.9,
+              2000.0
+            ],
+            [
+              136.988,
+              4000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 135.796,
+            "reference_low": 135.601,
+            "reference_high": 135.99,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_rise",
+            "state_score": 1,
+            "state_confidence": 0.74,
+            "recent_buy_bonds": 10000.0,
+            "recent_sell_bonds": 14620.0,
+            "midpoint_change": 0.386,
+            "short_ask_change": -1.0,
+            "largest_ask_gap": 0.009,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近1分钟买卖中点上移0.386元",
+              "买一近1分钟抬升0.380元",
+              "近30秒卖一从阶段高位下压1.000元"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.7955,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.38900000000001,
+            "bid_support_bonds": 9000.0,
+            "ask_supply_bonds": 7000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 817,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.602,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:27:57"
+          },
+          "sell_orders_before_decision": [
+            {
+              "order_id": 827,
+              "side": "sell",
+              "kind": "inventory_exit",
+              "status": "open",
+              "limit_price": 135.998,
+              "quantity_bonds": 1000.0,
+              "filled_quantity_bonds": 0.0,
+              "created_market_time": "13:28:09"
+            }
+          ]
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786685295000,
+          "market_time": "13:28:15.000",
+          "tick_id": 83045,
+          "last_price": 135.989,
+          "bid1": 135.601,
+          "bid1_bonds": 2000.0,
+          "ask1": 135.989,
+          "ask1_bonds": 3000.0,
+          "bids": [
+            [
+              135.601,
+              2000.0
+            ],
+            [
+              135.6,
+              1000.0
+            ],
+            [
+              135.421,
+              2000.0
+            ],
+            [
+              135.42,
+              2000.0
+            ],
+            [
+              135.41,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.989,
+              3000.0
+            ],
+            [
+              135.99,
+              2000.0
+            ],
+            [
+              135.999,
+              4000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.9,
+              2000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "buy",
+          "side_confidence": "tick_rule",
+          "assessment": {
+            "reference_price": 135.795,
+            "reference_low": 135.601,
+            "reference_high": 135.989,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_rise",
+            "state_score": 1,
+            "state_confidence": 0.74,
+            "recent_buy_bonds": 11000.0,
+            "recent_sell_bonds": 13620.0,
+            "midpoint_change": 0.385,
+            "short_ask_change": -1.001,
+            "largest_ask_gap": 0.009,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近1分钟买卖中点上移0.385元",
+              "买一近1分钟抬升0.380元",
+              "近30秒卖一从阶段高位下压1.001元"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.79500000000002,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.38800000000000523,
+            "bid_support_bonds": 9000.0,
+            "ask_supply_bonds": 10000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 0.0,
+          "customer_base_short_before_decision_bonds": 1000.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 817,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.602,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:27:57"
+          },
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T104",
+      "direction": "sell_then_buy",
+      "maximum_edge": 0.279,
+      "maximum_matchable_hands": 100,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "13:28:58",
+      "best_open_price": 135.879,
+      "best_close_time": "13:29:39",
+      "best_close_price": 135.6,
+      "open_causal_frames": {
+        "target_time": "13:28:58",
+        "seconds_from_previous_bond_frame": 1,
+        "seconds_to_next_bond_frame": 2,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786685337000,
+          "market_time": "13:28:57.000",
+          "tick_id": 83077,
+          "last_price": 135.601,
+          "bid1": 135.6,
+          "bid1_bonds": 1000.0,
+          "ask1": 135.879,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.6,
+              1000.0
+            ],
+            [
+              135.421,
+              2000.0
+            ],
+            [
+              135.42,
+              2000.0
+            ],
+            [
+              135.41,
+              2000.0
+            ],
+            [
+              135.4,
+              9000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.879,
+              2000.0
+            ],
+            [
+              135.88,
+              1000.0
+            ],
+            [
+              135.899,
+              2000.0
+            ],
+            [
+              135.9,
+              2000.0
+            ],
+            [
+              135.96,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 135.785,
+            "reference_low": 135.6,
+            "reference_high": 135.879,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_fall",
+            "state_score": -2,
+            "state_confidence": 0.7,
+            "recent_buy_bonds": 12000.0,
+            "recent_sell_bonds": 11000.0,
+            "midpoint_change": -0.556,
+            "short_ask_change": -0.091,
+            "largest_ask_gap": 0.019,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近1分钟买卖中点下移0.556元",
+              "卖一近1分钟主动下压1.111元"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.78525000000002,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.27899999999999636,
+            "bid_support_bonds": 16000.0,
+            "ask_supply_bonds": 8000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 838,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.601,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:28:51"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786685340000,
+          "market_time": "13:29:00.000",
+          "tick_id": 83079,
+          "last_price": 135.879,
+          "bid1": 135.6,
+          "bid1_bonds": 1000.0,
+          "ask1": 135.8,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              135.6,
+              1000.0
+            ],
+            [
+              135.421,
+              2000.0
+            ],
+            [
+              135.42,
+              2000.0
+            ],
+            [
+              135.41,
+              2000.0
+            ],
+            [
+              135.4,
+              9000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.8,
+              1000.0
+            ],
+            [
+              135.879,
+              1000.0
+            ],
+            [
+              135.88,
+              1000.0
+            ],
+            [
+              135.899,
+              2000.0
+            ],
+            [
+              135.9,
+              2000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 135.785,
+            "reference_low": 135.6,
+            "reference_high": 135.8,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "falling",
+            "state_score": -3,
+            "state_confidence": 0.9,
+            "recent_buy_bonds": 13000.0,
+            "recent_sell_bonds": 11000.0,
+            "midpoint_change": -0.595,
+            "short_ask_change": -0.169,
+            "largest_ask_gap": 0.079,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": null,
+            "iron_floor_bonds": 0.0,
+            "evidence": [
+              "近1分钟买卖中点下移0.595元",
+              "卖一近1分钟主动下压1.189元",
+              "近30秒卖一从阶段高位下压0.169元"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.785,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.20000000000001705,
+            "bid_support_bonds": 16000.0,
+            "ask_supply_bonds": 7000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 838,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.601,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:28:51"
+          },
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "13:29:39",
+        "seconds_from_previous_bond_frame": 0,
+        "seconds_to_next_bond_frame": 3,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786685379000,
+          "market_time": "13:29:39.000",
+          "tick_id": 83106,
+          "last_price": 135.879,
+          "bid1": 135.601,
+          "bid1_bonds": 1000.0,
+          "ask1": 135.899,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.601,
+              1000.0
+            ],
+            [
+              135.6,
+              4000.0
+            ],
+            [
+              135.421,
+              4000.0
+            ],
+            [
+              135.4,
+              9000.0
+            ],
+            [
+              135.05,
+              74000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.899,
+              2000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.988,
+              4000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ],
+            [
+              137.201,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 135.7,
+            "reference_low": 135.601,
+            "reference_high": 135.899,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "stable",
+            "state_score": 0,
+            "state_confidence": 0.66,
+            "recent_buy_bonds": 13000.0,
+            "recent_sell_bonds": 9000.0,
+            "midpoint_change": -0.0,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.988,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 74000.0,
+            "evidence": [
+              "135.050附近可见买盘约74,000张，形成强承托区",
+              "前三档卖盘最大断档0.988元，上方供给稀疏",
+              "买卖区间持续稳定，暂按平稳状态做市"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.7,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.2980000000000018,
+            "bid_support_bonds": 9000.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 840,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.602,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:29:36"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786685382000,
+          "market_time": "13:29:42.000",
+          "tick_id": 83109,
+          "last_price": 135.6,
+          "bid1": 135.6,
+          "bid1_bonds": 3000.0,
+          "ask1": 135.899,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.6,
+              3000.0
+            ],
+            [
+              135.421,
+              4000.0
+            ],
+            [
+              135.4,
+              9000.0
+            ],
+            [
+              135.05,
+              74000.0
+            ],
+            [
+              135.001,
+              10000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.899,
+              2000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.988,
+              4000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ],
+            [
+              137.201,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 2000.0,
+          "transaction_delta": 2,
+          "inferred_side": "sell",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 135.7,
+            "reference_low": 135.6,
+            "reference_high": 135.899,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "stable",
+            "state_score": 0,
+            "state_confidence": 0.66,
+            "recent_buy_bonds": 13000.0,
+            "recent_sell_bonds": 11000.0,
+            "midpoint_change": -0.03,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.988,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 84000.0,
+            "evidence": [
+              "135.050附近可见买盘约84,000张，形成强承托区",
+              "前三档卖盘最大断档0.988元，上方供给稀疏",
+              "买卖区间持续稳定，暂按平稳状态做市"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.7,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.2990000000000066,
+            "bid_support_bonds": 16000.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 841,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.35,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:29:39"
+          },
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T106",
+      "direction": "sell_then_buy",
+      "maximum_edge": 0.299,
+      "maximum_matchable_hands": 100,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "13:34:43",
+      "best_open_price": 135.999,
+      "best_close_time": "13:34:53",
+      "best_close_price": 135.7,
+      "open_causal_frames": {
+        "target_time": "13:34:43",
+        "seconds_from_previous_bond_frame": 1,
+        "seconds_to_next_bond_frame": 2,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786685682000,
+          "market_time": "13:34:42.000",
+          "tick_id": 83291,
+          "last_price": 135.661,
+          "bid1": 135.701,
+          "bid1_bonds": 1000.0,
+          "ask1": 135.999,
+          "ask1_bonds": 4000.0,
+          "bids": [
+            [
+              135.701,
+              1000.0
+            ],
+            [
+              135.7,
+              3000.0
+            ],
+            [
+              135.66,
+              2000.0
+            ],
+            [
+              135.621,
+              1000.0
+            ],
+            [
+              135.62,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.999,
+              4000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.988,
+              4000.0
+            ],
+            [
+              137.198,
+              8000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 135.85,
+            "reference_low": 135.701,
+            "reference_high": 135.999,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.74,
+            "recent_buy_bonds": 0,
+            "recent_sell_bonds": 9000.0,
+            "midpoint_change": 0.007,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.988,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 74000.0,
+            "evidence": [
+              "近5分钟主动卖出约9,000张，明显强于买入",
+              "近期曾观察到135.050附近买盘约74,000张，形成强承托区",
+              "前三档卖盘最大断档0.988元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.85,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.2980000000000018,
+            "bid_support_bonds": 9000.0,
+            "ask_supply_bonds": 5000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 841,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.35,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:29:39"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786685685000,
+          "market_time": "13:34:45.000",
+          "tick_id": 83294,
+          "last_price": 135.999,
+          "bid1": 135.701,
+          "bid1_bonds": 1000.0,
+          "ask1": 135.999,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.701,
+              1000.0
+            ],
+            [
+              135.7,
+              3000.0
+            ],
+            [
+              135.66,
+              2000.0
+            ],
+            [
+              135.621,
+              1000.0
+            ],
+            [
+              135.62,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.999,
+              2000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.988,
+              4000.0
+            ],
+            [
+              137.198,
+              8000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 2000.0,
+          "transaction_delta": 2,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 135.85,
+            "reference_low": 135.701,
+            "reference_high": 135.999,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.74,
+            "recent_buy_bonds": 2000.0,
+            "recent_sell_bonds": 7000.0,
+            "midpoint_change": 0.007,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.988,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 74000.0,
+            "evidence": [
+              "近5分钟主动卖出约7,000张，明显强于买入",
+              "近期曾观察到135.050附近买盘约74,000张，形成强承托区",
+              "前三档卖盘最大断档0.988元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.85,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.2980000000000018,
+            "bid_support_bonds": 9000.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 841,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.35,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:29:39"
+          },
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "13:34:53",
+        "seconds_from_previous_bond_frame": 8,
+        "seconds_to_next_bond_frame": 1,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786685685000,
+          "market_time": "13:34:45.000",
+          "tick_id": 83294,
+          "last_price": 135.999,
+          "bid1": 135.701,
+          "bid1_bonds": 1000.0,
+          "ask1": 135.999,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.701,
+              1000.0
+            ],
+            [
+              135.7,
+              3000.0
+            ],
+            [
+              135.66,
+              2000.0
+            ],
+            [
+              135.621,
+              1000.0
+            ],
+            [
+              135.62,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.999,
+              2000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.988,
+              4000.0
+            ],
+            [
+              137.198,
+              8000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 2000.0,
+          "transaction_delta": 2,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 135.85,
+            "reference_low": 135.701,
+            "reference_high": 135.999,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.74,
+            "recent_buy_bonds": 2000.0,
+            "recent_sell_bonds": 7000.0,
+            "midpoint_change": 0.007,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.988,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 74000.0,
+            "evidence": [
+              "近5分钟主动卖出约7,000张，明显强于买入",
+              "近期曾观察到135.050附近买盘约74,000张，形成强承托区",
+              "前三档卖盘最大断档0.988元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.85,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.2980000000000018,
+            "bid_support_bonds": 9000.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 841,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.35,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:29:39"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786685694000,
+          "market_time": "13:34:54.000",
+          "tick_id": 83300,
+          "last_price": 135.7,
+          "bid1": 135.7,
+          "bid1_bonds": 2000.0,
+          "ask1": 135.999,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.7,
+              2000.0
+            ],
+            [
+              135.66,
+              2000.0
+            ],
+            [
+              135.621,
+              1000.0
+            ],
+            [
+              135.62,
+              2000.0
+            ],
+            [
+              135.61,
+              3000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.999,
+              2000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.988,
+              4000.0
+            ],
+            [
+              137.198,
+              8000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 2000.0,
+          "transaction_delta": 2,
+          "inferred_side": "sell",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 135.85,
+            "reference_low": 135.7,
+            "reference_high": 135.999,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.74,
+            "recent_buy_bonds": 2000.0,
+            "recent_sell_bonds": 9000.0,
+            "midpoint_change": -0.001,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.988,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 74000.0,
+            "evidence": [
+              "近5分钟主动卖出约9,000张，明显强于买入",
+              "近期曾观察到135.050附近买盘约74,000张，形成强承托区",
+              "前三档卖盘最大断档0.988元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.85,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.2990000000000066,
+            "bid_support_bonds": 10000.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 841,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.35,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:29:39"
+          },
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T110",
+      "direction": "sell_then_buy",
+      "maximum_edge": 0.199,
+      "maximum_matchable_hands": 200,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "13:37:02",
+      "best_open_price": 135.999,
+      "best_close_time": "13:37:10",
+      "best_close_price": 135.8,
+      "open_causal_frames": {
+        "target_time": "13:37:02",
+        "seconds_from_previous_bond_frame": 23,
+        "seconds_to_next_bond_frame": 1,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786685799000,
+          "market_time": "13:36:39.000",
+          "tick_id": 83368,
+          "last_price": 135.714,
+          "bid1": 135.801,
+          "bid1_bonds": 1000.0,
+          "ask1": 135.999,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.801,
+              1000.0
+            ],
+            [
+              135.8,
+              1000.0
+            ],
+            [
+              135.751,
+              1000.0
+            ],
+            [
+              135.75,
+              2000.0
+            ],
+            [
+              135.71,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.999,
+              2000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.988,
+              4000.0
+            ],
+            [
+              137.198,
+              8000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 135.875,
+            "reference_low": 135.801,
+            "reference_high": 135.999,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "stable",
+            "state_score": 0,
+            "state_confidence": 0.9,
+            "recent_buy_bonds": 3000.0,
+            "recent_sell_bonds": 7000.0,
+            "midpoint_change": 0.145,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.988,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 74000.0,
+            "evidence": [
+              "近5分钟主动卖出约7,000张，明显强于买入",
+              "近1分钟买卖中点上移0.145元",
+              "近期曾观察到135.050附近买盘约74,000张，形成强承托区",
+              "前三档卖盘最大断档0.988元，上方供给稀疏",
+              "买卖区间持续稳定，暂按平稳状态做市"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.8745,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.19799999999997908,
+            "bid_support_bonds": 7000.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 841,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.35,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:29:39"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786685823000,
+          "market_time": "13:37:03.000",
+          "tick_id": 83379,
+          "last_price": 135.999,
+          "bid1": 135.801,
+          "bid1_bonds": 1000.0,
+          "ask1": 135.999,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.801,
+              1000.0
+            ],
+            [
+              135.8,
+              1000.0
+            ],
+            [
+              135.751,
+              1000.0
+            ],
+            [
+              135.75,
+              2000.0
+            ],
+            [
+              135.71,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.999,
+              2000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.988,
+              4000.0
+            ],
+            [
+              137.198,
+              8000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 2000.0,
+          "transaction_delta": 1,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 135.875,
+            "reference_low": 135.801,
+            "reference_high": 135.999,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "stable",
+            "state_score": 0,
+            "state_confidence": 0.66,
+            "recent_buy_bonds": 5000.0,
+            "recent_sell_bonds": 7000.0,
+            "midpoint_change": 0.043,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.988,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 74000.0,
+            "evidence": [
+              "近期曾观察到135.050附近买盘约74,000张，形成强承托区",
+              "前三档卖盘最大断档0.988元，上方供给稀疏",
+              "买卖区间持续稳定，暂按平稳状态做市"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.875,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.19799999999997908,
+            "bid_support_bonds": 7000.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 841,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.35,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:29:39"
+          },
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "13:37:10",
+        "seconds_from_previous_bond_frame": 1,
+        "seconds_to_next_bond_frame": 2,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786685829000,
+          "market_time": "13:37:09.000",
+          "tick_id": 83382,
+          "last_price": 135.999,
+          "bid1": 135.801,
+          "bid1_bonds": 1000.0,
+          "ask1": 135.999,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.801,
+              1000.0
+            ],
+            [
+              135.8,
+              1000.0
+            ],
+            [
+              135.751,
+              1000.0
+            ],
+            [
+              135.75,
+              2000.0
+            ],
+            [
+              135.71,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.999,
+              2000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.988,
+              4000.0
+            ],
+            [
+              137.198,
+              8000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 135.9,
+            "reference_low": 135.801,
+            "reference_high": 135.999,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "stable",
+            "state_score": 0,
+            "state_confidence": 0.66,
+            "recent_buy_bonds": 5000.0,
+            "recent_sell_bonds": 7000.0,
+            "midpoint_change": 0.025,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.988,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 74000.0,
+            "evidence": [
+              "近期曾观察到135.050附近买盘约74,000张，形成强承托区",
+              "前三档卖盘最大断档0.988元，上方供给稀疏",
+              "买卖区间持续稳定，暂按平稳状态做市"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.89974999999998,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.19799999999997908,
+            "bid_support_bonds": 7000.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 841,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.35,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:29:39"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786685832000,
+          "market_time": "13:37:12.000",
+          "tick_id": 83384,
+          "last_price": 135.8,
+          "bid1": 135.751,
+          "bid1_bonds": 1000.0,
+          "ask1": 135.999,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.751,
+              1000.0
+            ],
+            [
+              135.75,
+              2000.0
+            ],
+            [
+              135.71,
+              2000.0
+            ],
+            [
+              135.66,
+              2000.0
+            ],
+            [
+              135.62,
+              2000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.999,
+              2000.0
+            ],
+            [
+              136.0,
+              1000.0
+            ],
+            [
+              136.988,
+              4000.0
+            ],
+            [
+              137.198,
+              8000.0
+            ],
+            [
+              137.199,
+              1000.0
+            ]
+          ],
+          "trade_bonds": 2000.0,
+          "transaction_delta": 2,
+          "inferred_side": "sell",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 135.9,
+            "reference_low": 135.751,
+            "reference_high": 135.999,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "possible_fall",
+            "state_score": -1,
+            "state_confidence": 0.74,
+            "recent_buy_bonds": 5000.0,
+            "recent_sell_bonds": 9000.0,
+            "midpoint_change": 0.0,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.988,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 74000.0,
+            "evidence": [
+              "近5分钟主动卖出约9,000张，明显强于买入",
+              "近期曾观察到135.050附近买盘约74,000张，形成强承托区",
+              "前三档卖盘最大断档0.988元，上方供给稀疏"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.9,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.24799999999999045,
+            "bid_support_bonds": 9000.0,
+            "ask_supply_bonds": 3000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 841,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.35,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "13:29:39"
+          },
+          "sell_orders_before_decision": []
+        }
+      }
+    },
+    {
+      "turn_id": "2026-08-14_132026.SH_T140",
+      "direction": "sell_then_buy",
+      "maximum_edge": 0.224,
+      "maximum_matchable_hands": 100,
+      "opening_action_capacity_strict_bonds": 1000,
+      "best_open_time": "14:48:21",
+      "best_open_price": 135.625,
+      "best_close_time": "14:50:02",
+      "best_close_price": 135.401,
+      "open_causal_frames": {
+        "target_time": "14:48:21",
+        "seconds_from_previous_bond_frame": 0,
+        "seconds_to_next_bond_frame": 15,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786690101000,
+          "market_time": "14:48:21.000",
+          "tick_id": 86262,
+          "last_price": 135.625,
+          "bid1": 135.601,
+          "bid1_bonds": 2000.0,
+          "ask1": 135.997,
+          "ask1_bonds": 2000.0,
+          "bids": [
+            [
+              135.601,
+              2000.0
+            ],
+            [
+              135.6,
+              15000.0
+            ],
+            [
+              135.401,
+              2000.0
+            ],
+            [
+              135.4,
+              9000.0
+            ],
+            [
+              135.051,
+              8000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.997,
+              2000.0
+            ],
+            [
+              135.998,
+              2000.0
+            ],
+            [
+              135.999,
+              9000.0
+            ],
+            [
+              136.0,
+              4000.0
+            ],
+            [
+              136.199,
+              2000.0
+            ]
+          ],
+          "trade_bonds": 1000.0,
+          "transaction_delta": 1,
+          "inferred_side": "buy",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 135.799,
+            "reference_low": 135.601,
+            "reference_high": 135.997,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "stable",
+            "state_score": 0,
+            "state_confidence": 0.42,
+            "recent_buy_bonds": 8000.0,
+            "recent_sell_bonds": 11000.0,
+            "midpoint_change": -0.014,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.001,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 74000.0,
+            "evidence": [
+              "近期曾观察到135.050附近买盘约74,000张，形成强承托区"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.799,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.396000000000015,
+            "bid_support_bonds": 19000.0,
+            "ask_supply_bonds": 17000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 1059,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.35,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "14:46:09"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786690116000,
+          "market_time": "14:48:36.000",
+          "tick_id": 86271,
+          "last_price": 135.625,
+          "bid1": 135.601,
+          "bid1_bonds": 2000.0,
+          "ask1": 135.997,
+          "ask1_bonds": 4000.0,
+          "bids": [
+            [
+              135.601,
+              2000.0
+            ],
+            [
+              135.6,
+              15000.0
+            ],
+            [
+              135.401,
+              2000.0
+            ],
+            [
+              135.4,
+              9000.0
+            ],
+            [
+              135.051,
+              8000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.997,
+              4000.0
+            ],
+            [
+              135.998,
+              2000.0
+            ],
+            [
+              135.999,
+              9000.0
+            ],
+            [
+              136.0,
+              4000.0
+            ],
+            [
+              136.199,
+              2000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 135.799,
+            "reference_low": 135.601,
+            "reference_high": 135.997,
+            "reference_source": "current_midpoint",
+            "reference_confidence": 0.35,
+            "state": "stable",
+            "state_score": 0,
+            "state_confidence": 0.42,
+            "recent_buy_bonds": 8000.0,
+            "recent_sell_bonds": 11000.0,
+            "midpoint_change": -0.05,
+            "short_ask_change": 0.0,
+            "largest_ask_gap": 0.001,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.05,
+            "iron_floor_bonds": 74000.0,
+            "evidence": [
+              "近期曾观察到135.050附近买盘约74,000张，形成强承托区"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.799,
+            "reference_source": "current_midpoint",
+            "reliable_anchor": false,
+            "spread": 0.396000000000015,
+            "bid_support_bonds": 19000.0,
+            "ask_supply_bonds": 19000.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 1059,
+            "side": "buy",
+            "kind": "low_bid_reversion",
+            "status": "open",
+            "limit_price": 135.35,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "14:46:09"
+          },
+          "sell_orders_before_decision": []
+        }
+      },
+      "close_causal_frames": {
+        "target_time": "14:50:02",
+        "seconds_from_previous_bond_frame": 5,
+        "seconds_to_next_bond_frame": 1,
+        "previous_or_same_bond_frame": {
+          "market_ts_ms": 1786690197000,
+          "market_time": "14:49:57.000",
+          "tick_id": 86333,
+          "last_price": 135.6,
+          "bid1": 135.401,
+          "bid1_bonds": 2000.0,
+          "ask1": 135.602,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              135.401,
+              2000.0
+            ],
+            [
+              135.4,
+              9000.0
+            ],
+            [
+              135.051,
+              8000.0
+            ],
+            [
+              135.05,
+              74000.0
+            ],
+            [
+              135.001,
+              10000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.602,
+              1000.0
+            ],
+            [
+              135.606,
+              140.0
+            ],
+            [
+              135.703,
+              1000.0
+            ],
+            [
+              135.992,
+              4000.0
+            ],
+            [
+              135.993,
+              9000.0
+            ]
+          ],
+          "trade_bonds": 0.0,
+          "transaction_delta": 0,
+          "inferred_side": "none",
+          "side_confidence": "none",
+          "assessment": {
+            "reference_price": 135.502,
+            "reference_low": 135.401,
+            "reference_high": 135.602,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "falling",
+            "state_score": -4,
+            "state_confidence": 0.95,
+            "recent_buy_bonds": 8000.0,
+            "recent_sell_bonds": 30000.0,
+            "midpoint_change": -0.3,
+            "short_ask_change": -0.004,
+            "largest_ask_gap": 0.097,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.051,
+            "iron_floor_bonds": 92000.0,
+            "evidence": [
+              "近5分钟主动卖出约30,000张，明显强于买入",
+              "近1分钟买卖中点下移0.300元",
+              "卖一近1分钟主动下压0.395元",
+              "买一近1分钟后退0.205元",
+              "135.051附近可见买盘约92,000张，形成强承托区"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.50150000000002,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.2009999999999934,
+            "bid_support_bonds": 11000.0,
+            "ask_supply_bonds": 2140.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1000.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 0.0,
+          "buy_order_before_decision": {
+            "order_id": 1064,
+            "side": "buy",
+            "kind": "persistent_wall_supported_falling_entry",
+            "status": "open",
+            "limit_price": 135.402,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 0.0,
+            "created_market_time": "14:49:45"
+          },
+          "sell_orders_before_decision": []
+        },
+        "next_bond_frame": {
+          "market_ts_ms": 1786690203000,
+          "market_time": "14:50:03.000",
+          "tick_id": 86337,
+          "last_price": 135.401,
+          "bid1": 135.401,
+          "bid1_bonds": 1620.0,
+          "ask1": 135.602,
+          "ask1_bonds": 1000.0,
+          "bids": [
+            [
+              135.401,
+              1620.0
+            ],
+            [
+              135.4,
+              9000.0
+            ],
+            [
+              135.051,
+              8000.0
+            ],
+            [
+              135.05,
+              74000.0
+            ],
+            [
+              135.001,
+              10000.0
+            ]
+          ],
+          "asks": [
+            [
+              135.602,
+              1000.0
+            ],
+            [
+              135.606,
+              140.0
+            ],
+            [
+              135.703,
+              1000.0
+            ],
+            [
+              135.992,
+              4000.0
+            ],
+            [
+              135.993,
+              9000.0
+            ]
+          ],
+          "trade_bonds": 380.0,
+          "transaction_delta": 1,
+          "inferred_side": "sell",
+          "side_confidence": "quote",
+          "assessment": {
+            "reference_price": 135.502,
+            "reference_low": 135.401,
+            "reference_high": 135.602,
+            "reference_source": "persistent_inside_market",
+            "reference_confidence": 0.55,
+            "state": "falling",
+            "state_score": -4,
+            "state_confidence": 0.95,
+            "recent_buy_bonds": 3000.0,
+            "recent_sell_bonds": 30380.0,
+            "midpoint_change": -0.299,
+            "short_ask_change": -0.004,
+            "largest_ask_gap": 0.097,
+            "downside_book_vacuum": false,
+            "fragile_top_bid": false,
+            "iron_floor_price": 135.051,
+            "iron_floor_bonds": 92000.0,
+            "evidence": [
+              "近5分钟主动卖出约30,380张，明显强于买入",
+              "近1分钟买卖中点下移0.299元",
+              "卖一近1分钟主动下压0.394元",
+              "买一近1分钟后退0.205元",
+              "135.051附近可见买盘约92,000张，形成强承托区"
+            ]
+          },
+          "decision_context": {
+            "reference_price": 135.50150000000002,
+            "reference_source": "persistent_inside_market",
+            "reliable_anchor": false,
+            "spread": 0.2009999999999934,
+            "bid_support_bonds": 10620.0,
+            "ask_supply_bonds": 2140.0,
+            "wall_threshold_bonds": 5000.0,
+            "breakout_support_price": 0.0,
+            "breakout_lower_sell_bonds": 0.0
+          },
+          "inventory_before_decision_bonds": 1380.0,
+          "customer_base_short_before_decision_bonds": 0.0,
+          "extra_inventory_before_decision_bonds": 380.0,
+          "buy_order_before_decision": {
+            "order_id": 1064,
+            "side": "buy",
+            "kind": "persistent_wall_supported_falling_entry",
+            "status": "open",
+            "limit_price": 135.402,
+            "quantity_bonds": 1000.0,
+            "filled_quantity_bonds": 380.0,
+            "created_market_time": "14:49:45"
+          },
+          "sell_orders_before_decision": []
+        }
+      }
+    }
+  ]
+}

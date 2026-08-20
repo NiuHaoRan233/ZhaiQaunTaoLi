@@ -1,0 +1,103 @@
+{
+  "frozen_at_asia_shanghai": "2026-08-17T06:31:10+08:00",
+  "git_head": "5550252eb5332304e4e109b20e4bb3c05ee8cec6",
+  "candidate_model_id": "maker_priority_v1_30_candidate",
+  "parent_model_id": "maker_priority_v1_29_candidate",
+  "production_comparator_model_id": "maker_priority_v1_1",
+  "execution_branch": "priority",
+  "supersedes_manifest": "v1.30_样本外冻结清单_逐债正股版_2026-08-17.json",
+  "supersession_reason": "登记并否决v1.31研究后重冻当前源码。v1.31新增的默认关闭profile字段改变了v1.30结构哈希，但未改变v1.30权限；当前v1.30与原冻结前九日双债18个单元的收益、成交数和订单数逐项一致。旧清单保留为不可变历史，不再作为当前入口。",
+  "research_revalidation": {
+    "rejected_candidate_model_id": "maker_priority_v1_31_candidate",
+    "rejected_candidate_may_be_parent": false,
+    "comparison_cells": 18,
+    "v1_30_pnl_matches_original_saved_matrix": true,
+    "v1_30_fill_count_matches_original_saved_matrix": true,
+    "v1_30_order_count_matches_original_saved_matrix": true,
+    "full_unittest_count": 166,
+    "full_unittest_passed": true
+  },
+  "instruments": [
+    "132026.SH",
+    "132024.SH"
+  ],
+  "underlying_stock_codes": {
+    "132026.SH": "600900.SH",
+    "132024.SH": "600362.SH"
+  },
+  "calibration_dates": [
+    "2026-08-04",
+    "2026-08-05",
+    "2026-08-06",
+    "2026-08-07",
+    "2026-08-10",
+    "2026-08-11",
+    "2026-08-12",
+    "2026-08-13",
+    "2026-08-14"
+  ],
+  "first_eligible_sample_out_date": "2026-08-17",
+  "opening_account": {
+    "base_inventory_bonds": 1000,
+    "additional_buying_capacity_bonds": 1000,
+    "normal_minimum_inventory_bonds": 0,
+    "normal_maximum_inventory_bonds": 2000,
+    "legacy_cash_seed_is_not_a_quantity_limit": true,
+    "funding_adjustment_is_pnl_neutral": true,
+    "force_end_of_day_base_replenishment": false,
+    "carry_previous_day_terminal_state_into_independent_replay": false
+  },
+  "historical_input_limitations": {
+    "600362.SH_ticks_on_calibration_dates": 0,
+    "missing_underlying_semantics": "stock_return_5m=None; no confidence discount",
+    "unrelated_stock_substitution_forbidden": true,
+    "external_or_future_intraday_backfill_forbidden": true,
+    "jiangxi_copper_replay_is_complete_dual_input": false
+  },
+  "shared_parameters": {
+    "price_tick": 0.001,
+    "order_quantity_bonds": 1000,
+    "minimum_anchor_bonds": 5000,
+    "minimum_entry_edge": 0.2,
+    "minimum_active_entry_edge": 0.5,
+    "minimum_base_high_sell_edge": 0.3,
+    "maximum_active_turnover_spread": 0.02,
+    "market_temperature_window_seconds": 300,
+    "priority_rising_base_short_after_extra_exit_isolation_seconds": 15,
+    "confirmed_rising_base_short_stop_seconds": 30,
+    "profitable_visible_bid_base_replenishment_enabled": true,
+    "minimum_rising_base_short_reliable_reference_edge": 0.2
+  },
+  "policy_profile_sha256": "E25A9D21BDC49E8D3A90F112FF252C3C7420C2AE56FFED94FF4C11371D182B11",
+  "source_sha256": {
+    "src/zhaiquant/config.py": "597D73F172C58CEA77E53BB9AF8F12691E02DAD221FF965A5D81C7FF947BC493",
+    "src/zhaiquant/maker_paper.py": "390FD1CE0B6196698D58D50E24B9FDBE2D0CF5A1661E02E4FEE42364980D0B8F",
+    "src/zhaiquant/maker.py": "FB6E236D4F53EC19166D96693E54D35D4EBD20D7C1A78B2573A1F14E4706518C",
+    "src/zhaiquant/opportunity_audit.py": "61BC466B86D6ED59BE9348B508F7D70996E9A6237049FF46D2BA1284F5A17C02",
+    "src/zhaiquant/maker_dashboard.py": "5D75D74B21246A593BD390CBB61570D32F10DFA79C9F620D6573D1E2F99CFF17",
+    "src/zhaiquant/qmt_feed.py": "DF21DBF99D3AAF43E93C7F1C2303C5078DEA2C63B57B424196BF16C513078BF4",
+    "src/zhaiquant/cli.py": "ABED84746D51E7F94860F660114F86256F73658AF096F591B34CBA55BE543793",
+    "config.example.toml": "17D5B618F01A7FBB14D1B3FE0A27D995464936A0FF81693E88E5256B094519AF",
+    "tests/test_config.py": "59F69F1DE293270E10B18B11ADA8A677FC7B650828438107F93437B21932B84D",
+    "tests/test_maker_paper.py": "B0132D7DAB5885DCF6B3FF74C6D972EA771623C1C8EEB4A249EE287FB2F2E2F2",
+    "scripts/audit_priority_sample_out.py": "D7CC3511C77377338B56A9C20FE7DE1B60147557958BD58E286EE08DDDD3815A",
+    "tests/test_priority_sample_out.py": "C08330FF294EAF96E8F4994CC0EEA0E084C0421E87774926CD80F4B19B2D931D"
+  },
+  "validation_invariants": {
+    "same_model_and_parameters_for_both_instruments": true,
+    "security_code_specific_trading_conditions_forbidden": true,
+    "per_bond_underlying_mapping_is_input_identity_only": true,
+    "future_information_forbidden": true,
+    "tdx_trade_side_is_post_trade_validation_only": true,
+    "market_data_access_read_only": true,
+    "broker_order_submission_forbidden": true,
+    "profit_must_be_reported_per_instrument_without_cross_instrument_offset": true,
+    "end_of_day_exposure_is_reported_but_not_forced_closed": true,
+    "standard_account_capacity_is_bond_denominated": true,
+    "windfall_remains_cash_limited": true,
+    "first_eligible_common_date_is_selected_automatically": true,
+    "both_bonds_and_both_mapped_stocks_require_full_day_coverage": true,
+    "dual_instrument_dual_model_matrix_is_mandatory": true,
+    "no_new_eligible_date_returns_waiting_without_replay": true
+  }
+}

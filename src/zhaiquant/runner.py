@@ -279,7 +279,7 @@ class LiveRunner:
         maker_text = "maker=off"
         if maker_paper.get("enabled"):
             maker_text = "maker=" + ",".join(
-                f"{item.get('bond_code', '')}:{item['fill_mode']}:"
+                f"{item.get('bond_code', '')}:{item.get('model_id', item['fill_mode'])}:"
                 f"inv{item['inventory']:.0f}/pnl{item['pnl']:.0f}"
                 for item in maker_accounts
             )

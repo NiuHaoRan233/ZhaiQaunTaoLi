@@ -1,0 +1,1638 @@
+{
+  "source_database_opened_readonly": true,
+  "temporary_replay_databases": true,
+  "same_policy_for_all_codes": true,
+  "security_specific_trading_conditions": false,
+  "parent_model_id": "maker_priority_v1_37_candidate",
+  "candidate_model_id": "maker_priority_v1_41_candidate",
+  "branch_isolation": {
+    "queue_all_cells_identical": true,
+    "windfall_all_cells_identical": true,
+    "verified_cells": 2
+  },
+  "totals_by_code": {
+    "132026.SH": {
+      "parent_trading_pnl": 2382.2999999999884,
+      "candidate_trading_pnl": 2131.5999999999767,
+      "trading_pnl_delta": -250.70000000001164,
+      "changed_cells": 1,
+      "new_permission_fills": 3
+    },
+    "132024.SH": {
+      "parent_trading_pnl": 1875.820000000007,
+      "candidate_trading_pnl": 2263.820000000036,
+      "trading_pnl_delta": 388.0000000000291,
+      "changed_cells": 1,
+      "new_permission_fills": 4
+    }
+  },
+  "cells": [
+    {
+      "market_date": "2026-08-17",
+      "bond_code": "132026.SH",
+      "parent_model_id": "maker_priority_v1_37_candidate",
+      "candidate_model_id": "maker_priority_v1_41_candidate",
+      "parent_trading_pnl": 2382.2999999999884,
+      "candidate_trading_pnl": 2131.5999999999767,
+      "trading_pnl_delta": -250.70000000001164,
+      "parent_terminal_inventory": 2000.0,
+      "candidate_terminal_inventory": 2000.0,
+      "parent_customer_base_short_bonds": 0.0,
+      "candidate_customer_base_short_bonds": 0.0,
+      "parent_path_bounds": {
+        "minimum_inventory_bonds": 0.0,
+        "maximum_inventory_bonds": 2000.0,
+        "minimum_cash_cny": 2248.0,
+        "derived_terminal_cash_cny": 4659.300000000003
+      },
+      "candidate_path_bounds": {
+        "minimum_inventory_bonds": 0.0,
+        "maximum_inventory_bonds": 2000.0,
+        "minimum_cash_cny": 1997.2999999999884,
+        "derived_terminal_cash_cny": 4408.599999999991
+      },
+      "customer_base_short_path_identical": false,
+      "parent_customer_base_short_metrics": {
+        "episodes": 1,
+        "completed_episodes": 1,
+        "total_exposure_seconds": 570,
+        "maximum_episode_seconds": 570,
+        "open_at_close": false,
+        "open_episode_seconds_to_15_00": 0
+      },
+      "candidate_customer_base_short_metrics": {
+        "episodes": 1,
+        "completed_episodes": 1,
+        "total_exposure_seconds": 144,
+        "maximum_episode_seconds": 144,
+        "open_at_close": false,
+        "open_episode_seconds_to_15_00": 0
+      },
+      "parent_fill_count": 31,
+      "candidate_fill_count": 32,
+      "parent_order_count": 239,
+      "candidate_order_count": 251,
+      "new_permission_fill_count": 3,
+      "new_permission_fills": [
+        {
+          "market_time": "09:52:47",
+          "side": "buy",
+          "price": 135.646,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 350.0
+        },
+        {
+          "market_time": "09:52:53",
+          "side": "buy",
+          "price": 135.646,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 700.0
+        },
+        {
+          "market_time": "09:52:59",
+          "side": "buy",
+          "price": 135.645,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1000.0
+        }
+      ],
+      "new_permission_order_count": 8,
+      "new_permission_orders": [
+        {
+          "id": 134,
+          "created_market_time": "09:50:35",
+          "updated_market_time": "09:50:56",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 135.238,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 137,
+          "created_market_time": "09:50:56",
+          "updated_market_time": "09:50:59",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 135.373,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 139,
+          "created_market_time": "09:50:59",
+          "updated_market_time": "09:51:38",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 135.374,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 145,
+          "created_market_time": "09:51:38",
+          "updated_market_time": "09:51:41",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 135.509,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 146,
+          "created_market_time": "09:51:41",
+          "updated_market_time": "09:52:35",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 135.51,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 147,
+          "created_market_time": "09:52:35",
+          "updated_market_time": "09:52:38",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 135.645,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 148,
+          "created_market_time": "09:52:38",
+          "updated_market_time": "09:52:56",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 135.646,
+          "quantity": 1000.0,
+          "filled_quantity": 700.0,
+          "cancel_reason": "maker_reprice",
+          "fills": [
+            {
+              "market_time": "09:52:47",
+              "side": "buy",
+              "price": 135.646,
+              "quantity_bonds": 350.0,
+              "fill_reason": "passive_buy",
+              "inventory_after_bonds": 350.0
+            },
+            {
+              "market_time": "09:52:53",
+              "side": "buy",
+              "price": 135.646,
+              "quantity_bonds": 350.0,
+              "fill_reason": "passive_buy",
+              "inventory_after_bonds": 700.0
+            }
+          ]
+        },
+        {
+          "id": 156,
+          "created_market_time": "09:52:56",
+          "updated_market_time": "09:52:59",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "filled",
+          "limit_price": 135.645,
+          "quantity": 300.0,
+          "filled_quantity": 300.0,
+          "cancel_reason": null,
+          "fills": [
+            {
+              "market_time": "09:52:59",
+              "side": "buy",
+              "price": 135.645,
+              "quantity_bonds": 300.0,
+              "fill_reason": "passive_buy",
+              "inventory_after_bonds": 1000.0
+            }
+          ]
+        }
+      ],
+      "fill_paths_identical": false,
+      "queue_branch_identical": true,
+      "windfall_branch_identical": true,
+      "parent_fills": [
+        {
+          "market_time": "09:50:35",
+          "side": "sell",
+          "price": 135.995,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 0.0
+        },
+        {
+          "market_time": "09:53:23",
+          "side": "buy",
+          "price": 135.382,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 350.0
+        },
+        {
+          "market_time": "10:00:05",
+          "side": "buy",
+          "price": 135.402,
+          "quantity_bonds": 650.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:12:05",
+          "side": "buy",
+          "price": 135.152,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:12:50",
+          "side": "sell",
+          "price": 135.695,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:15:02",
+          "side": "buy",
+          "price": 135.288,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:15:47",
+          "side": "sell",
+          "price": 135.478,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:16:17",
+          "side": "buy",
+          "price": 135.152,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1350.0
+        },
+        {
+          "market_time": "10:17:08",
+          "side": "buy",
+          "price": 135.152,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1700.0
+        },
+        {
+          "market_time": "10:17:59",
+          "side": "buy",
+          "price": 135.152,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:19:35",
+          "side": "sell",
+          "price": 135.468,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1650.0
+        },
+        {
+          "market_time": "10:19:35",
+          "side": "sell",
+          "price": 135.468,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1300.0
+        },
+        {
+          "market_time": "10:19:35",
+          "side": "sell",
+          "price": 135.468,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:24:17",
+          "side": "buy",
+          "price": 135.302,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1350.0
+        },
+        {
+          "market_time": "10:24:41",
+          "side": "buy",
+          "price": 135.302,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1700.0
+        },
+        {
+          "market_time": "10:25:08",
+          "side": "buy",
+          "price": 135.302,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:34:05",
+          "side": "sell",
+          "price": 135.748,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1650.0
+        },
+        {
+          "market_time": "10:34:05",
+          "side": "sell",
+          "price": 135.748,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1300.0
+        },
+        {
+          "market_time": "10:34:05",
+          "side": "sell",
+          "price": 135.748,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:35:26",
+          "side": "buy",
+          "price": 135.303,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:38:56",
+          "side": "sell",
+          "price": 135.748,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:50:56",
+          "side": "buy",
+          "price": 135.305,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1350.0
+        },
+        {
+          "market_time": "10:52:08",
+          "side": "sell",
+          "price": 135.548,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:57:14",
+          "side": "buy",
+          "price": 135.443,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:57:32",
+          "side": "sell",
+          "price": 135.698,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:58:17",
+          "side": "buy",
+          "price": 135.332,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1350.0
+        },
+        {
+          "market_time": "11:20:59",
+          "side": "buy",
+          "price": 135.003,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1700.0
+        },
+        {
+          "market_time": "11:25:38",
+          "side": "buy",
+          "price": 134.012,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "11:25:47",
+          "side": "sell",
+          "price": 134.618,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1700.0
+        },
+        {
+          "market_time": "11:28:14",
+          "side": "sell",
+          "price": 135.293,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1350.0
+        },
+        {
+          "market_time": "13:00:02",
+          "side": "buy",
+          "price": 135.289,
+          "quantity_bonds": 650.0,
+          "fill_reason": "active_deep_discount",
+          "inventory_after_bonds": 2000.0
+        }
+      ],
+      "candidate_fills": [
+        {
+          "market_time": "09:50:35",
+          "side": "sell",
+          "price": 135.995,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 0.0
+        },
+        {
+          "market_time": "09:52:47",
+          "side": "buy",
+          "price": 135.646,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 350.0
+        },
+        {
+          "market_time": "09:52:53",
+          "side": "buy",
+          "price": 135.646,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 700.0
+        },
+        {
+          "market_time": "09:52:59",
+          "side": "buy",
+          "price": 135.645,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:12:05",
+          "side": "buy",
+          "price": 135.152,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:12:50",
+          "side": "sell",
+          "price": 135.695,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:15:02",
+          "side": "buy",
+          "price": 135.288,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:15:47",
+          "side": "sell",
+          "price": 135.478,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:16:17",
+          "side": "buy",
+          "price": 135.152,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1350.0
+        },
+        {
+          "market_time": "10:17:08",
+          "side": "buy",
+          "price": 135.152,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1700.0
+        },
+        {
+          "market_time": "10:17:59",
+          "side": "buy",
+          "price": 135.152,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:19:35",
+          "side": "sell",
+          "price": 135.468,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1650.0
+        },
+        {
+          "market_time": "10:19:35",
+          "side": "sell",
+          "price": 135.468,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1300.0
+        },
+        {
+          "market_time": "10:19:35",
+          "side": "sell",
+          "price": 135.468,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:24:17",
+          "side": "buy",
+          "price": 135.302,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1350.0
+        },
+        {
+          "market_time": "10:24:41",
+          "side": "buy",
+          "price": 135.302,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1700.0
+        },
+        {
+          "market_time": "10:25:08",
+          "side": "buy",
+          "price": 135.302,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:34:05",
+          "side": "sell",
+          "price": 135.748,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1650.0
+        },
+        {
+          "market_time": "10:34:05",
+          "side": "sell",
+          "price": 135.748,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1300.0
+        },
+        {
+          "market_time": "10:34:05",
+          "side": "sell",
+          "price": 135.748,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:35:26",
+          "side": "buy",
+          "price": 135.303,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:38:56",
+          "side": "sell",
+          "price": 135.748,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:50:56",
+          "side": "buy",
+          "price": 135.305,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1350.0
+        },
+        {
+          "market_time": "10:52:08",
+          "side": "sell",
+          "price": 135.548,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:57:14",
+          "side": "buy",
+          "price": 135.443,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "10:57:32",
+          "side": "sell",
+          "price": 135.698,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:58:17",
+          "side": "buy",
+          "price": 135.332,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1350.0
+        },
+        {
+          "market_time": "11:20:59",
+          "side": "buy",
+          "price": 135.003,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1700.0
+        },
+        {
+          "market_time": "11:25:38",
+          "side": "buy",
+          "price": 134.012,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "11:25:47",
+          "side": "sell",
+          "price": 134.618,
+          "quantity_bonds": 300.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1700.0
+        },
+        {
+          "market_time": "11:28:14",
+          "side": "sell",
+          "price": 135.293,
+          "quantity_bonds": 350.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1350.0
+        },
+        {
+          "market_time": "13:00:02",
+          "side": "buy",
+          "price": 135.289,
+          "quantity_bonds": 650.0,
+          "fill_reason": "active_deep_discount",
+          "inventory_after_bonds": 2000.0
+        }
+      ]
+    },
+    {
+      "market_date": "2026-08-17",
+      "bond_code": "132024.SH",
+      "parent_model_id": "maker_priority_v1_37_candidate",
+      "candidate_model_id": "maker_priority_v1_41_candidate",
+      "parent_trading_pnl": 1875.820000000007,
+      "candidate_trading_pnl": 2263.820000000036,
+      "trading_pnl_delta": 388.0000000000291,
+      "parent_terminal_inventory": 0.0,
+      "candidate_terminal_inventory": 1000.0,
+      "parent_customer_base_short_bonds": 1000.0,
+      "candidate_customer_base_short_bonds": 0.0,
+      "parent_path_bounds": {
+        "minimum_inventory_bonds": 0.0,
+        "maximum_inventory_bonds": 2000.0,
+        "minimum_cash_cny": 636.1599999999853,
+        "derived_terminal_cash_cny": 276165.82
+      },
+      "candidate_path_bounds": {
+        "minimum_inventory_bonds": 0.0,
+        "maximum_inventory_bonds": 2000.0,
+        "minimum_cash_cny": 636.1599999999853,
+        "derived_terminal_cash_cny": 139063.82000000004
+      },
+      "customer_base_short_path_identical": false,
+      "parent_customer_base_short_metrics": {
+        "episodes": 2,
+        "completed_episodes": 1,
+        "total_exposure_seconds": 858,
+        "maximum_episode_seconds": 840,
+        "open_at_close": true,
+        "open_episode_seconds_to_15_00": 840
+      },
+      "candidate_customer_base_short_metrics": {
+        "episodes": 2,
+        "completed_episodes": 2,
+        "total_exposure_seconds": 228,
+        "maximum_episode_seconds": 210,
+        "open_at_close": false,
+        "open_episode_seconds_to_15_00": 0
+      },
+      "parent_fill_count": 39,
+      "candidate_fill_count": 42,
+      "parent_order_count": 463,
+      "candidate_order_count": 513,
+      "new_permission_fill_count": 4,
+      "new_permission_fills": [
+        {
+          "market_time": "13:03:15",
+          "side": "buy",
+          "price": 136.122,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:47:57",
+          "side": "buy",
+          "price": 137.102,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 180.0
+        },
+        {
+          "market_time": "14:49:06",
+          "side": "buy",
+          "price": 137.102,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 360.0
+        },
+        {
+          "market_time": "14:49:30",
+          "side": "buy",
+          "price": 137.102,
+          "quantity_bonds": 640.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1000.0
+        }
+      ],
+      "new_permission_order_count": 9,
+      "new_permission_orders": [
+        {
+          "id": 493,
+          "created_market_time": "13:03:06",
+          "updated_market_time": "13:03:15",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "filled",
+          "limit_price": 136.122,
+          "quantity": 1000.0,
+          "filled_quantity": 1000.0,
+          "cancel_reason": null,
+          "fills": [
+            {
+              "market_time": "13:03:15",
+              "side": "buy",
+              "price": 136.122,
+              "quantity_bonds": 1000.0,
+              "fill_reason": "passive_buy",
+              "inventory_after_bonds": 1000.0
+            }
+          ]
+        },
+        {
+          "id": 763,
+          "created_market_time": "14:46:09",
+          "updated_market_time": "14:46:12",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 137.011,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 764,
+          "created_market_time": "14:46:12",
+          "updated_market_time": "14:46:30",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 137.012,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 765,
+          "created_market_time": "14:46:30",
+          "updated_market_time": "14:46:33",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 137.013,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 766,
+          "created_market_time": "14:46:33",
+          "updated_market_time": "14:47:06",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 137.014,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 768,
+          "created_market_time": "14:47:06",
+          "updated_market_time": "14:47:12",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 137.051,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 769,
+          "created_market_time": "14:47:12",
+          "updated_market_time": "14:47:15",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 137.052,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 770,
+          "created_market_time": "14:47:15",
+          "updated_market_time": "14:47:18",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "cancelled",
+          "limit_price": 137.101,
+          "quantity": 1000.0,
+          "filled_quantity": 0.0,
+          "cancel_reason": "maker_reprice",
+          "fills": []
+        },
+        {
+          "id": 771,
+          "created_market_time": "14:47:18",
+          "updated_market_time": "14:49:30",
+          "side": "buy",
+          "kind": "dynamic_customer_base_replenish",
+          "status": "filled",
+          "limit_price": 137.102,
+          "quantity": 1000.0,
+          "filled_quantity": 1000.0,
+          "cancel_reason": null,
+          "fills": [
+            {
+              "market_time": "14:47:57",
+              "side": "buy",
+              "price": 137.102,
+              "quantity_bonds": 180.0,
+              "fill_reason": "passive_buy",
+              "inventory_after_bonds": 180.0
+            },
+            {
+              "market_time": "14:49:06",
+              "side": "buy",
+              "price": 137.102,
+              "quantity_bonds": 180.0,
+              "fill_reason": "passive_buy",
+              "inventory_after_bonds": 360.0
+            },
+            {
+              "market_time": "14:49:30",
+              "side": "buy",
+              "price": 137.102,
+              "quantity_bonds": 640.0,
+              "fill_reason": "passive_buy",
+              "inventory_after_bonds": 1000.0
+            }
+          ]
+        }
+      ],
+      "fill_paths_identical": false,
+      "queue_branch_identical": true,
+      "windfall_branch_identical": true,
+      "parent_fills": [
+        {
+          "market_time": "09:42:54",
+          "side": "buy",
+          "price": 136.612,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "09:48:00",
+          "side": "buy",
+          "price": 136.612,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1360.0
+        },
+        {
+          "market_time": "09:48:42",
+          "side": "buy",
+          "price": 136.612,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1540.0
+        },
+        {
+          "market_time": "09:50:27",
+          "side": "sell",
+          "price": 136.786,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1360.0
+        },
+        {
+          "market_time": "09:50:27",
+          "side": "sell",
+          "price": 136.786,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "09:50:27",
+          "side": "sell",
+          "price": 136.786,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:12:42",
+          "side": "buy",
+          "price": 136.212,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "10:15:42",
+          "side": "buy",
+          "price": 136.302,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1360.0
+        },
+        {
+          "market_time": "10:16:09",
+          "side": "buy",
+          "price": 136.302,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1540.0
+        },
+        {
+          "market_time": "10:16:18",
+          "side": "buy",
+          "price": 136.302,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1720.0
+        },
+        {
+          "market_time": "10:17:09",
+          "side": "buy",
+          "price": 136.202,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1900.0
+        },
+        {
+          "market_time": "10:18:00",
+          "side": "buy",
+          "price": 136.202,
+          "quantity_bonds": 100.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1820.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1640.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1460.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1280.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1100.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 100.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "11:29:00",
+          "side": "buy",
+          "price": 136.103,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "13:02:45",
+          "side": "sell",
+          "price": 136.128,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "13:02:57",
+          "side": "sell",
+          "price": 136.439,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 0.0
+        },
+        {
+          "market_time": "13:03:15",
+          "side": "buy",
+          "price": 136.122,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "13:24:36",
+          "side": "buy",
+          "price": 136.101,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "13:54:06",
+          "side": "sell",
+          "price": 136.335,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:14:15",
+          "side": "buy",
+          "price": 136.202,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "14:24:06",
+          "side": "sell",
+          "price": 136.808,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:30:06",
+          "side": "buy",
+          "price": 136.252,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "14:30:24",
+          "side": "sell",
+          "price": 136.494,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:30:57",
+          "side": "buy",
+          "price": 136.302,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "14:31:27",
+          "side": "sell",
+          "price": 136.797,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:33:42",
+          "side": "buy",
+          "price": 136.602,
+          "quantity_bonds": 620.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1620.0
+        },
+        {
+          "market_time": "14:33:54",
+          "side": "buy",
+          "price": 136.602,
+          "quantity_bonds": 200.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1820.0
+        },
+        {
+          "market_time": "14:37:30",
+          "side": "sell",
+          "price": 136.996,
+          "quantity_bonds": 620.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1200.0
+        },
+        {
+          "market_time": "14:37:30",
+          "side": "sell",
+          "price": 136.996,
+          "quantity_bonds": 200.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:40:39",
+          "side": "buy",
+          "price": 136.552,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "14:41:12",
+          "side": "sell",
+          "price": 136.8,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:42:15",
+          "side": "buy",
+          "price": 136.702,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "14:44:00",
+          "side": "sell",
+          "price": 136.998,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:46:00",
+          "side": "sell",
+          "price": 137.298,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 0.0
+        }
+      ],
+      "candidate_fills": [
+        {
+          "market_time": "09:42:54",
+          "side": "buy",
+          "price": 136.612,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "09:48:00",
+          "side": "buy",
+          "price": 136.612,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1360.0
+        },
+        {
+          "market_time": "09:48:42",
+          "side": "buy",
+          "price": 136.612,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1540.0
+        },
+        {
+          "market_time": "09:50:27",
+          "side": "sell",
+          "price": 136.786,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1360.0
+        },
+        {
+          "market_time": "09:50:27",
+          "side": "sell",
+          "price": 136.786,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "09:50:27",
+          "side": "sell",
+          "price": 136.786,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "10:12:42",
+          "side": "buy",
+          "price": 136.212,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "10:15:42",
+          "side": "buy",
+          "price": 136.302,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1360.0
+        },
+        {
+          "market_time": "10:16:09",
+          "side": "buy",
+          "price": 136.302,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1540.0
+        },
+        {
+          "market_time": "10:16:18",
+          "side": "buy",
+          "price": 136.302,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1720.0
+        },
+        {
+          "market_time": "10:17:09",
+          "side": "buy",
+          "price": 136.202,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1900.0
+        },
+        {
+          "market_time": "10:18:00",
+          "side": "buy",
+          "price": 136.202,
+          "quantity_bonds": 100.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1820.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1640.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1460.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1280.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1100.0
+        },
+        {
+          "market_time": "11:28:39",
+          "side": "sell",
+          "price": 136.496,
+          "quantity_bonds": 100.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "11:29:00",
+          "side": "buy",
+          "price": 136.103,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "13:02:45",
+          "side": "sell",
+          "price": 136.128,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "13:02:57",
+          "side": "sell",
+          "price": 136.439,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 0.0
+        },
+        {
+          "market_time": "13:03:15",
+          "side": "buy",
+          "price": 136.122,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "13:24:36",
+          "side": "buy",
+          "price": 136.101,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "13:54:06",
+          "side": "sell",
+          "price": 136.335,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:14:15",
+          "side": "buy",
+          "price": 136.202,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 2000.0
+        },
+        {
+          "market_time": "14:24:06",
+          "side": "sell",
+          "price": 136.808,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:30:06",
+          "side": "buy",
+          "price": 136.252,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "14:30:24",
+          "side": "sell",
+          "price": 136.494,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:30:57",
+          "side": "buy",
+          "price": 136.302,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "14:31:27",
+          "side": "sell",
+          "price": 136.797,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:33:42",
+          "side": "buy",
+          "price": 136.602,
+          "quantity_bonds": 620.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1620.0
+        },
+        {
+          "market_time": "14:33:54",
+          "side": "buy",
+          "price": 136.602,
+          "quantity_bonds": 200.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1820.0
+        },
+        {
+          "market_time": "14:37:30",
+          "side": "sell",
+          "price": 136.996,
+          "quantity_bonds": 620.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1200.0
+        },
+        {
+          "market_time": "14:37:30",
+          "side": "sell",
+          "price": 136.996,
+          "quantity_bonds": 200.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:40:39",
+          "side": "buy",
+          "price": 136.552,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "14:41:12",
+          "side": "sell",
+          "price": 136.8,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:42:15",
+          "side": "buy",
+          "price": 136.702,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1180.0
+        },
+        {
+          "market_time": "14:44:00",
+          "side": "sell",
+          "price": 136.998,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 1000.0
+        },
+        {
+          "market_time": "14:46:00",
+          "side": "sell",
+          "price": 137.298,
+          "quantity_bonds": 1000.0,
+          "fill_reason": "passive_sell",
+          "inventory_after_bonds": 0.0
+        },
+        {
+          "market_time": "14:47:57",
+          "side": "buy",
+          "price": 137.102,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 180.0
+        },
+        {
+          "market_time": "14:49:06",
+          "side": "buy",
+          "price": 137.102,
+          "quantity_bonds": 180.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 360.0
+        },
+        {
+          "market_time": "14:49:30",
+          "side": "buy",
+          "price": 137.102,
+          "quantity_bonds": 640.0,
+          "fill_reason": "passive_buy",
+          "inventory_after_bonds": 1000.0
+        }
+      ]
+    }
+  ]
+}

@@ -12,6 +12,12 @@ class ConfigError(ValueError):
     pass
 
 
+DEFAULT_MAKER_UNDERLYING_STOCK_CODES = {
+    "132026.SH": "600900.SH",
+    "132024.SH": "600362.SH",
+}
+
+
 @dataclass(frozen=True)
 class ConversionPrice:
     effective_date: date
@@ -23,10 +29,11 @@ class QmtConfig:
     port: int = 58611
     bond_code: str = "132026.SH"
     stock_code: str = "600900.SH"
-    watch_codes: tuple[str, ...] = ("132024.SH",)
+    watch_codes: tuple[str, ...] = ("132024.SH", "600362.SH")
     instrument_names: dict[str, str] = field(default_factory=lambda: {
         "132026.SH": "G三峡EB2",
         "132024.SH": "26江铜EB",
+        "600362.SH": "江西铜业",
     })
     callback_queue_size: int = 100_000
     stale_after_seconds: float = 3.0
@@ -87,14 +94,19 @@ class MakerPaperConfig:
 
     enabled: bool = False
     bond_codes: tuple[str, ...] = ()
+    underlying_stock_codes: dict[str, str] = field(default_factory=lambda: dict(
+        DEFAULT_MAKER_UNDERLYING_STOCK_CODES
+    ))
     initial_inventory_bonds: float = 1_000.0
+    additional_buying_capacity_bonds: float = 1_000.0
     maximum_inventory_bonds: float = 2_000.0
     initial_cash_cny: float = 136_800.0
     order_quantity_bonds: float = 1_000.0
     price_tick: float = 0.001
     fill_modes: tuple[str, ...] = ("priority", "queue")
+    realtime_comparison_model_ids: tuple[str, ...] = ()
     earliest_entry: str = "09:30:00.000"
-    latest_entry: str = "14:56:30.000"
+    latest_entry: str = "15:29:59.999"
     super_windfall_enabled: bool = False
     super_windfall_quantity_bonds: float = 10.0
     super_windfall_credit_cny: float = 2_000.0
@@ -162,6 +174,7 @@ def load_config(path: str | Path = "config.toml") -> AppConfig:
     instrument_names_data = qmt_data.get("instrument_names", {
         "132026.SH": "G三峡EB2",
         "132024.SH": "26江铜EB",
+        "600362.SH": "江西铜业",
     })
     if not isinstance(instrument_names_data, dict):
         raise ConfigError("qmt.instrument_names must be a TOML table")
@@ -170,7 +183,9 @@ def load_config(path: str | Path = "config.toml") -> AppConfig:
         port=int(qmt_data.get("port", 58611)),
         bond_code=str(qmt_data.get("bond_code", "132026.SH")),
         stock_code=str(qmt_data.get("stock_code", "600900.SH")),
-        watch_codes=tuple(str(item) for item in qmt_data.get("watch_codes", ["132024.SH"])),
+        watch_codes=tuple(str(item) for item in qmt_data.get(
+            "watch_codes", ["132024.SH", "600362.SH"]
+        )),
         instrument_names={
             str(code): str(name) for code, name in instrument_names_data.items()
         },
@@ -216,13 +231,39 @@ def load_config(path: str | Path = "config.toml") -> AppConfig:
             "fill_modes", ["optimistic", "queue", "conservative"]
         )),
     )
+    maker_bond_codes = tuple(str(item) for item in maker_paper_data.get(
+        "bond_codes", [qmt.bond_code]
+    ))
+    underlying_stock_codes_data = maker_paper_data.get(
+        "underlying_stock_codes"
+    )
+    if underlying_stock_codes_data is None:
+        underlying_stock_codes = {
+            code: (
+                qmt.stock_code if code == qmt.bond_code
+                else DEFAULT_MAKER_UNDERLYING_STOCK_CODES.get(code, "")
+            )
+            for code in maker_bond_codes
+        }
+    elif not isinstance(underlying_stock_codes_data, dict):
+        raise ConfigError(
+            "maker_paper.underlying_stock_codes must be a TOML table"
+        )
+    else:
+        underlying_stock_codes = {
+            str(code): str(stock_code)
+            for code, stock_code in underlying_stock_codes_data.items()
+        }
+
     maker_paper = MakerPaperConfig(
         enabled=bool(maker_paper_data.get("enabled", False)),
-        bond_codes=tuple(str(item) for item in maker_paper_data.get(
-            "bond_codes", [qmt.bond_code]
-        )),
+        bond_codes=maker_bond_codes,
+        underlying_stock_codes=underlying_stock_codes,
         initial_inventory_bonds=float(maker_paper_data.get(
             "initial_inventory_bonds", 1_000.0
+        )),
+        additional_buying_capacity_bonds=float(maker_paper_data.get(
+            "additional_buying_capacity_bonds", 1_000.0
         )),
         maximum_inventory_bonds=float(maker_paper_data.get(
             "maximum_inventory_bonds", 2_000.0
@@ -237,11 +278,16 @@ def load_config(path: str | Path = "config.toml") -> AppConfig:
         fill_modes=tuple(str(item).lower() for item in maker_paper_data.get(
             "fill_modes", ["priority", "queue"]
         )),
+        realtime_comparison_model_ids=tuple(
+            str(item) for item in maker_paper_data.get(
+                "realtime_comparison_model_ids", []
+            )
+        ),
         earliest_entry=str(maker_paper_data.get(
             "earliest_entry", "09:30:00.000"
         )),
         latest_entry=str(maker_paper_data.get(
-            "latest_entry", "14:56:30.000"
+            "latest_entry", "15:29:59.999"
         )),
         super_windfall_enabled=bool(maker_paper_data.get(
             "super_windfall_enabled", False
@@ -287,6 +333,7 @@ def _validate(
         raise ConfigError("paper.fill_modes contains an unknown mode")
     maker_values = (
         maker_paper.initial_inventory_bonds,
+        maker_paper.additional_buying_capacity_bonds,
         maker_paper.maximum_inventory_bonds,
         maker_paper.initial_cash_cny,
         maker_paper.order_quantity_bonds,
@@ -296,20 +343,76 @@ def _validate(
         raise ConfigError("maker_paper inventory, cash, quantity and price_tick must be positive")
     if maker_paper.initial_inventory_bonds > maker_paper.maximum_inventory_bonds:
         raise ConfigError("maker_paper initial inventory cannot exceed maximum inventory")
+    expected_maximum = (
+        maker_paper.initial_inventory_bonds
+        + maker_paper.additional_buying_capacity_bonds
+    )
+    if abs(maker_paper.maximum_inventory_bonds - expected_maximum) > 1e-9:
+        raise ConfigError(
+            "maker_paper.maximum_inventory_bonds must equal "
+            "initial_inventory_bonds + additional_buying_capacity_bonds"
+        )
     if any(value % 10 != 0 for value in (
         maker_paper.initial_inventory_bonds,
+        maker_paper.additional_buying_capacity_bonds,
         maker_paper.maximum_inventory_bonds,
         maker_paper.order_quantity_bonds,
     )):
         raise ConfigError("maker_paper bond quantities must be multiples of 10")
     if not maker_paper.fill_modes or not set(maker_paper.fill_modes).issubset({"priority", "queue"}):
         raise ConfigError("maker_paper.fill_modes may only contain priority/queue")
+    supported_realtime_comparison_models = {
+        "maker_priority_v1_37_candidate",
+        "maker_priority_v1_42_candidate",
+        "maker_priority_v1_43_candidate",
+        "maker_queue_v1_13_candidate",
+        "maker_queue_v1_17_candidate",
+    }
+    comparison_models = maker_paper.realtime_comparison_model_ids
+    if len(set(comparison_models)) != len(comparison_models):
+        raise ConfigError(
+            "maker_paper.realtime_comparison_model_ids cannot contain duplicates"
+        )
+    unknown_comparison_models = (
+        set(comparison_models) - supported_realtime_comparison_models
+    )
+    if unknown_comparison_models:
+        raise ConfigError(
+            "maker_paper.realtime_comparison_model_ids contains unsupported "
+            f"models: {sorted(unknown_comparison_models)}"
+        )
     maker_bond_codes = maker_paper.bond_codes or (qmt.bond_code,)
     if any(not code for code in maker_bond_codes):
         raise ConfigError("maker_paper.bond_codes cannot contain blank codes")
     if len(set(maker_bond_codes)) != len(maker_bond_codes):
         raise ConfigError("maker_paper.bond_codes cannot contain duplicates")
-    recorded_codes = {qmt.bond_code, *qmt.watch_codes}
+    underlying_stock_codes = maker_paper.underlying_stock_codes
+    if any(
+        not bond_code or not stock_code
+        for bond_code, stock_code in underlying_stock_codes.items()
+    ):
+        raise ConfigError(
+            "maker_paper.underlying_stock_codes cannot contain blank codes"
+        )
+    missing_underlying_mappings = (
+        set(maker_bond_codes) - set(underlying_stock_codes)
+    )
+    if missing_underlying_mappings:
+        raise ConfigError(
+            "maker_paper.underlying_stock_codes must map every maker bond: "
+            f"{sorted(missing_underlying_mappings)}"
+        )
+    if underlying_stock_codes.get(qmt.bond_code) != qmt.stock_code:
+        raise ConfigError(
+            "the primary maker bond must map to qmt.stock_code"
+        )
+    if set(underlying_stock_codes.values()) & set(maker_bond_codes):
+        raise ConfigError(
+            "maker_paper underlying stock codes cannot be maker bond codes"
+        )
+    recorded_codes = {
+        qmt.bond_code, qmt.stock_code, *qmt.watch_codes,
+    }
     missing_codes = set(maker_bond_codes) - recorded_codes
     if missing_codes:
         raise ConfigError(
@@ -318,6 +421,15 @@ def _validate(
         )
     if qmt.stock_code in maker_bond_codes:
         raise ConfigError("maker_paper.bond_codes cannot include qmt.stock_code")
+    missing_stock_codes = (
+        {underlying_stock_codes[code] for code in maker_bond_codes}
+        - recorded_codes
+    )
+    if missing_stock_codes:
+        raise ConfigError(
+            "maker_paper underlying stocks must be included in qmt.stock_code "
+            f"or qmt.watch_codes: {sorted(missing_stock_codes)}"
+        )
     if maker_paper.earliest_entry >= maker_paper.latest_entry:
         raise ConfigError("maker_paper entry window is invalid")
     if (
@@ -330,3 +442,14 @@ def _validate(
             "of 10 bonds and credit must be positive"
         )
     storage.database.parent.mkdir(parents=True, exist_ok=True)
+
+
+def maker_underlying_stock_code(config: AppConfig, bond_code: str) -> str:
+    """Return the causally paired stock for one maker bond."""
+
+    try:
+        return config.maker_paper.underlying_stock_codes[bond_code]
+    except KeyError as exc:
+        raise ConfigError(
+            f"No maker_paper underlying stock configured for {bond_code}"
+        ) from exc

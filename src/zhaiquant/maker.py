@@ -35,6 +35,8 @@ class MakerParameters:
     minimum_distinct_active_improvement: float = 0.05
     large_wall_multiple: float = 5.0
     book_safety_distance: float = 0.20
+    maximum_downtrend_wall_entry_premium: float = 0.10
+    maximum_downtrend_wall_anchor_gap: float = 0.30
     book_reference_window_seconds: int = 60
     minimum_book_reference_seconds: int = 15
     maximum_book_midpoint_range: float = 0.15
@@ -77,7 +79,7 @@ class MakerParameters:
     maximum_stock_drop_5m: float = 0.003
     outcome_horizon_seconds: int = 600
     earliest_entry_time: str = "09:30:00.000"
-    latest_entry_time: str = "14:56:30.000"
+    latest_entry_time: str = "15:29:59.999"
 
 
 @dataclass(frozen=True)
@@ -330,6 +332,8 @@ class MakerAnalyzer:
         self.book_quotes: deque[BookQuote] = deque()
         self.stock_prices: deque[tuple[int, float]] = deque()
         self.ask_walls: dict[float, AskWall] = {}
+        self.last_visible_asks: dict[float, float] = {}
+        self.last_visible_asks_ts_ms = 0
         self.opportunities: list[Opportunity] = []
         self.anchor_observations = 0
         self.last_anchor: AnchorState | None = None
@@ -399,6 +403,10 @@ class MakerAnalyzer:
     def _update_ask_walls(self, tick: ReplayTick) -> list[Opportunity]:
         parameters = self.parameters
         visible = {round(price, 6): bonds for price, bonds in tick.asks if price > 0}
+        previous_visible = self.last_visible_asks
+        previous_visible_ts_ms = self.last_visible_asks_ts_ms
+        self.last_visible_asks = visible
+        self.last_visible_asks_ts_ms = tick.market_ts_ms
         trade_price = round(tick.last_price, 6)
         if tick.trade_bonds > 0 and tick.inferred_side == "buy":
             wall = self.ask_walls.get(trade_price)
@@ -462,6 +470,31 @@ class MakerAnalyzer:
                 if abs(visible_price - price)
                     <= parameters.price_cluster_width + 1e-9
             )
+            immediate_source_cluster_bonds = sum(
+                bonds for visible_price, bonds in previous_visible.items()
+                if abs(visible_price - price)
+                    <= parameters.price_cluster_width + 1e-9
+            )
+            immediate_frame_buy_bonds = (
+                tick.trade_bonds
+                if tick.inferred_side == "buy"
+                and abs(trade_price - price)
+                    <= parameters.price_cluster_width + 1e-9
+                and 0 < tick.market_ts_ms - previous_visible_ts_ms
+                    <= parameters.sweep_consumption_window_seconds * 1_000
+                else 0.0
+            )
+            immediate_verified_consumed = min(
+                immediate_frame_buy_bonds,
+                max(
+                    0.0,
+                    immediate_source_cluster_bonds - current_cluster_bonds,
+                ),
+            )
+            immediate_consumed_ratio = (
+                immediate_verified_consumed / immediate_source_cluster_bonds
+                if immediate_source_cluster_bonds > 0 else 0.0
+            )
             rapid_cutoff = (
                 tick.market_ts_ms
                 - parameters.sweep_consumption_window_seconds * 1000
@@ -508,6 +541,14 @@ class MakerAnalyzer:
                 parameters.minimum_sweep_source_bonds,
                 parameters.minimum_sweep_source_multiple * planned_quantity,
             )
+            immediate_snapshot_exhaustion = (
+                immediate_source_cluster_bonds + 1e-9 >= minimum_source_wall
+                and immediate_consumed_ratio + 1e-9
+                    >= parameters.minimum_sweep_consumed_ratio
+                and 0 < current_cluster_bonds
+                    <= parameters.maximum_sweep_tail_bonds + 1e-9
+                and jump + 1e-9 >= parameters.minimum_sweep_jump
+            )
             thin_cluster_exhaustion = (
                 source_cluster_bonds + 1e-9
                     >= parameters.minimum_thin_sweep_source_multiple
@@ -542,6 +583,7 @@ class MakerAnalyzer:
                     and jump + 1e-9 >= parameters.minimum_sweep_jump
                 )
                 or thin_cluster_exhaustion
+                or immediate_snapshot_exhaustion
             ):
                 continue
 
@@ -574,6 +616,22 @@ class MakerAnalyzer:
                 continue
             priority_exit = max(price + parameters.price_tick, next_ask - parameters.price_tick)
             quantity = planned_quantity
+            event_source_bonds = (
+                immediate_source_cluster_bonds
+                if immediate_snapshot_exhaustion else source_cluster_bonds
+            )
+            event_consumed_bonds = (
+                immediate_verified_consumed
+                if immediate_snapshot_exhaustion else verified_consumed
+            )
+            event_consumed_ratio = (
+                immediate_consumed_ratio
+                if immediate_snapshot_exhaustion else consumed_ratio
+            )
+            event_consumption_seconds = (
+                (tick.market_ts_ms - previous_visible_ts_ms) / 1_000
+                if immediate_snapshot_exhaustion else consumption_seconds
+            )
             opportunity = Opportunity(
                 kind="sweep_tail",
                 signal_ts_ms=tick.market_ts_ms,
@@ -584,17 +642,21 @@ class MakerAnalyzer:
                 priority_exit_price=priority_exit,
                 theoretical_edge=priority_exit - price,
                 anchor=anchor,
-                source_wall_bonds=source_cluster_bonds,
-                consumed_bonds=verified_consumed,
-                consumed_ratio=consumed_ratio,
-                consumption_seconds=consumption_seconds,
+                source_wall_bonds=event_source_bonds,
+                consumed_bonds=event_consumed_bonds,
+                consumed_ratio=event_consumed_ratio,
+                consumption_seconds=event_consumption_seconds,
                 tail_bonds=current_cluster_bonds,
                 next_ask_price=next_ask,
                 notes=(
                     (
-                        "adjacent_offer_cluster_exhaustion_with_large_jump"
-                        if thin_cluster_exhaustion
-                        else "verified_large_wall_tail_consumption"
+                        "immediate_visible_cluster_tail_consumption"
+                        if immediate_snapshot_exhaustion
+                        else (
+                            "adjacent_offer_cluster_exhaustion_with_large_jump"
+                            if thin_cluster_exhaustion
+                            else "verified_large_wall_tail_consumption"
+                        )
                     ),
                     "active_tail_sweep_uses_current_level1_snapshot",
                     "three_second_snapshots_may_overstate_execution_window",
@@ -1558,14 +1620,27 @@ def _load_ticks(
 ) -> list[ReplayTick]:
     rows = connection.execute(
         """
+        WITH ranked_ticks AS (
+            SELECT r.*,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY r.code,r.market_ts_ms
+                       ORDER BY
+                           CASE WHEN s.status='backfill' THEN 1 ELSE 0 END,
+                           r.received_ts_ns,
+                           r.id
+                   ) AS replay_rank
+            FROM raw_ticks r
+            LEFT JOIN sessions s ON s.run_id=r.run_id
+            WHERE r.market_date=? AND r.code IN (?,?)
+        )
         SELECT r.*,
                COALESCE(c.volume_delta,0) AS volume_delta,
                COALESCE(c.transaction_delta,0) AS transaction_delta_value,
                COALESCE(c.inferred_side,'none') AS inferred_side_value,
                COALESCE(c.side_confidence,'none') AS side_confidence_value
-        FROM raw_ticks r
+        FROM ranked_ticks r
         LEFT JOIN tick_changes c ON c.tick_id=r.id
-        WHERE r.market_date=? AND r.code IN (?,?)
+        WHERE r.replay_rank=1
         ORDER BY r.market_ts_ms,r.received_ts_ns,r.id
         """,
         (market_date, bond_code, stock_code),

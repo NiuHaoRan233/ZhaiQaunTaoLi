@@ -1,13 +1,13 @@
 # Windows换机迁移教程
 
-版本：2026-08-10
+版本：2026-08-21
 
 ## 1. 旧电脑导出
 
 先正常停止实时程序，再创建一致性数据库备份：
 
 ```powershell
-cd C:\Users\Administrator\Desktop\重操旧业
+cd C:\Users\NHR\Desktop\债券套利策略
 powershell -ExecutionPolicy Bypass -File .\scripts\backup_data.ps1
 ```
 
@@ -22,7 +22,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\backup_data.ps1
 
 ## 2. 新电脑准备
 
-1. 安装券商 MiniQMT，登录后开通和确认 `132026.SH`、`132024.SH`、`600900.SH` 行情权限。
+1. 安装券商 MiniQMT，登录后开通和确认 `132026.SH`、`600900.SH`、`132024.SH`、`600362.SH` 行情权限。
 2. 在 MiniQMT 设置中确认行情端口，默认配置为 `58611`。安装路径可以与旧电脑不同。
 3. 如需界面采集逐笔委托和成交明细，安装并登录通达信金融终端。安装盘符和目录可以与旧电脑不同；项目技能会按应用名称和窗口重新发现、校准，不依赖 `D:\TDX`。
 4. 安装 64 位 Python 3.11-3.13 和 Git，并确认 PowerShell 中 `python --version`、`git --version` 可用。
@@ -50,7 +50,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\setup_windows.ps1 -PythonComm
 port = 58611
 bond_code = "132026.SH"
 stock_code = "600900.SH"
-watch_codes = ["132024.SH"]
+watch_codes = ["132024.SH", "600362.SH"]
 
 [storage]
 database = "data/zhaiquant.sqlite3"
@@ -84,7 +84,7 @@ Copy-Item "D:\迁移文件\zhaiquant-20260810-151000.sqlite3" ".\data\zhaiquant.
 - 30秒测试正常结束，`latest_session.status` 为 `completed`，回调丢失数为0。
 - 从仓库根目录打开 Codex 后，技能列表可见 `tdx-cb-market-capture`。首次在新电脑运行时，允许它重新识别通达信安装位置和界面坐标。
 
-盘后运行30秒时可能只有启动快照而没有订阅回调，这是正常现象。最终实时订阅必须在交易时段确认：三个代码的 `count` 和 `last_ts` 持续变化。
+盘后运行30秒时可能只有启动快照而没有订阅回调，这是正常现象。最终实时订阅必须在交易时段确认：四个代码的 `count` 和 `last_ts` 持续变化。
 
 ## 5. 正式切换
 

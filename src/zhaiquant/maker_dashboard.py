@@ -15,6 +15,7 @@ from .types import SHANGHAI
 
 DASHBOARD_REFRESH_START = clock_time(9, 25)
 DASHBOARD_REFRESH_END = clock_time(15, 30)
+DASHBOARD_WIDTH = 96
 
 
 def dashboard_refresh_active(now: datetime) -> bool:
@@ -314,10 +315,12 @@ class MakerDashboardReader:
 
     def __init__(
         self, database: Path, *, stock_code: str = "600900.SH",
+        underlying_stock_codes: dict[str, str] | None = None,
         parameters: MakerParameters | None = None,
     ) -> None:
         self.database = database.resolve()
         self.stock_code = stock_code
+        self.underlying_stock_codes = dict(underlying_stock_codes or {})
         self.parameters = parameters or MakerParameters()
         if not self.database.exists():
             raise RuntimeError(f"数据库不存在: {self.database}")
@@ -356,12 +359,15 @@ class MakerDashboardReader:
             ).fetchone()
             assessment = None
             if include_assessment and market is not None:
+                stock_code = self.underlying_stock_codes.get(
+                    bond_code, self.stock_code,
+                )
                 replay_ticks = _load_ticks(
                     connection, market_date, bond_code,
-                    self.stock_code, self.parameters,
+                    stock_code, self.parameters,
                 )
                 analyzer = MakerAnalyzer(
-                    bond_code, self.stock_code, self.parameters,
+                    bond_code, stock_code, self.parameters,
                 )
                 latest_bond_tick = None
                 for replay_tick in replay_ticks:
@@ -509,78 +515,135 @@ def _confidence_label(value: float | int | None) -> str:
     return "低"
 
 
-def _trader_thinking_lines(snapshot: dict[str, Any]) -> list[str]:
+def _account_orders(
+    snapshot: dict[str, Any], account: dict[str, Any],
+) -> list[dict[str, Any]]:
+    return [
+        order for order in snapshot.get("orders") or []
+        if order["strategy_id"] == account["strategy_id"]
+    ]
+
+
+def _account_order_lines(
+    snapshot: dict[str, Any], account: dict[str, Any],
+) -> list[str]:
+    lines = ["[本模型：当前模拟挂单]"]
+    orders = _account_orders(snapshot, account)
+    if not orders:
+        missing = max(
+            0.0,
+            float(account["initial_inventory"]) - float(account["inventory"]),
+        )
+        if missing > 1e-9:
+            lines.append(
+                f"  无当前挂单；客户底仓缺口 {_quantity(missing)} 张，"
+                "等待本模型重新获得有效回补条件"
+            )
+        else:
+            lines.append("  无当前挂单")
+        return lines
+
+    lines.append("  方向  类型             价格      剩余数量    前方队列    目标价")
+    for order in orders:
+        remaining = float(order["quantity"]) - float(order["filled_quantity"])
+        lines.append(
+            f"  {_pad(SIDE_LABELS.get(order['side'], order['side']), 6)}"
+            f"{_pad(KIND_LABELS.get(order['kind'], order['kind']), 16)}"
+            f"{_pad(_price(order['limit_price']), 10, right=True)}"
+            f"{_pad(_quantity(remaining), 12, right=True)}"
+            f"{_pad(_quantity(order['queue_ahead']), 12, right=True)}"
+            f"{_pad(_price(order['target_price']), 10, right=True)}"
+        )
+    return lines
+
+
+def _trader_thinking_lines(
+    snapshot: dict[str, Any], account: dict[str, Any],
+) -> list[str]:
     assessment = snapshot.get("assessment")
     market = snapshot.get("market")
     lines = [
-        "[交易员思考与应对预案]  因果纸面判断，供复盘纠正，不发送真实委托",
+        "[本模型：交易员思考与应对预案]  "
+        "因果纸面判断，供复盘纠正，不发送真实委托",
+        f"  模型 {account.get('model_id') or '历史未登记'}  "
+        f"执行口径 {_strategy_label(account['strategy_id'], account['fill_mode'])}",
     ]
     if not assessment or not market:
-        lines.append("  暂无足够行情生成合理价和趋势判断")
-        return lines
-
-    score = int(assessment["state_score"])
-    score_text = f"{score:+d}"
-    lines.append(
-        f"  合理定价 {_price(assessment['reference_price'])}  "
-        f"合理区间 {_price(assessment['reference_low'])}—"
-        f"{_price(assessment['reference_high'])}  "
-        f"来源 {REFERENCE_LABELS.get(assessment['reference_source'], assessment['reference_source'])}  "
-        f"参考置信度 {_confidence_label(assessment['reference_confidence'])}"
-    )
-    lines.append(
-        f"  当前状态 {STATE_LABELS.get(assessment['state'], assessment['state'])}  "
-        f"方向评分 {score_text}  "
-        f"状态置信度 {_confidence_label(assessment['state_confidence'])}"
-    )
-    lines.append("  判断依据：")
-    for evidence in assessment.get("evidence") or ["方向证据不足"]:
-        lines.append(f"    - {evidence}")
-
-    accounts = snapshot.get("accounts") or []
-    account = next(
-        (item for item in accounts if item.get("fill_mode") == "priority"),
-        accounts[0] if accounts else None,
-    )
-    if account is not None:
-        difference = (
-            float(account["inventory"]) - float(account["initial_inventory"])
+        lines.append("  共享市场判断：暂无足够行情生成合理价和趋势判断")
+    else:
+        score = int(assessment["state_score"])
+        score_text = f"{score:+d}"
+        lines.append(
+            "  共享市场判断：同一债券行情输入；各模型的库存、委托和执行预案独立"
         )
-        if difference > 1e-9:
+        lines.append(
+            f"  合理定价 {_price(assessment['reference_price'])}  "
+            f"合理区间 {_price(assessment['reference_low'])}—"
+            f"{_price(assessment['reference_high'])}  "
+            f"来源 {REFERENCE_LABELS.get(assessment['reference_source'], assessment['reference_source'])}  "
+            f"参考置信度 {_confidence_label(assessment['reference_confidence'])}"
+        )
+        lines.append(
+            f"  当前状态 {STATE_LABELS.get(assessment['state'], assessment['state'])}  "
+            f"方向评分 {score_text}  "
+            f"状态置信度 {_confidence_label(assessment['state_confidence'])}"
+        )
+        lines.append("  判断依据：")
+        for evidence in assessment.get("evidence") or ["方向证据不足"]:
+            lines.append(f"    - {evidence}")
+
+    difference = float(account["inventory"]) - float(account["initial_inventory"])
+    if account["fill_mode"] == "windfall":
+        if float(account["inventory"]) > 1e-9:
             inventory_text = (
-                f"已有额外仓{_quantity(difference)}张，优先随当前合理区维护退出"
-            )
-        elif difference < -1e-9:
-            inventory_text = (
-                f"底仓缺口{_quantity(-difference)}张，需要按当前趋势安排回补"
+                f"独立捡漏持仓{_quantity(account['inventory'])}张，"
+                "不与普通做T库存混合"
             )
         else:
-            inventory_text = "底仓持平，仍有现金时可等待下一次低接"
-        lines.append(f"  库存判断：{inventory_text}")
+            inventory_text = "独立捡漏账户空仓，等待五档异常深价"
+    elif difference > 1e-9:
+        inventory_text = (
+            f"已有额外仓{_quantity(difference)}张，优先随当前合理区维护退出"
+        )
+    elif difference < -1e-9:
+        inventory_text = (
+            f"底仓缺口{_quantity(-difference)}张，需要按当前趋势安排回补"
+        )
+    else:
+        inventory_text = "底仓持平，仍有现金时可等待下一次低接"
+    lines.append(f"  本模型库存判断：{inventory_text}")
 
-        account_orders = [
-            order for order in snapshot.get("orders") or []
-            if order["strategy_id"] == account["strategy_id"]
-        ]
-        if account_orders:
-            descriptions = []
-            for order in account_orders:
-                remaining = float(order["quantity"]) - float(order["filled_quantity"])
-                descriptions.append(
-                    f"{SIDE_LABELS.get(order['side'], order['side'])}"
-                    f"{KIND_LABELS.get(order['kind'], order['kind'])}"
-                    f" {_quantity(remaining)}@{_price(order['limit_price'])}"
-                )
-            lines.append("  当前准备：" + "；".join(descriptions))
-        else:
-            lines.append("  当前准备：暂无有效模拟挂单，等待新的价格或趋势证据")
+    account_orders = _account_orders(snapshot, account)
+    if account_orders:
+        descriptions = []
+        for order in account_orders:
+            remaining = float(order["quantity"]) - float(order["filled_quantity"])
+            descriptions.append(
+                f"{SIDE_LABELS.get(order['side'], order['side'])}"
+                f"{KIND_LABELS.get(order['kind'], order['kind'])}"
+                f" {_quantity(remaining)}@{_price(order['limit_price'])}"
+            )
+        lines.append("  本模型当前准备：" + "；".join(descriptions))
+    else:
+        lines.append("  本模型当前准备：暂无有效模拟挂单，等待新的价格或趋势证据")
 
-    windfall_orders = [
-        order for order in snapshot.get("orders") or []
-        if order["strategy_id"].endswith("_super_windfall")
-    ]
-    if windfall_orders:
-        order = windfall_orders[0]
+    if account["fill_mode"] == "priority":
+        lines.append(
+            "  本模型执行特点：改善一厘争取第一顺位；行情或判断变化时动态撤改"
+        )
+    elif account["fill_mode"] == "queue":
+        queued = sum(float(order.get("queue_ahead") or 0.0) for order in account_orders)
+        lines.append(
+            "  本模型执行特点：先消耗真实前方队列，兼顾等待价值与撤改后丢位成本；"
+            f"当前显示前队合计约{_quantity(queued)}张"
+        )
+    else:
+        lines.append(
+            "  本模型执行特点：仅使用独立一手额度预埋异常深档，不参与普通做T"
+        )
+
+    if account["fill_mode"] == "windfall" and account_orders:
+        order = account_orders[0]
         remaining = float(order["quantity"]) - float(order["filled_quantity"])
         lines.append(
             "  超级捡漏：独立额度预埋"
@@ -588,22 +651,27 @@ def _trader_thinking_lines(snapshot: dict[str, Any]) -> list[str]:
             "不占普通做T库存和现金"
         )
 
+    if not assessment or not market:
+        return lines
+
     spread = float(market["ask_price_1"]) - float(market["bid_price_1"])
     state = assessment["state"]
-    if state == "stable":
+    if account["fill_mode"] == "windfall":
+        plan = "忽略普通价差周转，只检查异常深档与独立额度状态"
+    elif state == "stable":
         if spread >= 0.20:
-            plan = "盘口平稳且价差充足，围绕买一承接、卖一退出，持续周转"
+            plan = "盘口平稳且价差充足，按本模型执行口径围绕两侧持续周转"
         else:
             plan = "盘口平稳但价差偏小，减少无效成交，等待空间重新打开"
     elif state == "possible_rise":
-        plan = "提高买入积极度，允许在更新后的合理区补库存，同时防范假突破"
+        plan = "提高买入积极度，按本模型成交假设补库存，同时防范假突破"
     elif state == "rising":
-        plan = "优先保证正确库存；合理区即可买，强势证据连续时不被上一笔盈亏束缚"
+        plan = "优先保证正确库存；强势证据连续时不被上一笔盈亏束缚"
     elif state == "possible_fall":
         plan = "下调合理价假设、减少追买，观察卖压是否继续确认"
     else:
-        plan = "按下降状态处理，降低买入积极度并及时调整额外库存的退出报价"
-    lines.append(f"  当前思路：{plan}")
+        plan = "按下降状态处理，降低买入积极度并调整额外库存退出报价"
+    lines.append(f"  本模型当前思路：{plan}")
 
     if float(assessment.get("largest_ask_gap") or 0.0) >= 0.15:
         upward = (
@@ -618,8 +686,8 @@ def _trader_thinking_lines(snapshot: dict[str, Any]) -> list[str]:
         "若卖一连续下压、低价主动卖出增加或买一后退：下调合理区、取消追价，"
         "按新盘口重新安排退出和低接"
     )
-    lines.append(f"  向上应对：{upward}")
-    lines.append(f"  向下应对：{downward}")
+    lines.append(f"  本模型向上应对：{upward}")
+    lines.append(f"  本模型向下应对：{downward}")
     return lines
 
 
@@ -640,9 +708,15 @@ def render_dashboard(snapshot: dict[str, Any], *, now: datetime | None = None) -
         "[纯模拟 / 只读SQLite / 不发送券商订单]"
     )
 
+    market_clock = market["market_time"][:8] if market else "--:--:--"
     lines = [
+        "",
+        "=" * DASHBOARD_WIDTH,
+        f">>> 新一轮看板刷新  |  系统时间 {now.strftime('%Y-%m-%d %H:%M:%S')}  "
+        f"|  行情时间 {market_clock}  |  {bond_label}",
+        "=" * DASHBOARD_WIDTH,
         title,
-        "=" * 78,
+        "-" * DASHBOARD_WIDTH,
         f"系统时间 {now.strftime('%Y-%m-%d %H:%M:%S')}  "
         f"交易日 {snapshot['market_date']}  状态 {state} ({state_detail})",
     ]
@@ -658,28 +732,47 @@ def render_dashboard(snapshot: dict[str, Any], *, now: datetime | None = None) -
         lines.append(f"债券 {bond_label}  暂无行情")
 
     lines.extend(["", "[五档盘口]  数量单位：张", *_book_lines(market), ""])
-    lines.extend([*_trader_thinking_lines(snapshot), ""])
     if snapshot["accounts"]:
+        standard_accounts = [
+            account for account in snapshot["accounts"]
+            if account["fill_mode"] in {"priority", "queue"}
+        ]
         assumptions = {
             (
                 float(account["initial_inventory"]),
-                float(account["initial_cash"]),
                 float(account["maximum_inventory"]),
             )
-            for account in snapshot["accounts"]
+            for account in standard_accounts
         }
         if len(assumptions) == 1:
-            initial_inventory, initial_cash, maximum_inventory = assumptions.pop()
+            initial_inventory, maximum_inventory = assumptions.pop()
+            additional_capacity = maximum_inventory - initial_inventory
+            funding_bases = [
+                float(account["initial_cash"])
+                for account in standard_accounts
+            ]
             lines.append(
-                "[每日账户假设] "
-                f"每个口径开盘重置为底仓 {_quantity(initial_inventory)} 张 + "
-                f"现金 {initial_cash:,.2f} 元；最大库存 {_quantity(maximum_inventory)} 张"
+                "[每日普通账户假设] "
+                f"客户底仓 {_quantity(initial_inventory)} 张 + "
+                f"额外买入能力 {_quantity(additional_capacity)} 张；"
+                f"最大库存 {_quantity(maximum_inventory)} 张"
             )
+            if funding_bases:
+                minimum_funding = min(funding_bases)
+                maximum_funding = max(funding_bases)
+                funding_text = (
+                    f"{minimum_funding:,.2f} 元"
+                    if abs(maximum_funding - minimum_funding) <= 0.005
+                    else f"{minimum_funding:,.2f}—{maximum_funding:,.2f} 元"
+                )
+                lines.append(
+                    f"  人民币资金基数 {funding_text}；按实际成交需要等额派生，"
+                    "不缩减上述债券张数容量"
+                )
             lines.append("")
         else:
             lines.append(
-                "[每日账户假设] 普通做T账户与超级捡漏独立额度分开核算，"
-                "库存、现金和收益不得合并"
+                "[每日普通账户假设] 账户输入不一致，请核对底仓和额外买入能力"
             )
             lines.append("")
     lines.append("[账户与持仓方向]  盈亏为模型盯市毛收益，未扣费用")
@@ -720,61 +813,17 @@ def render_dashboard(snapshot: dict[str, Any], *, now: datetime | None = None) -
             + action_text
         )
 
-    lines.extend(["", "[当前模拟挂单]"])
-    if not snapshot["orders"]:
-        deficits = [
-            account for account in snapshot["accounts"]
-            if float(account["inventory"]) + 1e-9
-                < float(account["initial_inventory"])
-        ]
-        if deficits:
-            lines.append("  无当前挂单；以下账户正在等待有效盘口或回补时段：")
-            for account in deficits:
-                missing = float(account["initial_inventory"]) - float(account["inventory"])
-                lines.append(
-                    f"  {_strategy_label(account['strategy_id'], account['fill_mode'])} "
-                    f"待回补 {_quantity(missing)} 张"
-                )
-        else:
-            lines.append("  无当前挂单")
-    else:
-        lines.append("  口径       方向  类型       价格      剩余数量    前方队列    目标价")
-        for order in snapshot["orders"]:
-            remaining = float(order["quantity"]) - float(order["filled_quantity"])
-            lines.append(
-                f"  {_pad(_strategy_label(order['strategy_id']), 10)}"
-                f" {_pad(SIDE_LABELS.get(order['side'], order['side']), 5)}"
-                f" {_pad(KIND_LABELS.get(order['kind'], order['kind']), 10)}"
-                f" {_pad(_price(order['limit_price']), 9, right=True)}"
-                f" {_pad(_quantity(remaining), 12, right=True)}"
-                f" {_pad(_quantity(order['queue_ahead']), 11, right=True)}"
-                f" {_pad(_price(order['target_price']), 9, right=True)}"
-            )
-
-    lines.extend(["", "[当前持仓批次]"])
-    if not snapshot["lots"]:
-        lines.append("  无持仓批次")
-    else:
-        lines.append("  口径       批次类型   开仓时间   成本价     剩余数量    目标价")
-        for lot in snapshot["lots"]:
-            lines.append(
-                f"  {_pad(_strategy_label(lot['strategy_id']), 10)}"
-                f" {_pad(KIND_LABELS.get(lot['kind'], lot['kind']), 10)}"
-                f" {_pad(_clock(lot['opened_market_ts_ms']), 10)}"
-                f" {_pad(_price(lot['entry_price']), 10, right=True)}"
-                f" {_pad(_quantity(lot['remaining_quantity']), 12, right=True)}"
-                f" {_pad(_price(lot['target_price']), 9, right=True)}"
-            )
-
     completed_trades, unfinished_trades = build_daily_trades(
         snapshot["fills"], snapshot["accounts"]
     )
     lines.extend([
         "",
-        "=" * 78,
+        "=" * DASHBOARD_WIDTH,
         "[以下模拟账户彼此独立，分开展示，收益不能相加]",
+        "=" * DASHBOARD_WIDTH,
     ])
-    for account in snapshot["accounts"]:
+    account_count = len(snapshot["accounts"])
+    for account_index, account in enumerate(snapshot["accounts"], 1):
         strategy_id = account["strategy_id"]
         account_trades = [
             trade for trade in completed_trades
@@ -798,13 +847,20 @@ def render_dashboard(snapshot: dict[str, Any], *, now: datetime | None = None) -
 
         lines.extend([
             "",
-            "#" * 78,
-            f"模拟账户：{_mode_title(account['fill_mode'])}；"
+            "",
+            "#" * DASHBOARD_WIDTH,
+            f">>> 模型区块 {account_index}/{account_count} 开始  |  "
+            f"{_mode_title(account['fill_mode'])}  |  "
             f"模型 {account.get('model_id') or '历史未登记'}",
+            "#" * DASHBOARD_WIDTH,
             f"今日账户结果：盯市毛收益 {account['trading_pnl']:+,.2f}元；"
             f"完整交易 {len(account_trades)}笔（盈利{wins} / 亏损{losses} / 持平{flats}）；"
             f"闭环毛利润 {closed_pnl:+,.2f}元；"
             f"当前库存 {_quantity(account['inventory'])}张（{_inventory_direction(account)}）",
+            "",
+            *_trader_thinking_lines(snapshot, account),
+            "",
+            *_account_order_lines(snapshot, account),
             "",
             "[本账户：今日完整交易]",
         ])
@@ -867,14 +923,27 @@ def render_dashboard(snapshot: dict[str, Any], *, now: datetime | None = None) -
                     f" {_pad(_quantity(fill['inventory_after']), 12, right=True)}"
                 )
 
+        lines.extend([
+            "",
+            "-" * DASHBOARD_WIDTH,
+            f"<<< 模型区块 {account_index}/{account_count} 结束  |  "
+            f"模型 {account.get('model_id') or '历史未登记'}",
+            "-" * DASHBOARD_WIDTH,
+        ])
+
     session = snapshot.get("session") or {}
     lines.extend([
         "",
-        "-" * 78,
+        "=" * DASHBOARD_WIDTH,
+        f"<<< 本轮刷新结束  |  系统时间 {now.strftime('%Y-%m-%d %H:%M:%S')}  "
+        f"|  行情时间 {market_clock}  |  {bond_label}",
         f"采集进程状态: {session.get('status', '未知')}  "
         f"回调丢失: {session.get('dropped_callbacks', '未知')}  "
         "09:25-15:30内有新成交立即刷新、无成交每分钟刷新；"
         "其余时间休眠。按 Ctrl+C 退出看板（不停止后台采集）。",
+        "=" * DASHBOARD_WIDTH,
+        "",
+        "",
     ])
     return "\n".join(lines)
 
@@ -900,6 +969,7 @@ def run_dashboard(
     market_date: str,
     *,
     stock_code: str = "600900.SH",
+    underlying_stock_codes: dict[str, str] | None = None,
     parameters: MakerParameters | None = None,
     bond_name: str | None = None,
     interval_seconds: float = 60.0,
@@ -914,14 +984,20 @@ def run_dashboard(
         raise RuntimeError("最近成交条数必须大于0")
     _enable_ansi()
     reader = MakerDashboardReader(
-        database, stock_code=stock_code, parameters=parameters,
+        database, stock_code=stock_code,
+        underlying_stock_codes=underlying_stock_codes,
+        parameters=parameters,
     )
+
+    def read_snapshot() -> dict[str, Any]:
+        return reader.snapshot(
+            market_date, bond_code, recent_fills=recent_fills,
+            strategy_ids=strategy_ids,
+        )
+
     try:
         if once:
-            snapshot = reader.snapshot(
-                market_date, bond_code, recent_fills=recent_fills,
-                strategy_ids=strategy_ids,
-            )
+            snapshot = read_snapshot()
             snapshot["bond_name"] = bond_name
             print(render_dashboard(snapshot), flush=True)
             return 0
@@ -965,20 +1041,13 @@ def run_dashboard(
                 or now_monotonic - last_rendered >= interval_seconds
             )
             if should_render:
-                snapshot = reader.snapshot(
-                    market_date, bond_code, recent_fills=recent_fills,
-                    strategy_ids=strategy_ids,
-                )
+                snapshot = read_snapshot()
                 snapshot["bond_name"] = bond_name
                 output = render_dashboard(snapshot)
                 if sys.stdout.isatty():
                     print("\x1b[2J\x1b[H", end="")
                 print(output, flush=True)
                 last_rendered = now_monotonic
-                fills = snapshot["fills"]
-                fill_marker = (
-                    len(fills), int(fills[0]["id"]) if fills else 0
-                )
             last_fill_marker = fill_marker
             # Poll quietly to show a new fill promptly; without a fill the
             # visible console updates only at interval_seconds.

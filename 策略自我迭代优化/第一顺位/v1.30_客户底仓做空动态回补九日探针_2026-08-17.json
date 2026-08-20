@@ -1,0 +1,5199 @@
+{
+  "model_id": "maker_priority_v1_30_candidate",
+  "behavior_changed": false,
+  "source_database_opened_readonly": true,
+  "probe_conditions": {
+    "profitable_visible_bid_minimum_edge": 0.18,
+    "profitable_visible_bid_minimum_bonds": 1000,
+    "rising_tight_ask_maximum_spread": 0.02,
+    "rising_tight_ask_maximum_loss": 0.05,
+    "customer_base_short_only": true
+  },
+  "signal_count": 96,
+  "signals_by_category_date_and_code": {
+    "profitable_visible_bid_018|2026-08-04|132026.SH": 5,
+    "profitable_visible_bid_018|2026-08-04|132024.SH": 8,
+    "rising_tight_ask_loss_le_005|2026-08-04|132024.SH": 1,
+    "profitable_visible_bid_018|2026-08-05|132026.SH": 3,
+    "profitable_visible_bid_018|2026-08-05|132024.SH": 5,
+    "rising_tight_ask_loss_le_005|2026-08-05|132024.SH": 2,
+    "profitable_visible_bid_018|2026-08-06|132026.SH": 3,
+    "profitable_visible_bid_018|2026-08-06|132024.SH": 2,
+    "profitable_visible_bid_018|2026-08-07|132026.SH": 6,
+    "profitable_visible_bid_018|2026-08-07|132024.SH": 10,
+    "rising_tight_ask_loss_le_005|2026-08-07|132024.SH": 4,
+    "profitable_visible_bid_018|2026-08-10|132026.SH": 4,
+    "rising_tight_ask_loss_le_005|2026-08-10|132026.SH": 1,
+    "profitable_visible_bid_018|2026-08-10|132024.SH": 3,
+    "profitable_visible_bid_018|2026-08-11|132026.SH": 3,
+    "rising_tight_ask_loss_le_005|2026-08-11|132026.SH": 1,
+    "profitable_visible_bid_018|2026-08-11|132024.SH": 4,
+    "profitable_visible_bid_018|2026-08-12|132026.SH": 3,
+    "profitable_visible_bid_018|2026-08-12|132024.SH": 1,
+    "profitable_visible_bid_018|2026-08-13|132026.SH": 7,
+    "rising_tight_ask_loss_le_005|2026-08-13|132026.SH": 3,
+    "profitable_visible_bid_018|2026-08-13|132024.SH": 2,
+    "rising_tight_ask_loss_le_005|2026-08-13|132024.SH": 1,
+    "profitable_visible_bid_018|2026-08-14|132026.SH": 6,
+    "rising_tight_ask_loss_le_005|2026-08-14|132026.SH": 1,
+    "profitable_visible_bid_018|2026-08-14|132024.SH": 7
+  },
+  "signals": [
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785807477000,
+      "signal_market_time": "09:37:57.000",
+      "base_short_sale_market_ts_ms": 1785807477000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.097,
+      "bid1": 137.201,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.099,
+      "ask1_bonds": 5000.0,
+      "profit_at_bid": 0.896,
+      "loss_at_ask": 0.002,
+      "reference_price": 137.65,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_fall",
+      "recent_buy_bonds": 2000.0,
+      "recent_sell_bonds": 3140.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 137.202,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785808131000,
+        "price": 136.602,
+        "quantity_bonds": 380.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 654
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 137.201,
+        "maximum_bid1": 137.201,
+        "minimum_ask1": 137.799,
+        "maximum_ask1": 138.0
+      },
+      "future_120s": {
+        "ticks": 31,
+        "minimum_bid1": 137.201,
+        "maximum_bid1": 137.201,
+        "minimum_ask1": 137.597,
+        "maximum_ask1": 138.0
+      },
+      "future_600s": {
+        "ticks": 148,
+        "minimum_bid1": 136.201,
+        "maximum_bid1": 137.401,
+        "minimum_ask1": 137.21,
+        "maximum_ask1": 138.0
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785819633000,
+      "signal_market_time": "13:00:33.000",
+      "base_short_sale_market_ts_ms": 1785819633000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.999,
+      "bid1": 135.79,
+      "bid1_bonds": 6000.0,
+      "ask1": 136.9,
+      "ask1_bonds": 500.0,
+      "profit_at_bid": 1.209,
+      "loss_at_ask": -0.099,
+      "reference_price": 135.816,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "stable",
+      "recent_buy_bonds": 13000.0,
+      "recent_sell_bonds": 14000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785819636000,
+        "price": 135.791,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 3
+      },
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 135.79,
+        "maximum_bid1": 135.801,
+        "minimum_ask1": 136.899,
+        "maximum_ask1": 136.9
+      },
+      "future_120s": {
+        "ticks": 32,
+        "minimum_bid1": 135.79,
+        "maximum_bid1": 135.811,
+        "minimum_ask1": 136.0,
+        "maximum_ask1": 137.899
+      },
+      "future_600s": {
+        "ticks": 159,
+        "minimum_bid1": 135.7,
+        "maximum_bid1": 135.923,
+        "minimum_ask1": 135.702,
+        "maximum_ask1": 137.899
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785819729000,
+      "signal_market_time": "13:02:09.000",
+      "base_short_sale_market_ts_ms": 1785819729000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.598,
+      "bid1": 135.81,
+      "bid1_bonds": 1000.0,
+      "ask1": 136.599,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.788,
+      "loss_at_ask": 0.001,
+      "reference_price": 135.814,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_fall",
+      "recent_buy_bonds": 15000.0,
+      "recent_sell_bonds": 16000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785819765000,
+        "price": 135.812,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 36
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 135.811,
+        "maximum_bid1": 135.811,
+        "minimum_ask1": 136.0,
+        "maximum_ask1": 136.599
+      },
+      "future_120s": {
+        "ticks": 30,
+        "minimum_bid1": 135.8,
+        "maximum_bid1": 135.821,
+        "minimum_ask1": 136.0,
+        "maximum_ask1": 136.599
+      },
+      "future_600s": {
+        "ticks": 150,
+        "minimum_bid1": 135.7,
+        "maximum_bid1": 135.923,
+        "minimum_ask1": 135.702,
+        "maximum_ask1": 136.599
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785822384000,
+      "signal_market_time": "13:46:24.000",
+      "base_short_sale_market_ts_ms": 1785822384000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.899,
+      "bid1": 136.488,
+      "bid1_bonds": 1000.0,
+      "ask1": 136.899,
+      "ask1_bonds": 3000.0,
+      "profit_at_bid": 0.411,
+      "loss_at_ask": 0.0,
+      "reference_price": 135.86,
+      "reference_source": "large_buy_breakout_support",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 6000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785822387000,
+        "price": 136.489,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 3
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 135.721,
+        "maximum_bid1": 135.9,
+        "minimum_ask1": 135.999,
+        "maximum_ask1": 136.897
+      },
+      "future_120s": {
+        "ticks": 32,
+        "minimum_bid1": 135.721,
+        "maximum_bid1": 136.1,
+        "minimum_ask1": 135.999,
+        "maximum_ask1": 136.897
+      },
+      "future_600s": {
+        "ticks": 163,
+        "minimum_bid1": 135.7,
+        "maximum_bid1": 136.46,
+        "minimum_ask1": 135.9,
+        "maximum_ask1": 136.998
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785824250000,
+      "signal_market_time": "14:17:30.000",
+      "base_short_sale_market_ts_ms": 1785824250000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.399,
+      "bid1": 136.003,
+      "bid1_bonds": 1000.0,
+      "ask1": 136.499,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.396,
+      "loss_at_ask": 0.1,
+      "reference_price": 136.2,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 8000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.004,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": null,
+      "future_30s": {
+        "ticks": 5,
+        "minimum_bid1": 136.003,
+        "maximum_bid1": 136.011,
+        "minimum_ask1": 136.35,
+        "maximum_ask1": 136.4
+      },
+      "future_120s": {
+        "ticks": 31,
+        "minimum_bid1": 136.003,
+        "maximum_bid1": 136.107,
+        "minimum_ask1": 136.349,
+        "maximum_ask1": 136.951
+      },
+      "future_600s": {
+        "ticks": 120,
+        "minimum_bid1": 136.003,
+        "maximum_bid1": 137.2,
+        "minimum_ask1": 136.349,
+        "maximum_ask1": 137.899
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785807019000,
+      "signal_market_time": "09:30:19.000",
+      "base_short_sale_market_ts_ms": 1785807013000,
+      "seconds_since_base_short_sale": 6,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.988,
+      "bid1": 135.001,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.98,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 3.987,
+      "loss_at_ask": -0.008,
+      "reference_price": 137.162,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "stable",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785807403000,
+        "price": 137.502,
+        "quantity_bonds": 190.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 384
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 135.001,
+        "maximum_bid1": 135.001,
+        "minimum_ask1": 138.97,
+        "maximum_ask1": 138.979
+      },
+      "future_120s": {
+        "ticks": 19,
+        "minimum_bid1": 135.001,
+        "maximum_bid1": 137.001,
+        "minimum_ask1": 138.499,
+        "maximum_ask1": 138.979
+      },
+      "future_600s": {
+        "ticks": 85,
+        "minimum_bid1": 135.001,
+        "maximum_bid1": 137.501,
+        "minimum_ask1": 136.896,
+        "maximum_ask1": 138.979
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785808378000,
+      "signal_market_time": "09:52:58.000",
+      "base_short_sale_market_ts_ms": 1785808378000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.876,
+      "bid1": 136.101,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.878,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 2.775,
+      "loss_at_ask": 0.002,
+      "reference_price": 137.162,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 2190.0,
+      "recent_sell_bonds": 1190.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.202,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785808633000,
+        "price": 137.452,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 255
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 136.101,
+        "maximum_bid1": 136.201,
+        "minimum_ask1": 137.999,
+        "maximum_ask1": 138.878
+      },
+      "future_120s": {
+        "ticks": 19,
+        "minimum_bid1": 136.101,
+        "maximum_bid1": 136.501,
+        "minimum_ask1": 137.499,
+        "maximum_ask1": 138.878
+      },
+      "future_600s": {
+        "ticks": 82,
+        "minimum_bid1": 136.101,
+        "maximum_bid1": 138.4,
+        "minimum_ask1": 137.499,
+        "maximum_ask1": 138.878
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785808882000,
+      "signal_market_time": "10:01:22.000",
+      "base_short_sale_market_ts_ms": 1785808849000,
+      "seconds_since_base_short_sale": 33,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.698,
+      "bid1": 138.101,
+      "bid1_bonds": 1000.0,
+      "ask1": 138.7,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.597,
+      "loss_at_ask": 0.002,
+      "reference_price": 138.102,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 2950.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 137.504,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785809917000,
+        "price": 137.801,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 1035
+      },
+      "future_30s": {
+        "ticks": 2,
+        "minimum_bid1": 137.503,
+        "maximum_bid1": 138.4,
+        "minimum_ask1": 138.7,
+        "maximum_ask1": 138.7
+      },
+      "future_120s": {
+        "ticks": 5,
+        "minimum_bid1": 137.503,
+        "maximum_bid1": 138.4,
+        "minimum_ask1": 138.7,
+        "maximum_ask1": 138.7
+      },
+      "future_600s": {
+        "ticks": 39,
+        "minimum_bid1": 137.503,
+        "maximum_bid1": 138.593,
+        "minimum_ask1": 138.182,
+        "maximum_ask1": 138.877
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785810331000,
+      "signal_market_time": "10:25:31.000",
+      "base_short_sale_market_ts_ms": 1785810331000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.799,
+      "bid1": 137.504,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.8,
+      "ask1_bonds": 8000.0,
+      "profit_at_bid": 1.295,
+      "loss_at_ask": 0.001,
+      "reference_price": 137.162,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "stable",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785812260000,
+        "price": 137.505,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 1929
+      },
+      "future_30s": {
+        "ticks": 2,
+        "minimum_bid1": 137.504,
+        "maximum_bid1": 137.504,
+        "minimum_ask1": 138.8,
+        "maximum_ask1": 138.8
+      },
+      "future_120s": {
+        "ticks": 5,
+        "minimum_bid1": 137.504,
+        "maximum_bid1": 137.504,
+        "minimum_ask1": 138.8,
+        "maximum_ask1": 138.8
+      },
+      "future_600s": {
+        "ticks": 35,
+        "minimum_bid1": 137.503,
+        "maximum_bid1": 138.001,
+        "minimum_ask1": 138.5,
+        "maximum_ask1": 138.8
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785812275000,
+      "signal_market_time": "10:57:55.000",
+      "base_short_sale_market_ts_ms": 1785812269000,
+      "seconds_since_base_short_sale": 6,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.498,
+      "bid1": 137.504,
+      "bid1_bonds": 1000.0,
+      "ask1": 138.499,
+      "ask1_bonds": 190.0,
+      "profit_at_bid": 0.994,
+      "loss_at_ask": 0.001,
+      "reference_price": 138.001,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "stable",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 137.504,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785812860000,
+        "price": 137.801,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 585
+      },
+      "future_30s": {
+        "ticks": 1,
+        "minimum_bid1": 137.504,
+        "maximum_bid1": 137.504,
+        "minimum_ask1": 138.499,
+        "maximum_ask1": 138.499
+      },
+      "future_120s": {
+        "ticks": 4,
+        "minimum_bid1": 137.504,
+        "maximum_bid1": 137.504,
+        "minimum_ask1": 138.499,
+        "maximum_ask1": 138.499
+      },
+      "future_600s": {
+        "ticks": 29,
+        "minimum_bid1": 137.504,
+        "maximum_bid1": 137.8,
+        "minimum_ask1": 138.498,
+        "maximum_ask1": 138.499
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785812872000,
+      "signal_market_time": "11:07:52.000",
+      "base_short_sale_market_ts_ms": 1785812872000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.497,
+      "bid1": 137.701,
+      "bid1_bonds": 1000.0,
+      "ask1": 138.499,
+      "ask1_bonds": 190.0,
+      "profit_at_bid": 0.796,
+      "loss_at_ask": 0.002,
+      "reference_price": 138.125,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "stable",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785814120000,
+        "price": 137.502,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 1248
+      },
+      "future_30s": {
+        "ticks": 2,
+        "minimum_bid1": 137.8,
+        "maximum_bid1": 137.8,
+        "minimum_ask1": 138.499,
+        "maximum_ask1": 138.499
+      },
+      "future_120s": {
+        "ticks": 13,
+        "minimum_bid1": 137.8,
+        "maximum_bid1": 138.0,
+        "minimum_ask1": 137.806,
+        "maximum_ask1": 138.499
+      },
+      "future_600s": {
+        "ticks": 64,
+        "minimum_bid1": 137.503,
+        "maximum_bid1": 138.05,
+        "minimum_ask1": 137.806,
+        "maximum_ask1": 138.499
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132024.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1785820537000,
+      "signal_market_time": "13:15:37.000",
+      "base_short_sale_market_ts_ms": 1785820537000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.998,
+      "bid1": 137.999,
+      "bid1_bonds": 3620.0,
+      "ask1": 138.0,
+      "ask1_bonds": 4000.0,
+      "profit_at_bid": -0.001,
+      "loss_at_ask": 0.002,
+      "reference_price": 137.162,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 2380.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 135.502,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785820549000,
+        "price": 138.0,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "active_confirmed_rising_base_short_stop",
+        "seconds_after_signal": 12
+      },
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 135.501,
+        "maximum_bid1": 137.999,
+        "minimum_ask1": 137.999,
+        "maximum_ask1": 138.0
+      },
+      "future_120s": {
+        "ticks": 15,
+        "minimum_bid1": 135.501,
+        "maximum_bid1": 137.999,
+        "minimum_ask1": 137.999,
+        "maximum_ask1": 138.0
+      },
+      "future_600s": {
+        "ticks": 41,
+        "minimum_bid1": 135.501,
+        "maximum_bid1": 137.999,
+        "minimum_ask1": 137.999,
+        "maximum_ask1": 138.0
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785823465000,
+      "signal_market_time": "14:04:25.000",
+      "base_short_sale_market_ts_ms": 1785823465000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.399,
+      "bid1": 137.201,
+      "bid1_bonds": 1000.0,
+      "ask1": 138.4,
+      "ask1_bonds": 5000.0,
+      "profit_at_bid": 1.198,
+      "loss_at_ask": 0.001,
+      "reference_price": 138.388,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 10000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 137.202,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785824173000,
+        "price": 138.2,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "active_deep_discount",
+        "seconds_after_signal": 708
+      },
+      "future_30s": {
+        "ticks": 3,
+        "minimum_bid1": 137.201,
+        "maximum_bid1": 137.201,
+        "minimum_ask1": 138.399,
+        "maximum_ask1": 138.399
+      },
+      "future_120s": {
+        "ticks": 8,
+        "minimum_bid1": 137.2,
+        "maximum_bid1": 137.201,
+        "minimum_ask1": 138.399,
+        "maximum_ask1": 138.4
+      },
+      "future_600s": {
+        "ticks": 49,
+        "minimum_bid1": 135.504,
+        "maximum_bid1": 138.4,
+        "minimum_ask1": 138.399,
+        "maximum_ask1": 138.798
+      }
+    },
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785828580000,
+      "signal_market_time": "15:29:40.000",
+      "base_short_sale_market_ts_ms": 1785828580000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.999,
+      "bid1": 136.3,
+      "bid1_bonds": 1000.0,
+      "ask1": 138.0,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 1.699,
+      "loss_at_ask": 0.001,
+      "reference_price": 137.162,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "falling",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": null,
+      "future_30s": {
+        "ticks": 1,
+        "minimum_bid1": 136.3,
+        "maximum_bid1": 136.3,
+        "minimum_ask1": 138.0,
+        "maximum_ask1": 138.0
+      },
+      "future_120s": {
+        "ticks": 1,
+        "minimum_bid1": 136.3,
+        "maximum_bid1": 136.3,
+        "minimum_ask1": 138.0,
+        "maximum_ask1": 138.0
+      },
+      "future_600s": {
+        "ticks": 1,
+        "minimum_bid1": 136.3,
+        "maximum_bid1": 136.3,
+        "minimum_ask1": 138.0,
+        "maximum_ask1": 138.0
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785896454000,
+      "signal_market_time": "10:20:54.000",
+      "base_short_sale_market_ts_ms": 1785896454000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 134.894,
+      "bid1": 134.709,
+      "bid1_bonds": 1000.0,
+      "ask1": 134.897,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.185,
+      "loss_at_ask": 0.003,
+      "reference_price": 134.5,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "stable",
+      "recent_buy_bonds": 2000.0,
+      "recent_sell_bonds": 2000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785896652000,
+        "price": 134.621,
+        "quantity_bonds": 380.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 198
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 134.62,
+        "maximum_bid1": 134.709,
+        "minimum_ask1": 134.891,
+        "maximum_ask1": 134.897
+      },
+      "future_120s": {
+        "ticks": 39,
+        "minimum_bid1": 134.62,
+        "maximum_bid1": 134.709,
+        "minimum_ask1": 134.866,
+        "maximum_ask1": 134.897
+      },
+      "future_600s": {
+        "ticks": 108,
+        "minimum_bid1": 134.505,
+        "maximum_bid1": 134.709,
+        "minimum_ask1": 134.619,
+        "maximum_ask1": 134.897
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785898233000,
+      "signal_market_time": "10:50:33.000",
+      "base_short_sale_market_ts_ms": 1785898227000,
+      "seconds_since_base_short_sale": 6,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 135.494,
+      "bid1": 135.273,
+      "bid1_bonds": 1000.0,
+      "ask1": 135.496,
+      "ask1_bonds": 3000.0,
+      "profit_at_bid": 0.221,
+      "loss_at_ask": 0.002,
+      "reference_price": 135.418,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 7000.0,
+      "recent_sell_bonds": 2000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785898755000,
+        "price": 135.138,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 522
+      },
+      "future_30s": {
+        "ticks": 2,
+        "minimum_bid1": 135.273,
+        "maximum_bid1": 135.274,
+        "minimum_ask1": 135.496,
+        "maximum_ask1": 135.496
+      },
+      "future_120s": {
+        "ticks": 13,
+        "minimum_bid1": 135.273,
+        "maximum_bid1": 135.343,
+        "minimum_ask1": 135.496,
+        "maximum_ask1": 135.496
+      },
+      "future_600s": {
+        "ticks": 82,
+        "minimum_bid1": 135.136,
+        "maximum_bid1": 135.344,
+        "minimum_ask1": 135.2,
+        "maximum_ask1": 135.496
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785908991000,
+      "signal_market_time": "13:49:51.000",
+      "base_short_sale_market_ts_ms": 1785908991000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 134.898,
+      "bid1": 134.669,
+      "bid1_bonds": 1000.0,
+      "ask1": 134.8,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.229,
+      "loss_at_ask": -0.098,
+      "reference_price": 134.735,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "possible_fall",
+      "recent_buy_bonds": 1980.0,
+      "recent_sell_bonds": 20.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785909816000,
+        "price": 135.239,
+        "quantity_bonds": 380.0,
+        "fill_reason": "active_tail_sweep",
+        "seconds_after_signal": 825
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 134.67,
+        "maximum_bid1": 134.737,
+        "minimum_ask1": 134.849,
+        "maximum_ask1": 134.9
+      },
+      "future_120s": {
+        "ticks": 15,
+        "minimum_bid1": 134.602,
+        "maximum_bid1": 134.737,
+        "minimum_ask1": 134.799,
+        "maximum_ask1": 134.9
+      },
+      "future_600s": {
+        "ticks": 105,
+        "minimum_bid1": 134.602,
+        "maximum_bid1": 135.11,
+        "minimum_ask1": 134.799,
+        "maximum_ask1": 135.498
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785899118000,
+      "signal_market_time": "11:05:18.000",
+      "base_short_sale_market_ts_ms": 1785899118000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.239,
+      "bid1": 137.501,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.3,
+      "ask1_bonds": 4000.0,
+      "profit_at_bid": 0.738,
+      "loss_at_ask": 0.061,
+      "reference_price": 137.901,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 3000.0,
+      "recent_sell_bonds": 23000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 137.502,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785899805000,
+        "price": 138.002,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 687
+      },
+      "future_30s": {
+        "ticks": 5,
+        "minimum_bid1": 137.501,
+        "maximum_bid1": 138.299,
+        "minimum_ask1": 138.299,
+        "maximum_ask1": 138.3
+      },
+      "future_120s": {
+        "ticks": 14,
+        "minimum_bid1": 137.501,
+        "maximum_bid1": 138.299,
+        "minimum_ask1": 138.299,
+        "maximum_ask1": 138.3
+      },
+      "future_600s": {
+        "ticks": 83,
+        "minimum_bid1": 137.501,
+        "maximum_bid1": 138.299,
+        "minimum_ask1": 138.201,
+        "maximum_ask1": 138.3
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785906051000,
+      "signal_market_time": "13:00:51.000",
+      "base_short_sale_market_ts_ms": 1785906051000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.199,
+      "bid1": 137.701,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.2,
+      "ask1_bonds": 4880.0,
+      "profit_at_bid": 0.498,
+      "loss_at_ask": 0.001,
+      "reference_price": 137.9,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "falling",
+      "recent_buy_bonds": 4000.0,
+      "recent_sell_bonds": 27120.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 137.702,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785906300000,
+        "price": 138.2,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "active_tail_sweep",
+        "seconds_after_signal": 249
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 137.701,
+        "maximum_bid1": 138.001,
+        "minimum_ask1": 138.199,
+        "maximum_ask1": 138.2
+      },
+      "future_120s": {
+        "ticks": 22,
+        "minimum_bid1": 137.701,
+        "maximum_bid1": 138.111,
+        "minimum_ask1": 138.199,
+        "maximum_ask1": 138.2
+      },
+      "future_600s": {
+        "ticks": 94,
+        "minimum_bid1": 137.701,
+        "maximum_bid1": 138.2,
+        "minimum_ask1": 138.18,
+        "maximum_ask1": 138.498
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "bond_code": "132024.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1785906882000,
+      "signal_market_time": "13:14:42.000",
+      "base_short_sale_market_ts_ms": 1785906882000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.497,
+      "bid1": 138.498,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.499,
+      "ask1_bonds": 16000.0,
+      "profit_at_bid": -0.001,
+      "loss_at_ask": 0.002,
+      "reference_price": 138.265,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 5380.0,
+      "recent_sell_bonds": 4420.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785906939000,
+        "price": 138.182,
+        "quantity_bonds": 190.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 57
+      },
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 138.121,
+        "maximum_bid1": 138.18,
+        "minimum_ask1": 138.498,
+        "maximum_ask1": 138.499
+      },
+      "future_120s": {
+        "ticks": 26,
+        "minimum_bid1": 138.121,
+        "maximum_bid1": 138.205,
+        "minimum_ask1": 138.495,
+        "maximum_ask1": 138.499
+      },
+      "future_600s": {
+        "ticks": 108,
+        "minimum_bid1": 138.121,
+        "maximum_bid1": 138.501,
+        "minimum_ask1": 138.489,
+        "maximum_ask1": 138.8
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785906885000,
+      "signal_market_time": "13:14:45.000",
+      "base_short_sale_market_ts_ms": 1785906882000,
+      "seconds_since_base_short_sale": 3,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.497,
+      "bid1": 138.121,
+      "bid1_bonds": 1000.0,
+      "ask1": 138.499,
+      "ask1_bonds": 17000.0,
+      "profit_at_bid": 0.376,
+      "loss_at_ask": 0.002,
+      "reference_price": 138.276,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 5380.0,
+      "recent_sell_bonds": 6420.0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 138.297,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785906939000,
+        "price": 138.182,
+        "quantity_bonds": 190.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 54
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 138.121,
+        "maximum_bid1": 138.18,
+        "minimum_ask1": 138.498,
+        "maximum_ask1": 138.498
+      },
+      "future_120s": {
+        "ticks": 26,
+        "minimum_bid1": 138.121,
+        "maximum_bid1": 138.205,
+        "minimum_ask1": 138.495,
+        "maximum_ask1": 138.498
+      },
+      "future_600s": {
+        "ticks": 107,
+        "minimum_bid1": 138.121,
+        "maximum_bid1": 138.501,
+        "minimum_ask1": 138.489,
+        "maximum_ask1": 138.8
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "bond_code": "132024.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1785910596000,
+      "signal_market_time": "14:16:36.000",
+      "base_short_sale_market_ts_ms": 1785910596000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 990.0,
+      "average_sale_price": 138.496,
+      "bid1": 138.498,
+      "bid1_bonds": 10.0,
+      "ask1": 138.499,
+      "ask1_bonds": 19940.0,
+      "profit_at_bid": -0.002,
+      "loss_at_ask": 0.003,
+      "reference_price": 138.498,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 4990.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": null,
+      "future_30s": {
+        "ticks": 3,
+        "minimum_bid1": 138.201,
+        "maximum_bid1": 138.202,
+        "minimum_ask1": 138.499,
+        "maximum_ask1": 138.499
+      },
+      "future_120s": {
+        "ticks": 14,
+        "minimum_bid1": 138.201,
+        "maximum_bid1": 138.209,
+        "minimum_ask1": 138.499,
+        "maximum_ask1": 138.499
+      },
+      "future_600s": {
+        "ticks": 45,
+        "minimum_bid1": 138.201,
+        "maximum_bid1": 138.304,
+        "minimum_ask1": 138.498,
+        "maximum_ask1": 138.499
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785910602000,
+      "signal_market_time": "14:16:42.000",
+      "base_short_sale_market_ts_ms": 1785910596000,
+      "seconds_since_base_short_sale": 6,
+      "deficit_bonds": 990.0,
+      "average_sale_price": 138.496,
+      "bid1": 138.201,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.499,
+      "ask1_bonds": 19940.0,
+      "profit_at_bid": 0.295,
+      "loss_at_ask": 0.003,
+      "reference_price": 138.423,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 4990.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": null,
+      "future_30s": {
+        "ticks": 3,
+        "minimum_bid1": 138.202,
+        "maximum_bid1": 138.203,
+        "minimum_ask1": 138.499,
+        "maximum_ask1": 138.499
+      },
+      "future_120s": {
+        "ticks": 13,
+        "minimum_bid1": 138.202,
+        "maximum_bid1": 138.209,
+        "minimum_ask1": 138.499,
+        "maximum_ask1": 138.499
+      },
+      "future_600s": {
+        "ticks": 44,
+        "minimum_bid1": 138.202,
+        "maximum_bid1": 138.304,
+        "minimum_ask1": 138.498,
+        "maximum_ask1": 138.499
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785910683000,
+      "signal_market_time": "14:18:03.000",
+      "base_short_sale_market_ts_ms": 1785910683000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.496,
+      "bid1": 138.209,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.499,
+      "ask1_bonds": 18940.0,
+      "profit_at_bid": 0.287,
+      "loss_at_ask": 0.003,
+      "reference_price": 138.354,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 5990.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 138.21,
+        "remaining_bonds": 990.0
+      },
+      "existing_model_next_buy": null,
+      "future_30s": {
+        "ticks": 1,
+        "minimum_bid1": 138.209,
+        "maximum_bid1": 138.209,
+        "minimum_ask1": 138.499,
+        "maximum_ask1": 138.499
+      },
+      "future_120s": {
+        "ticks": 10,
+        "minimum_bid1": 138.209,
+        "maximum_bid1": 138.253,
+        "minimum_ask1": 138.498,
+        "maximum_ask1": 138.499
+      },
+      "future_600s": {
+        "ticks": 37,
+        "minimum_bid1": 138.209,
+        "maximum_bid1": 138.321,
+        "minimum_ask1": 138.498,
+        "maximum_ask1": 138.499
+      }
+    },
+    {
+      "market_date": "2026-08-06",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785980058000,
+      "signal_market_time": "09:34:18.000",
+      "base_short_sale_market_ts_ms": 1785980058000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.886,
+      "bid1": 134.001,
+      "bid1_bonds": 2000.0,
+      "ask1": 136.887,
+      "ask1_bonds": 3000.0,
+      "profit_at_bid": 2.885,
+      "loss_at_ask": 0.001,
+      "reference_price": 135.383,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 134.002,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785981609000,
+        "price": 134.442,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "active_deep_discount",
+        "seconds_after_signal": 1551
+      },
+      "future_30s": {
+        "ticks": 4,
+        "minimum_bid1": 134.001,
+        "maximum_bid1": 134.501,
+        "minimum_ask1": 136.887,
+        "maximum_ask1": 136.887
+      },
+      "future_120s": {
+        "ticks": 14,
+        "minimum_bid1": 134.0,
+        "maximum_bid1": 134.501,
+        "minimum_ask1": 136.884,
+        "maximum_ask1": 136.887
+      },
+      "future_600s": {
+        "ticks": 150,
+        "minimum_bid1": 131.001,
+        "maximum_bid1": 134.801,
+        "minimum_ask1": 136.235,
+        "maximum_ask1": 136.887
+      }
+    },
+    {
+      "market_date": "2026-08-06",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785985701000,
+      "signal_market_time": "11:08:21.000",
+      "base_short_sale_market_ts_ms": 1785985701000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 134.876,
+      "bid1": 134.201,
+      "bid1_bonds": 5000.0,
+      "ask1": 134.878,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.675,
+      "loss_at_ask": 0.002,
+      "reference_price": 134.539,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 3000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 134.202,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785985812000,
+        "price": 134.202,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 111
+      },
+      "future_30s": {
+        "ticks": 3,
+        "minimum_bid1": 134.201,
+        "maximum_bid1": 134.201,
+        "minimum_ask1": 134.878,
+        "maximum_ask1": 134.919
+      },
+      "future_120s": {
+        "ticks": 21,
+        "minimum_bid1": 134.201,
+        "maximum_bid1": 134.201,
+        "minimum_ask1": 134.878,
+        "maximum_ask1": 134.961
+      },
+      "future_600s": {
+        "ticks": 142,
+        "minimum_bid1": 134.201,
+        "maximum_bid1": 135.0,
+        "minimum_ask1": 134.55,
+        "maximum_ask1": 135.082
+      }
+    },
+    {
+      "market_date": "2026-08-06",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785985821000,
+      "signal_market_time": "11:10:21.000",
+      "base_short_sale_market_ts_ms": 1785985821000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 134.958,
+      "bid1": 134.201,
+      "bid1_bonds": 4000.0,
+      "ask1": 134.959,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.757,
+      "loss_at_ask": 0.001,
+      "reference_price": 134.58,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 4000.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 134.202,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785986028000,
+        "price": 134.302,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 207
+      },
+      "future_30s": {
+        "ticks": 3,
+        "minimum_bid1": 134.201,
+        "maximum_bid1": 134.201,
+        "minimum_ask1": 134.958,
+        "maximum_ask1": 134.959
+      },
+      "future_120s": {
+        "ticks": 24,
+        "minimum_bid1": 134.201,
+        "maximum_bid1": 134.201,
+        "minimum_ask1": 134.55,
+        "maximum_ask1": 134.961
+      },
+      "future_600s": {
+        "ticks": 159,
+        "minimum_bid1": 134.121,
+        "maximum_bid1": 135.0,
+        "minimum_ask1": 134.502,
+        "maximum_ask1": 135.082
+      }
+    },
+    {
+      "market_date": "2026-08-06",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785979961000,
+      "signal_market_time": "09:32:41.000",
+      "base_short_sale_market_ts_ms": 1785979961000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.799,
+      "bid1": 138.582,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.999,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.217,
+      "loss_at_ask": 0.2,
+      "reference_price": 138.489,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785981830000,
+        "price": 138.582,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 1869
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 138.582,
+        "maximum_bid1": 138.601,
+        "minimum_ask1": 138.999,
+        "maximum_ask1": 138.999
+      },
+      "future_120s": {
+        "ticks": 20,
+        "minimum_bid1": 138.582,
+        "maximum_bid1": 138.631,
+        "minimum_ask1": 138.999,
+        "maximum_ask1": 139.0
+      },
+      "future_600s": {
+        "ticks": 57,
+        "minimum_bid1": 138.58,
+        "maximum_bid1": 138.701,
+        "minimum_ask1": 138.989,
+        "maximum_ask1": 139.0
+      }
+    },
+    {
+      "market_date": "2026-08-06",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1785984893000,
+      "signal_market_time": "10:54:53.000",
+      "base_short_sale_market_ts_ms": 1785984893000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.779,
+      "bid1": 138.32,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.79,
+      "ask1_bonds": 3000.0,
+      "profit_at_bid": 0.459,
+      "loss_at_ask": 0.011,
+      "reference_price": 138.512,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 30000.0,
+      "recent_sell_bonds": 9000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1785985151000,
+        "price": 138.49,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 258
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 138.32,
+        "maximum_bid1": 138.323,
+        "minimum_ask1": 138.69,
+        "maximum_ask1": 138.79
+      },
+      "future_120s": {
+        "ticks": 19,
+        "minimum_bid1": 138.32,
+        "maximum_bid1": 138.329,
+        "minimum_ask1": 138.69,
+        "maximum_ask1": 138.79
+      },
+      "future_600s": {
+        "ticks": 126,
+        "minimum_bid1": 138.32,
+        "maximum_bid1": 138.501,
+        "minimum_ask1": 138.4,
+        "maximum_ask1": 138.79
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786066835000,
+      "signal_market_time": "09:40:35.000",
+      "base_short_sale_market_ts_ms": 1786066835000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 134.685,
+      "bid1": 134.15,
+      "bid1_bonds": 2000.0,
+      "ask1": 134.686,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.535,
+      "loss_at_ask": 0.001,
+      "reference_price": 134.134,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_rise",
+      "recent_buy_bonds": 16000.0,
+      "recent_sell_bonds": 4000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786066970000,
+        "price": 134.296,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 135
+      },
+      "future_30s": {
+        "ticks": 10,
+        "minimum_bid1": 134.021,
+        "maximum_bid1": 134.15,
+        "minimum_ask1": 134.599,
+        "maximum_ask1": 134.685
+      },
+      "future_120s": {
+        "ticks": 33,
+        "minimum_bid1": 134.021,
+        "maximum_bid1": 134.447,
+        "minimum_ask1": 134.499,
+        "maximum_ask1": 134.685
+      },
+      "future_600s": {
+        "ticks": 170,
+        "minimum_bid1": 134.021,
+        "maximum_bid1": 134.559,
+        "minimum_ask1": 134.29,
+        "maximum_ask1": 138.097
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786067066000,
+      "signal_market_time": "09:44:26.000",
+      "base_short_sale_market_ts_ms": 1786067066000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 134.596,
+      "bid1": 134.111,
+      "bid1_bonds": 4000.0,
+      "ask1": 134.597,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.485,
+      "loss_at_ask": 0.001,
+      "reference_price": 134.201,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_rise",
+      "recent_buy_bonds": 18000.0,
+      "recent_sell_bonds": 6000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786067315000,
+        "price": 134.112,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 249
+      },
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 134.15,
+        "maximum_bid1": 134.151,
+        "minimum_ask1": 134.597,
+        "maximum_ask1": 134.597
+      },
+      "future_120s": {
+        "ticks": 36,
+        "minimum_bid1": 134.15,
+        "maximum_bid1": 134.25,
+        "minimum_ask1": 134.597,
+        "maximum_ask1": 134.687
+      },
+      "future_600s": {
+        "ticks": 158,
+        "minimum_bid1": 134.1,
+        "maximum_bid1": 134.559,
+        "minimum_ask1": 134.14,
+        "maximum_ask1": 138.097
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786068740000,
+      "signal_market_time": "10:12:20.000",
+      "base_short_sale_market_ts_ms": 1786068740000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 134.689,
+      "bid1": 134.002,
+      "bid1_bonds": 1000.0,
+      "ask1": 134.69,
+      "ask1_bonds": 5000.0,
+      "profit_at_bid": 0.687,
+      "loss_at_ask": 0.001,
+      "reference_price": 134.346,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 7000.0,
+      "recent_sell_bonds": 3000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 134.003,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786068854000,
+        "price": 134.051,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 114
+      },
+      "future_30s": {
+        "ticks": 10,
+        "minimum_bid1": 134.002,
+        "maximum_bid1": 134.002,
+        "minimum_ask1": 134.199,
+        "maximum_ask1": 134.6
+      },
+      "future_120s": {
+        "ticks": 21,
+        "minimum_bid1": 134.002,
+        "maximum_bid1": 134.05,
+        "minimum_ask1": 134.199,
+        "maximum_ask1": 134.6
+      },
+      "future_600s": {
+        "ticks": 134,
+        "minimum_bid1": 133.401,
+        "maximum_bid1": 134.05,
+        "minimum_ask1": 133.999,
+        "maximum_ask1": 134.699
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786071602000,
+      "signal_market_time": "11:00:02.000",
+      "base_short_sale_market_ts_ms": 1786071596000,
+      "seconds_since_base_short_sale": 6,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 135.899,
+      "bid1": 134.503,
+      "bid1_bonds": 1100.0,
+      "ask1": 135.9,
+      "ask1_bonds": 1750.0,
+      "profit_at_bid": 1.396,
+      "loss_at_ask": 0.001,
+      "reference_price": 134.516,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_rise",
+      "recent_buy_bonds": 41900.0,
+      "recent_sell_bonds": 12000.0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 134.504,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786072286000,
+        "price": 135.101,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 684
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 134.51,
+        "maximum_bid1": 134.511,
+        "minimum_ask1": 135.888,
+        "maximum_ask1": 135.888
+      },
+      "future_120s": {
+        "ticks": 17,
+        "minimum_bid1": 134.51,
+        "maximum_bid1": 135.891,
+        "minimum_ask1": 135.888,
+        "maximum_ask1": 136.0
+      },
+      "future_600s": {
+        "ticks": 91,
+        "minimum_bid1": 134.51,
+        "maximum_bid1": 135.891,
+        "minimum_ask1": 135.8,
+        "maximum_ask1": 136.0
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786081673000,
+      "signal_market_time": "13:47:53.000",
+      "base_short_sale_market_ts_ms": 1786081673000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 134.589,
+      "bid1": 133.932,
+      "bid1_bonds": 1000.0,
+      "ask1": 134.59,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.657,
+      "loss_at_ask": 0.001,
+      "reference_price": 134.0,
+      "reference_source": "large_buy_breakout_support",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 6000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786081769000,
+        "price": 134.005,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 96
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 133.932,
+        "maximum_bid1": 133.932,
+        "minimum_ask1": 134.59,
+        "maximum_ask1": 134.59
+      },
+      "future_120s": {
+        "ticks": 25,
+        "minimum_bid1": 133.932,
+        "maximum_bid1": 134.111,
+        "minimum_ask1": 134.59,
+        "maximum_ask1": 134.59
+      },
+      "future_600s": {
+        "ticks": 110,
+        "minimum_bid1": 133.901,
+        "maximum_bid1": 134.131,
+        "minimum_ask1": 134.11,
+        "maximum_ask1": 134.59
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786084130000,
+      "signal_market_time": "14:28:50.000",
+      "base_short_sale_market_ts_ms": 1786084091000,
+      "seconds_since_base_short_sale": 39,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 134.573,
+      "bid1": 134.001,
+      "bid1_bonds": 4000.0,
+      "ask1": 135.099,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.572,
+      "loss_at_ask": 0.526,
+      "reference_price": 134.571,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 23000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": null,
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 134.001,
+        "maximum_bid1": 134.601,
+        "minimum_ask1": 135.099,
+        "maximum_ask1": 135.099
+      },
+      "future_120s": {
+        "ticks": 13,
+        "minimum_bid1": 134.001,
+        "maximum_bid1": 134.601,
+        "minimum_ask1": 135.099,
+        "maximum_ask1": 135.099
+      },
+      "future_600s": {
+        "ticks": 95,
+        "minimum_bid1": 134.001,
+        "maximum_bid1": 134.85,
+        "minimum_ask1": 134.726,
+        "maximum_ask1": 135.1
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786066286000,
+      "signal_market_time": "09:31:26.000",
+      "base_short_sale_market_ts_ms": 1786066286000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 139.399,
+      "bid1": 135.101,
+      "bid1_bonds": 4000.0,
+      "ask1": 139.88,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 4.298,
+      "loss_at_ask": 0.481,
+      "reference_price": 138.218,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 135.102,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786067492000,
+        "price": 138.302,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 1206
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 135.101,
+        "maximum_bid1": 135.501,
+        "minimum_ask1": 138.99,
+        "maximum_ask1": 139.0
+      },
+      "future_120s": {
+        "ticks": 14,
+        "minimum_bid1": 135.101,
+        "maximum_bid1": 137.001,
+        "minimum_ask1": 138.99,
+        "maximum_ask1": 139.0
+      },
+      "future_600s": {
+        "ticks": 80,
+        "minimum_bid1": 135.101,
+        "maximum_bid1": 138.899,
+        "minimum_ask1": 138.7,
+        "maximum_ask1": 139.0
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786067720000,
+      "signal_market_time": "09:55:20.000",
+      "base_short_sale_market_ts_ms": 1786067720000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.795,
+      "bid1": 137.201,
+      "bid1_bonds": 5000.0,
+      "ask1": 138.796,
+      "ask1_bonds": 380.0,
+      "profit_at_bid": 1.594,
+      "loss_at_ask": 0.001,
+      "reference_price": 138.218,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "possible_fall",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 137.202,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786069403000,
+        "price": 138.8,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "active_tail_sweep",
+        "seconds_after_signal": 1683
+      },
+      "future_30s": {
+        "ticks": 5,
+        "minimum_bid1": 138.799,
+        "maximum_bid1": 138.799,
+        "minimum_ask1": 138.8,
+        "maximum_ask1": 138.8
+      },
+      "future_120s": {
+        "ticks": 10,
+        "minimum_bid1": 138.3,
+        "maximum_bid1": 138.799,
+        "minimum_ask1": 138.799,
+        "maximum_ask1": 138.8
+      },
+      "future_600s": {
+        "ticks": 97,
+        "minimum_bid1": 138.3,
+        "maximum_bid1": 138.8,
+        "minimum_ask1": 138.45,
+        "maximum_ask1": 138.89
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1786067729000,
+      "signal_market_time": "09:55:29.000",
+      "base_short_sale_market_ts_ms": 1786067720000,
+      "seconds_since_base_short_sale": 9,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.795,
+      "bid1": 138.799,
+      "bid1_bonds": 620.0,
+      "ask1": 138.8,
+      "ask1_bonds": 3190.0,
+      "profit_at_bid": -0.004,
+      "loss_at_ask": 0.005,
+      "reference_price": 138.738,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 1380.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": {
+        "kind": "profitable_visible_bid_base_replenish",
+        "limit_price": 137.202,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786069403000,
+        "price": 138.8,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "active_tail_sweep",
+        "seconds_after_signal": 1674
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 138.3,
+        "maximum_bid1": 138.799,
+        "minimum_ask1": 138.799,
+        "maximum_ask1": 138.8
+      },
+      "future_120s": {
+        "ticks": 9,
+        "minimum_bid1": 138.3,
+        "maximum_bid1": 138.799,
+        "minimum_ask1": 138.799,
+        "maximum_ask1": 138.8
+      },
+      "future_600s": {
+        "ticks": 98,
+        "minimum_bid1": 138.3,
+        "maximum_bid1": 138.8,
+        "minimum_ask1": 138.45,
+        "maximum_ask1": 138.89
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786069820000,
+      "signal_market_time": "10:30:20.000",
+      "base_short_sale_market_ts_ms": 1786069820000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 139.398,
+      "bid1": 139.199,
+      "bid1_bonds": 1000.0,
+      "ask1": 139.399,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.199,
+      "loss_at_ask": 0.001,
+      "reference_price": 138.8,
+      "reference_source": "large_buy_breakout_support",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 12000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786070120000,
+        "price": 139.198,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 300
+      },
+      "future_30s": {
+        "ticks": 4,
+        "minimum_bid1": 139.0,
+        "maximum_bid1": 139.199,
+        "minimum_ask1": 139.399,
+        "maximum_ask1": 139.399
+      },
+      "future_120s": {
+        "ticks": 12,
+        "minimum_bid1": 139.0,
+        "maximum_bid1": 139.199,
+        "minimum_ask1": 139.198,
+        "maximum_ask1": 139.399
+      },
+      "future_600s": {
+        "ticks": 74,
+        "minimum_bid1": 138.801,
+        "maximum_bid1": 140.001,
+        "minimum_ask1": 139.198,
+        "maximum_ask1": 140.6
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786070201000,
+      "signal_market_time": "10:36:41.000",
+      "base_short_sale_market_ts_ms": 1786070201000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 139.899,
+      "bid1": 139.499,
+      "bid1_bonds": 5000.0,
+      "ask1": 139.998,
+      "ask1_bonds": 19000.0,
+      "profit_at_bid": 0.4,
+      "loss_at_ask": 0.099,
+      "reference_price": 139.385,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 55000.0,
+      "recent_sell_bonds": 3000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786070975000,
+        "price": 139.503,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 774
+      },
+      "future_30s": {
+        "ticks": 4,
+        "minimum_bid1": 140.0,
+        "maximum_bid1": 140.0,
+        "minimum_ask1": 140.5,
+        "maximum_ask1": 140.5
+      },
+      "future_120s": {
+        "ticks": 21,
+        "minimum_bid1": 140.0,
+        "maximum_bid1": 140.001,
+        "minimum_ask1": 140.5,
+        "maximum_ask1": 140.6
+      },
+      "future_600s": {
+        "ticks": 89,
+        "minimum_bid1": 138.998,
+        "maximum_bid1": 140.001,
+        "minimum_ask1": 139.997,
+        "maximum_ask1": 140.6
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786071071000,
+      "signal_market_time": "10:51:11.000",
+      "base_short_sale_market_ts_ms": 1786071071000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 140.398,
+      "bid1": 140.0,
+      "bid1_bonds": 3000.0,
+      "ask1": 140.399,
+      "ask1_bonds": 5000.0,
+      "profit_at_bid": 0.398,
+      "loss_at_ask": 0.001,
+      "reference_price": 139.949,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 16000.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786071128000,
+        "price": 140.002,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 57
+      },
+      "future_30s": {
+        "ticks": 2,
+        "minimum_bid1": 140.001,
+        "maximum_bid1": 140.001,
+        "minimum_ask1": 140.399,
+        "maximum_ask1": 140.399
+      },
+      "future_120s": {
+        "ticks": 16,
+        "minimum_bid1": 139.501,
+        "maximum_bid1": 140.001,
+        "minimum_ask1": 139.72,
+        "maximum_ask1": 140.4
+      },
+      "future_600s": {
+        "ticks": 82,
+        "minimum_bid1": 138.999,
+        "maximum_bid1": 140.199,
+        "minimum_ask1": 139.72,
+        "maximum_ask1": 140.4
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786071821000,
+      "signal_market_time": "11:03:41.000",
+      "base_short_sale_market_ts_ms": 1786071821000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 140.298,
+      "bid1": 140.0,
+      "bid1_bonds": 3000.0,
+      "ask1": 140.299,
+      "ask1_bonds": 9000.0,
+      "profit_at_bid": 0.298,
+      "loss_at_ask": 0.001,
+      "reference_price": 140.0,
+      "reference_source": "large_buy_breakout_support",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 31000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786072175000,
+        "price": 140.002,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 354
+      },
+      "future_30s": {
+        "ticks": 2,
+        "minimum_bid1": 140.001,
+        "maximum_bid1": 140.001,
+        "minimum_ask1": 140.299,
+        "maximum_ask1": 140.299
+      },
+      "future_120s": {
+        "ticks": 6,
+        "minimum_bid1": 140.001,
+        "maximum_bid1": 140.001,
+        "minimum_ask1": 140.29,
+        "maximum_ask1": 140.299
+      },
+      "future_600s": {
+        "ticks": 37,
+        "minimum_bid1": 140.0,
+        "maximum_bid1": 140.29,
+        "minimum_ask1": 140.289,
+        "maximum_ask1": 140.299
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1786072007000,
+      "signal_market_time": "11:06:47.000",
+      "base_short_sale_market_ts_ms": 1786071821000,
+      "seconds_since_base_short_sale": 186,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 140.298,
+      "bid1": 140.29,
+      "bid1_bonds": 3000.0,
+      "ask1": 140.299,
+      "ask1_bonds": 9000.0,
+      "profit_at_bid": 0.008,
+      "loss_at_ask": 0.001,
+      "reference_price": 140.0,
+      "reference_source": "large_buy_breakout_support",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 3000.0,
+      "recent_sell_bonds": 2000.0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 140.002,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786072175000,
+        "price": 140.002,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 168
+      },
+      "future_30s": {
+        "ticks": 5,
+        "minimum_bid1": 140.001,
+        "maximum_bid1": 140.29,
+        "minimum_ask1": 140.29,
+        "maximum_ask1": 140.299
+      },
+      "future_120s": {
+        "ticks": 9,
+        "minimum_bid1": 140.001,
+        "maximum_bid1": 140.29,
+        "minimum_ask1": 140.29,
+        "maximum_ask1": 140.299
+      },
+      "future_600s": {
+        "ticks": 44,
+        "minimum_bid1": 140.0,
+        "maximum_bid1": 140.29,
+        "minimum_ask1": 140.289,
+        "maximum_ask1": 140.299
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786072439000,
+      "signal_market_time": "11:13:59.000",
+      "base_short_sale_market_ts_ms": 1786072439000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 140.288,
+      "bid1": 140.001,
+      "bid1_bonds": 1810.0,
+      "ask1": 140.29,
+      "ask1_bonds": 5000.0,
+      "profit_at_bid": 0.287,
+      "loss_at_ask": 0.002,
+      "reference_price": 140.091,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_rise",
+      "recent_buy_bonds": 2000.0,
+      "recent_sell_bonds": 4190.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786073315000,
+        "price": 140.012,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 876
+      },
+      "future_30s": {
+        "ticks": 3,
+        "minimum_bid1": 140.001,
+        "maximum_bid1": 140.001,
+        "minimum_ask1": 140.289,
+        "maximum_ask1": 140.289
+      },
+      "future_120s": {
+        "ticks": 11,
+        "minimum_bid1": 140.001,
+        "maximum_bid1": 140.005,
+        "minimum_ask1": 140.289,
+        "maximum_ask1": 140.289
+      },
+      "future_600s": {
+        "ticks": 49,
+        "minimum_bid1": 140.001,
+        "maximum_bid1": 140.28,
+        "minimum_ask1": 140.28,
+        "maximum_ask1": 140.29
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1786072946000,
+      "signal_market_time": "11:22:26.000",
+      "base_short_sale_market_ts_ms": 1786072439000,
+      "seconds_since_base_short_sale": 507,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 140.288,
+      "bid1": 140.28,
+      "bid1_bonds": 2000.0,
+      "ask1": 140.29,
+      "ask1_bonds": 3380.0,
+      "profit_at_bid": 0.008,
+      "loss_at_ask": 0.002,
+      "reference_price": 140.144,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 2000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 140.008,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786073315000,
+        "price": 140.012,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 369
+      },
+      "future_30s": {
+        "ticks": 3,
+        "minimum_bid1": 140.28,
+        "maximum_bid1": 140.28,
+        "minimum_ask1": 140.29,
+        "maximum_ask1": 140.29
+      },
+      "future_120s": {
+        "ticks": 15,
+        "minimum_bid1": 140.007,
+        "maximum_bid1": 140.28,
+        "minimum_ask1": 140.28,
+        "maximum_ask1": 140.29
+      },
+      "future_600s": {
+        "ticks": 33,
+        "minimum_bid1": 140.007,
+        "maximum_bid1": 140.28,
+        "minimum_ask1": 140.279,
+        "maximum_ask1": 140.29
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786078880000,
+      "signal_market_time": "13:01:20.000",
+      "base_short_sale_market_ts_ms": 1786078880000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 140.279,
+      "bid1": 140.011,
+      "bid1_bonds": 3000.0,
+      "ask1": 140.29,
+      "ask1_bonds": 1380.0,
+      "profit_at_bid": 0.268,
+      "loss_at_ask": 0.011,
+      "reference_price": 138.218,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "stable",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786080155000,
+        "price": 140.016,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 1275
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 140.011,
+        "maximum_bid1": 140.299,
+        "minimum_ask1": 140.29,
+        "maximum_ask1": 140.4
+      },
+      "future_120s": {
+        "ticks": 17,
+        "minimum_bid1": 140.011,
+        "maximum_bid1": 140.299,
+        "minimum_ask1": 140.29,
+        "maximum_ask1": 140.4
+      },
+      "future_600s": {
+        "ticks": 49,
+        "minimum_bid1": 140.011,
+        "maximum_bid1": 140.299,
+        "minimum_ask1": 140.219,
+        "maximum_ask1": 140.4
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786080173000,
+      "signal_market_time": "13:22:53.000",
+      "base_short_sale_market_ts_ms": 1786080173000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 139.999,
+      "bid1": 139.101,
+      "bid1_bonds": 2000.0,
+      "ask1": 140.219,
+      "ask1_bonds": 2380.0,
+      "profit_at_bid": 0.898,
+      "loss_at_ask": 0.22,
+      "reference_price": 139.526,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "falling",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 9000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786081064000,
+        "price": 140.22,
+        "quantity_bonds": 410.0,
+        "fill_reason": "active_tail_sweep",
+        "seconds_after_signal": 891
+      },
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 140.0,
+        "maximum_bid1": 140.0,
+        "minimum_ask1": 140.199,
+        "maximum_ask1": 140.219
+      },
+      "future_120s": {
+        "ticks": 26,
+        "minimum_bid1": 140.0,
+        "maximum_bid1": 140.18,
+        "minimum_ask1": 140.179,
+        "maximum_ask1": 140.219
+      },
+      "future_600s": {
+        "ticks": 64,
+        "minimum_bid1": 140.0,
+        "maximum_bid1": 140.22,
+        "minimum_ask1": 140.179,
+        "maximum_ask1": 140.4
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1786085879000,
+      "signal_market_time": "14:57:59.000",
+      "base_short_sale_market_ts_ms": 1786085879000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 140.595,
+      "bid1": 140.594,
+      "bid1_bonds": 5000.0,
+      "ask1": 140.596,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.001,
+      "loss_at_ask": 0.001,
+      "reference_price": 140.396,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 8000.0,
+      "recent_sell_bonds": 12000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": null,
+      "future_30s": {
+        "ticks": 3,
+        "minimum_bid1": 140.594,
+        "maximum_bid1": 140.594,
+        "minimum_ask1": 140.597,
+        "maximum_ask1": 140.597
+      },
+      "future_120s": {
+        "ticks": 12,
+        "minimum_bid1": 140.594,
+        "maximum_bid1": 140.594,
+        "minimum_ask1": 140.597,
+        "maximum_ask1": 140.597
+      },
+      "future_600s": {
+        "ticks": 84,
+        "minimum_bid1": 138.587,
+        "maximum_bid1": 140.594,
+        "minimum_ask1": 139.999,
+        "maximum_ask1": 140.597
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786086011000,
+      "signal_market_time": "15:00:11.000",
+      "base_short_sale_market_ts_ms": 1786085879000,
+      "seconds_since_base_short_sale": 132,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 140.595,
+      "bid1": 140.15,
+      "bid1_bonds": 2000.0,
+      "ask1": 140.597,
+      "ask1_bonds": 16000.0,
+      "profit_at_bid": 0.445,
+      "loss_at_ask": 0.002,
+      "reference_price": 140.408,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_fall",
+      "recent_buy_bonds": 7000.0,
+      "recent_sell_bonds": 3000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": null,
+      "future_30s": {
+        "ticks": 4,
+        "minimum_bid1": 140.151,
+        "maximum_bid1": 140.151,
+        "minimum_ask1": 140.597,
+        "maximum_ask1": 140.597
+      },
+      "future_120s": {
+        "ticks": 22,
+        "minimum_bid1": 138.587,
+        "maximum_bid1": 140.151,
+        "minimum_ask1": 139.999,
+        "maximum_ask1": 140.597
+      },
+      "future_600s": {
+        "ticks": 83,
+        "minimum_bid1": 138.587,
+        "maximum_bid1": 140.151,
+        "minimum_ask1": 139.999,
+        "maximum_ask1": 140.597
+      }
+    },
+    {
+      "market_date": "2026-08-10",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786325533000,
+      "signal_market_time": "09:32:13.000",
+      "base_short_sale_market_ts_ms": 1786325533000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 135.498,
+      "bid1": 134.201,
+      "bid1_bonds": 1000.0,
+      "ask1": 135.499,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 1.297,
+      "loss_at_ask": 0.001,
+      "reference_price": 134.863,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "stable",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 134.202,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786325791000,
+        "price": 134.302,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 258
+      },
+      "future_30s": {
+        "ticks": 4,
+        "minimum_bid1": 134.201,
+        "maximum_bid1": 134.201,
+        "minimum_ask1": 135.4,
+        "maximum_ask1": 135.499
+      },
+      "future_120s": {
+        "ticks": 14,
+        "minimum_bid1": 134.201,
+        "maximum_bid1": 134.501,
+        "minimum_ask1": 135.399,
+        "maximum_ask1": 135.499
+      },
+      "future_600s": {
+        "ticks": 133,
+        "minimum_bid1": 134.001,
+        "maximum_bid1": 134.801,
+        "minimum_ask1": 134.6,
+        "maximum_ask1": 135.499
+      }
+    },
+    {
+      "market_date": "2026-08-10",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786325950000,
+      "signal_market_time": "09:39:10.000",
+      "base_short_sale_market_ts_ms": 1786325950000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 135.196,
+      "bid1": 134.501,
+      "bid1_bonds": 1000.0,
+      "ask1": 135.0,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.695,
+      "loss_at_ask": -0.196,
+      "reference_price": 134.75,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "falling",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 6000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 133.399,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786325998000,
+        "price": 134.899,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "active_medium_base_short_replenishment",
+        "seconds_after_signal": 48
+      },
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 134.501,
+        "maximum_bid1": 134.601,
+        "minimum_ask1": 134.9,
+        "maximum_ask1": 135.0
+      },
+      "future_120s": {
+        "ticks": 35,
+        "minimum_bid1": 134.501,
+        "maximum_bid1": 134.701,
+        "minimum_ask1": 134.899,
+        "maximum_ask1": 135.366
+      },
+      "future_600s": {
+        "ticks": 111,
+        "minimum_bid1": 134.501,
+        "maximum_bid1": 135.192,
+        "minimum_ask1": 134.899,
+        "maximum_ask1": 135.368
+      }
+    },
+    {
+      "market_date": "2026-08-10",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786329232000,
+      "signal_market_time": "10:33:52.000",
+      "base_short_sale_market_ts_ms": 1786329214000,
+      "seconds_since_base_short_sale": 18,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 135.697,
+      "bid1": 135.401,
+      "bid1_bonds": 1000.0,
+      "ask1": 135.799,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.296,
+      "loss_at_ask": 0.102,
+      "reference_price": 135.376,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "stable",
+      "recent_buy_bonds": 19000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786330573000,
+        "price": 135.402,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 1341
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 135.401,
+        "maximum_bid1": 135.501,
+        "minimum_ask1": 135.799,
+        "maximum_ask1": 135.799
+      },
+      "future_120s": {
+        "ticks": 25,
+        "minimum_bid1": 135.401,
+        "maximum_bid1": 135.508,
+        "minimum_ask1": 135.699,
+        "maximum_ask1": 135.799
+      },
+      "future_600s": {
+        "ticks": 154,
+        "minimum_bid1": 135.401,
+        "maximum_bid1": 135.631,
+        "minimum_ask1": 135.609,
+        "maximum_ask1": 135.799
+      }
+    },
+    {
+      "market_date": "2026-08-10",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786338025000,
+      "signal_market_time": "13:00:25.000",
+      "base_short_sale_market_ts_ms": 1786338013000,
+      "seconds_since_base_short_sale": 12,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 135.607,
+      "bid1": 135.252,
+      "bid1_bonds": 4000.0,
+      "ask1": 135.608,
+      "ask1_bonds": 3000.0,
+      "profit_at_bid": 0.355,
+      "loss_at_ask": 0.001,
+      "reference_price": 135.555,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_fall",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786338289000,
+        "price": 135.62,
+        "quantity_bonds": 250.0,
+        "fill_reason": "active_tail_sweep",
+        "seconds_after_signal": 264
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 135.252,
+        "maximum_bid1": 135.5,
+        "minimum_ask1": 135.608,
+        "maximum_ask1": 135.608
+      },
+      "future_120s": {
+        "ticks": 21,
+        "minimum_bid1": 135.252,
+        "maximum_bid1": 135.501,
+        "minimum_ask1": 135.608,
+        "maximum_ask1": 135.608
+      },
+      "future_600s": {
+        "ticks": 116,
+        "minimum_bid1": 135.252,
+        "maximum_bid1": 135.536,
+        "minimum_ask1": 135.608,
+        "maximum_ask1": 135.62
+      }
+    },
+    {
+      "market_date": "2026-08-10",
+      "bond_code": "132026.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1786339621000,
+      "signal_market_time": "13:27:01.000",
+      "base_short_sale_market_ts_ms": 1786338013000,
+      "seconds_since_base_short_sale": 1608,
+      "deficit_bonds": 750.0,
+      "average_sale_price": 135.607,
+      "bid1": 135.536,
+      "bid1_bonds": 2000.0,
+      "ask1": 135.554,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.071,
+      "loss_at_ask": -0.053,
+      "reference_price": 135.62,
+      "reference_source": "large_buy_breakout_support",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 3000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 135.407,
+        "remaining_bonds": 750.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786339867000,
+        "price": 135.352,
+        "quantity_bonds": 480.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 246
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 135.536,
+        "maximum_bid1": 135.537,
+        "minimum_ask1": 135.545,
+        "maximum_ask1": 135.608
+      },
+      "future_120s": {
+        "ticks": 32,
+        "minimum_bid1": 135.536,
+        "maximum_bid1": 135.566,
+        "minimum_ask1": 135.545,
+        "maximum_ask1": 135.608
+      },
+      "future_600s": {
+        "ticks": 133,
+        "minimum_bid1": 135.252,
+        "maximum_bid1": 135.566,
+        "minimum_ask1": 135.419,
+        "maximum_ask1": 135.609
+      }
+    },
+    {
+      "market_date": "2026-08-10",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786325535000,
+      "signal_market_time": "09:32:15.000",
+      "base_short_sale_market_ts_ms": 1786325535000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 140.869,
+      "bid1": 139.001,
+      "bid1_bonds": 2000.0,
+      "ask1": 140.88,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 1.868,
+      "loss_at_ask": 0.011,
+      "reference_price": 140.323,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 139.002,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786326096000,
+        "price": 139.602,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 561
+      },
+      "future_30s": {
+        "ticks": 4,
+        "minimum_bid1": 139.001,
+        "maximum_bid1": 139.401,
+        "minimum_ask1": 140.879,
+        "maximum_ask1": 140.879
+      },
+      "future_120s": {
+        "ticks": 11,
+        "minimum_bid1": 139.001,
+        "maximum_bid1": 139.601,
+        "minimum_ask1": 140.879,
+        "maximum_ask1": 140.879
+      },
+      "future_600s": {
+        "ticks": 76,
+        "minimum_bid1": 139.001,
+        "maximum_bid1": 139.801,
+        "minimum_ask1": 140.151,
+        "maximum_ask1": 140.879
+      }
+    },
+    {
+      "market_date": "2026-08-10",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786326915000,
+      "signal_market_time": "09:55:15.000",
+      "base_short_sale_market_ts_ms": 1786326915000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 139.994,
+      "bid1": 139.401,
+      "bid1_bonds": 2000.0,
+      "ask1": 139.9,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.593,
+      "loss_at_ask": -0.094,
+      "reference_price": 139.651,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "possible_fall",
+      "recent_buy_bonds": 4000.0,
+      "recent_sell_bonds": 6000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 139.402,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786327350000,
+        "price": 139.722,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 435
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 139.401,
+        "maximum_bid1": 139.501,
+        "minimum_ask1": 139.899,
+        "maximum_ask1": 140.197
+      },
+      "future_120s": {
+        "ticks": 37,
+        "minimum_bid1": 139.401,
+        "maximum_bid1": 139.501,
+        "minimum_ask1": 139.899,
+        "maximum_ask1": 140.197
+      },
+      "future_600s": {
+        "ticks": 152,
+        "minimum_bid1": 139.101,
+        "maximum_bid1": 139.8,
+        "minimum_ask1": 139.577,
+        "maximum_ask1": 140.197
+      }
+    },
+    {
+      "market_date": "2026-08-10",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786327380000,
+      "signal_market_time": "10:03:00.000",
+      "base_short_sale_market_ts_ms": 1786327380000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 139.998,
+      "bid1": 139.6,
+      "bid1_bonds": 1000.0,
+      "ask1": 140.19,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.398,
+      "loss_at_ask": 0.192,
+      "reference_price": 139.721,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "stable",
+      "recent_buy_bonds": 5000.0,
+      "recent_sell_bonds": 6000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786327776000,
+        "price": 139.402,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 396
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 139.5,
+        "maximum_bid1": 139.601,
+        "minimum_ask1": 139.75,
+        "maximum_ask1": 140.189
+      },
+      "future_120s": {
+        "ticks": 30,
+        "minimum_bid1": 139.101,
+        "maximum_bid1": 139.601,
+        "minimum_ask1": 139.749,
+        "maximum_ask1": 140.189
+      },
+      "future_600s": {
+        "ticks": 117,
+        "minimum_bid1": 139.101,
+        "maximum_bid1": 139.601,
+        "minimum_ask1": 139.525,
+        "maximum_ask1": 140.198
+      }
+    },
+    {
+      "market_date": "2026-08-11",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786412362000,
+      "signal_market_time": "09:39:22.000",
+      "base_short_sale_market_ts_ms": 1786412362000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.789,
+      "bid1": 136.22,
+      "bid1_bonds": 1000.0,
+      "ask1": 136.799,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.569,
+      "loss_at_ask": 0.01,
+      "reference_price": 136.495,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 6260.0,
+      "recent_sell_bonds": 2380.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786412485000,
+        "price": 136.499,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "active_medium_base_short_replenishment",
+        "seconds_after_signal": 123
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 136.221,
+        "maximum_bid1": 136.221,
+        "minimum_ask1": 136.779,
+        "maximum_ask1": 136.798
+      },
+      "future_120s": {
+        "ticks": 33,
+        "minimum_bid1": 136.221,
+        "maximum_bid1": 136.35,
+        "minimum_ask1": 136.499,
+        "maximum_ask1": 136.798
+      },
+      "future_600s": {
+        "ticks": 158,
+        "minimum_bid1": 136.221,
+        "maximum_bid1": 136.797,
+        "minimum_ask1": 136.482,
+        "maximum_ask1": 136.9
+      }
+    },
+    {
+      "market_date": "2026-08-11",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786412632000,
+      "signal_market_time": "09:43:52.000",
+      "base_short_sale_market_ts_ms": 1786412629000,
+      "seconds_since_base_short_sale": 3,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.797,
+      "bid1": 136.487,
+      "bid1_bonds": 1620.0,
+      "ask1": 136.799,
+      "ask1_bonds": 380.0,
+      "profit_at_bid": 0.31,
+      "loss_at_ask": 0.002,
+      "reference_price": 136.643,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 6760.0,
+      "recent_sell_bonds": 4380.0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 136.488,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786412653000,
+        "price": 136.488,
+        "quantity_bonds": 380.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 21
+      },
+      "future_30s": {
+        "ticks": 4,
+        "minimum_bid1": 136.487,
+        "maximum_bid1": 136.487,
+        "minimum_ask1": 136.788,
+        "maximum_ask1": 136.799
+      },
+      "future_120s": {
+        "ticks": 17,
+        "minimum_bid1": 136.487,
+        "maximum_bid1": 136.797,
+        "minimum_ask1": 136.788,
+        "maximum_ask1": 136.9
+      },
+      "future_600s": {
+        "ticks": 150,
+        "minimum_bid1": 136.352,
+        "maximum_bid1": 136.797,
+        "minimum_ask1": 136.381,
+        "maximum_ask1": 136.9
+      }
+    },
+    {
+      "market_date": "2026-08-11",
+      "bond_code": "132026.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1786412692000,
+      "signal_market_time": "09:44:52.000",
+      "base_short_sale_market_ts_ms": 1786412692000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.793,
+      "bid1": 136.791,
+      "bid1_bonds": 2100.0,
+      "ask1": 136.797,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.002,
+      "loss_at_ask": 0.004,
+      "reference_price": 136.587,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 8660.0,
+      "recent_sell_bonds": 2760.0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 133.35,
+        "remaining_bonds": 620.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786412929000,
+        "price": 136.552,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 237
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 136.791,
+        "maximum_bid1": 136.797,
+        "minimum_ask1": 136.797,
+        "maximum_ask1": 136.9
+      },
+      "future_120s": {
+        "ticks": 23,
+        "minimum_bid1": 136.352,
+        "maximum_bid1": 136.797,
+        "minimum_ask1": 136.797,
+        "maximum_ask1": 136.9
+      },
+      "future_600s": {
+        "ticks": 157,
+        "minimum_bid1": 136.352,
+        "maximum_bid1": 136.797,
+        "minimum_ask1": 136.381,
+        "maximum_ask1": 136.9
+      }
+    },
+    {
+      "market_date": "2026-08-11",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786412758000,
+      "signal_market_time": "09:45:58.000",
+      "base_short_sale_market_ts_ms": 1786412692000,
+      "seconds_since_base_short_sale": 66,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.793,
+      "bid1": 136.352,
+      "bid1_bonds": 1340.0,
+      "ask1": 136.899,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.441,
+      "loss_at_ask": 0.106,
+      "reference_price": 136.628,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_fall",
+      "recent_buy_bonds": 11040.0,
+      "recent_sell_bonds": 5140.0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 133.35,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786412929000,
+        "price": 136.552,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 171
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 136.5,
+        "maximum_bid1": 136.501,
+        "minimum_ask1": 136.889,
+        "maximum_ask1": 136.899
+      },
+      "future_120s": {
+        "ticks": 33,
+        "minimum_bid1": 136.5,
+        "maximum_bid1": 136.511,
+        "minimum_ask1": 136.835,
+        "maximum_ask1": 136.899
+      },
+      "future_600s": {
+        "ticks": 169,
+        "minimum_bid1": 136.352,
+        "maximum_bid1": 136.551,
+        "minimum_ask1": 136.381,
+        "maximum_ask1": 136.899
+      }
+    },
+    {
+      "market_date": "2026-08-11",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786411918000,
+      "signal_market_time": "09:31:58.000",
+      "base_short_sale_market_ts_ms": 1786411918000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 140.687,
+      "bid1": 139.601,
+      "bid1_bonds": 2000.0,
+      "ask1": 140.69,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 1.086,
+      "loss_at_ask": 0.003,
+      "reference_price": 139.71,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 2000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786412623000,
+        "price": 139.801,
+        "quantity_bonds": 190.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 705
+      },
+      "future_30s": {
+        "ticks": 2,
+        "minimum_bid1": 139.601,
+        "maximum_bid1": 139.601,
+        "minimum_ask1": 140.689,
+        "maximum_ask1": 140.689
+      },
+      "future_120s": {
+        "ticks": 10,
+        "minimum_bid1": 139.601,
+        "maximum_bid1": 139.8,
+        "minimum_ask1": 140.679,
+        "maximum_ask1": 140.689
+      },
+      "future_600s": {
+        "ticks": 88,
+        "minimum_bid1": 137.201,
+        "maximum_bid1": 140.146,
+        "minimum_ask1": 139.797,
+        "maximum_ask1": 140.8
+      }
+    },
+    {
+      "market_date": "2026-08-11",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786413610000,
+      "signal_market_time": "10:00:10.000",
+      "base_short_sale_market_ts_ms": 1786413610000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 140.297,
+      "bid1": 139.801,
+      "bid1_bonds": 1000.0,
+      "ask1": 140.297,
+      "ask1_bonds": 820.0,
+      "profit_at_bid": 0.496,
+      "loss_at_ask": 0.0,
+      "reference_price": 140.049,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 4900.0,
+      "recent_sell_bonds": 2240.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786414159000,
+        "price": 139.713,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 549
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 139.801,
+        "maximum_bid1": 139.801,
+        "minimum_ask1": 140.297,
+        "maximum_ask1": 140.297
+      },
+      "future_120s": {
+        "ticks": 24,
+        "minimum_bid1": 139.801,
+        "maximum_bid1": 139.951,
+        "minimum_ask1": 140.199,
+        "maximum_ask1": 140.297
+      },
+      "future_600s": {
+        "ticks": 83,
+        "minimum_bid1": 139.712,
+        "maximum_bid1": 140.203,
+        "minimum_ask1": 139.951,
+        "maximum_ask1": 140.3
+      }
+    },
+    {
+      "market_date": "2026-08-11",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786428457000,
+      "signal_market_time": "14:07:37.000",
+      "base_short_sale_market_ts_ms": 1786428457000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.647,
+      "bid1": 138.028,
+      "bid1_bonds": 1000.0,
+      "ask1": 138.647,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.619,
+      "loss_at_ask": 0.0,
+      "reference_price": 138.0,
+      "reference_source": "large_buy_breakout_support",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 10190.0,
+      "recent_sell_bonds": 5000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786428568000,
+        "price": 138.302,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 111
+      },
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 138.028,
+        "maximum_bid1": 138.54,
+        "minimum_ask1": 138.639,
+        "maximum_ask1": 138.647
+      },
+      "future_120s": {
+        "ticks": 36,
+        "minimum_bid1": 138.028,
+        "maximum_bid1": 138.54,
+        "minimum_ask1": 138.497,
+        "maximum_ask1": 138.647
+      },
+      "future_600s": {
+        "ticks": 138,
+        "minimum_bid1": 138.028,
+        "maximum_bid1": 138.54,
+        "minimum_ask1": 138.449,
+        "maximum_ask1": 138.648
+      }
+    },
+    {
+      "market_date": "2026-08-11",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786429291000,
+      "signal_market_time": "14:21:31.000",
+      "base_short_sale_market_ts_ms": 1786429291000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 138.588,
+      "bid1": 138.204,
+      "bid1_bonds": 2000.0,
+      "ask1": 138.59,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.384,
+      "loss_at_ask": 0.002,
+      "reference_price": 138.398,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_rise",
+      "recent_buy_bonds": 2000.0,
+      "recent_sell_bonds": 10140.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 138.204,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786430884000,
+        "price": 138.202,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 1593
+      },
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 138.204,
+        "maximum_bid1": 138.55,
+        "minimum_ask1": 138.589,
+        "maximum_ask1": 138.589
+      },
+      "future_120s": {
+        "ticks": 18,
+        "minimum_bid1": 138.201,
+        "maximum_bid1": 138.551,
+        "minimum_ask1": 138.589,
+        "maximum_ask1": 138.59
+      },
+      "future_600s": {
+        "ticks": 52,
+        "minimum_bid1": 138.201,
+        "maximum_bid1": 138.551,
+        "minimum_ask1": 138.589,
+        "maximum_ask1": 138.647
+      }
+    },
+    {
+      "market_date": "2026-08-12",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786512129000,
+      "signal_market_time": "13:22:09.000",
+      "base_short_sale_market_ts_ms": 1786512129000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.64,
+      "bid1": 136.351,
+      "bid1_bonds": 1000.0,
+      "ask1": 136.641,
+      "ask1_bonds": 4000.0,
+      "profit_at_bid": 0.289,
+      "loss_at_ask": 0.001,
+      "reference_price": 136.335,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_rise",
+      "recent_buy_bonds": 47590.0,
+      "recent_sell_bonds": 380.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786512942000,
+        "price": 136.381,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 813
+      },
+      "future_30s": {
+        "ticks": 3,
+        "minimum_bid1": 136.351,
+        "maximum_bid1": 136.36,
+        "minimum_ask1": 136.641,
+        "maximum_ask1": 136.641
+      },
+      "future_120s": {
+        "ticks": 15,
+        "minimum_bid1": 136.351,
+        "maximum_bid1": 136.421,
+        "minimum_ask1": 136.635,
+        "maximum_ask1": 136.641
+      },
+      "future_600s": {
+        "ticks": 87,
+        "minimum_bid1": 136.351,
+        "maximum_bid1": 136.45,
+        "minimum_ask1": 136.369,
+        "maximum_ask1": 136.649
+      }
+    },
+    {
+      "market_date": "2026-08-12",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786513494000,
+      "signal_market_time": "13:44:54.000",
+      "base_short_sale_market_ts_ms": 1786513386000,
+      "seconds_since_base_short_sale": 108,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.649,
+      "bid1": 136.411,
+      "bid1_bonds": 1000.0,
+      "ask1": 136.649,
+      "ask1_bonds": 3040.0,
+      "profit_at_bid": 0.238,
+      "loss_at_ask": 0.0,
+      "reference_price": 136.35,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "stable",
+      "recent_buy_bonds": 3000.0,
+      "recent_sell_bonds": 2380.0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 136.449,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786513632000,
+        "price": 136.421,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 138
+      },
+      "future_30s": {
+        "ticks": 4,
+        "minimum_bid1": 136.412,
+        "maximum_bid1": 136.45,
+        "minimum_ask1": 136.649,
+        "maximum_ask1": 136.649
+      },
+      "future_120s": {
+        "ticks": 28,
+        "minimum_bid1": 136.411,
+        "maximum_bid1": 136.51,
+        "minimum_ask1": 136.549,
+        "maximum_ask1": 136.649
+      },
+      "future_600s": {
+        "ticks": 148,
+        "minimum_bid1": 136.33,
+        "maximum_bid1": 136.51,
+        "minimum_ask1": 136.342,
+        "maximum_ask1": 136.649
+      }
+    },
+    {
+      "market_date": "2026-08-12",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786515285000,
+      "signal_market_time": "14:14:45.000",
+      "base_short_sale_market_ts_ms": 1786515285000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.996,
+      "bid1": 136.401,
+      "bid1_bonds": 2000.0,
+      "ask1": 136.998,
+      "ask1_bonds": 7000.0,
+      "profit_at_bid": 0.595,
+      "loss_at_ask": 0.002,
+      "reference_price": 136.704,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "stable",
+      "recent_buy_bonds": 39880.0,
+      "recent_sell_bonds": 380.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.402,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786515408000,
+        "price": 136.402,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 123
+      },
+      "future_30s": {
+        "ticks": 4,
+        "minimum_bid1": 136.401,
+        "maximum_bid1": 136.401,
+        "minimum_ask1": 136.998,
+        "maximum_ask1": 136.998
+      },
+      "future_120s": {
+        "ticks": 11,
+        "minimum_bid1": 136.401,
+        "maximum_bid1": 136.401,
+        "minimum_ask1": 136.7,
+        "maximum_ask1": 136.998
+      },
+      "future_600s": {
+        "ticks": 116,
+        "minimum_bid1": 136.401,
+        "maximum_bid1": 136.911,
+        "minimum_ask1": 136.7,
+        "maximum_ask1": 136.998
+      }
+    },
+    {
+      "market_date": "2026-08-12",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786498212000,
+      "signal_market_time": "09:30:12.000",
+      "base_short_sale_market_ts_ms": 1786498212000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 139.388,
+      "bid1": 137.611,
+      "bid1_bonds": 2000.0,
+      "ask1": 139.389,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 1.777,
+      "loss_at_ask": 0.001,
+      "reference_price": 138.207,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "stable",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 137.612,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786499424000,
+        "price": 138.151,
+        "quantity_bonds": 190.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 1212
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 137.611,
+        "maximum_bid1": 137.611,
+        "minimum_ask1": 138.273,
+        "maximum_ask1": 139.389
+      },
+      "future_120s": {
+        "ticks": 11,
+        "minimum_bid1": 137.611,
+        "maximum_bid1": 137.611,
+        "minimum_ask1": 138.273,
+        "maximum_ask1": 139.389
+      },
+      "future_600s": {
+        "ticks": 67,
+        "minimum_bid1": 137.611,
+        "maximum_bid1": 138.0,
+        "minimum_ask1": 138.273,
+        "maximum_ask1": 139.389
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786584621000,
+      "signal_market_time": "09:30:21.000",
+      "base_short_sale_market_ts_ms": 1786584621000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.947,
+      "bid1": 130.001,
+      "bid1_bonds": 8000.0,
+      "ask1": 136.845,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 7.946,
+      "loss_at_ask": -1.102,
+      "reference_price": 136.867,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "possible_fall",
+      "recent_buy_bonds": 2000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 130.002,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786585890000,
+        "price": 135.2,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "active_deep_discount",
+        "seconds_after_signal": 1269
+      },
+      "future_30s": {
+        "ticks": 3,
+        "minimum_bid1": 130.001,
+        "maximum_bid1": 130.001,
+        "minimum_ask1": 137.949,
+        "maximum_ask1": 137.95
+      },
+      "future_120s": {
+        "ticks": 7,
+        "minimum_bid1": 130.001,
+        "maximum_bid1": 130.001,
+        "minimum_ask1": 137.949,
+        "maximum_ask1": 137.95
+      },
+      "future_600s": {
+        "ticks": 153,
+        "minimum_bid1": 130.001,
+        "maximum_bid1": 135.012,
+        "minimum_ask1": 137.29,
+        "maximum_ask1": 137.95
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786586742000,
+      "signal_market_time": "10:05:42.000",
+      "base_short_sale_market_ts_ms": 1786586742000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.295,
+      "bid1": 136.587,
+      "bid1_bonds": 2000.0,
+      "ask1": 137.297,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.708,
+      "loss_at_ask": 0.002,
+      "reference_price": 136.942,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 3380.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.588,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786586856000,
+        "price": 136.002,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 114
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 136.587,
+        "maximum_bid1": 136.587,
+        "minimum_ask1": 137.291,
+        "maximum_ask1": 137.296
+      },
+      "future_120s": {
+        "ticks": 26,
+        "minimum_bid1": 135.803,
+        "maximum_bid1": 137.29,
+        "minimum_ask1": 137.287,
+        "maximum_ask1": 137.298
+      },
+      "future_600s": {
+        "ticks": 164,
+        "minimum_bid1": 135.803,
+        "maximum_bid1": 137.795,
+        "minimum_ask1": 136.199,
+        "maximum_ask1": 137.8
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132026.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1786586826000,
+      "signal_market_time": "10:07:06.000",
+      "base_short_sale_market_ts_ms": 1786586742000,
+      "seconds_since_base_short_sale": 84,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.295,
+      "bid1": 137.29,
+      "bid1_bonds": 3000.0,
+      "ask1": 137.292,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.005,
+      "loss_at_ask": -0.003,
+      "reference_price": 137.291,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 6380.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "profitable_visible_bid_base_replenish",
+        "limit_price": 135.804,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786586856000,
+        "price": 136.002,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 30
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 135.803,
+        "maximum_bid1": 137.29,
+        "minimum_ask1": 137.288,
+        "maximum_ask1": 137.298
+      },
+      "future_120s": {
+        "ticks": 34,
+        "minimum_bid1": 135.803,
+        "maximum_bid1": 137.294,
+        "minimum_ask1": 136.199,
+        "maximum_ask1": 137.298
+      },
+      "future_600s": {
+        "ticks": 167,
+        "minimum_bid1": 135.803,
+        "maximum_bid1": 137.795,
+        "minimum_ask1": 136.199,
+        "maximum_ask1": 137.8
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786586877000,
+      "signal_market_time": "10:07:57.000",
+      "base_short_sale_market_ts_ms": 1786586877000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.292,
+      "bid1": 136.1,
+      "bid1_bonds": 1000.0,
+      "ask1": 137.292,
+      "ask1_bonds": 4000.0,
+      "profit_at_bid": 1.192,
+      "loss_at_ask": 0.0,
+      "reference_price": 136.867,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 13380.0,
+      "recent_sell_bonds": 7000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.002,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786587432000,
+        "price": 137.0,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "active_deep_discount",
+        "seconds_after_signal": 555
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 136.101,
+        "maximum_bid1": 136.501,
+        "minimum_ask1": 137.199,
+        "maximum_ask1": 137.292
+      },
+      "future_120s": {
+        "ticks": 32,
+        "minimum_bid1": 135.803,
+        "maximum_bid1": 137.309,
+        "minimum_ask1": 137.199,
+        "maximum_ask1": 137.8
+      },
+      "future_600s": {
+        "ticks": 160,
+        "minimum_bid1": 135.803,
+        "maximum_bid1": 137.795,
+        "minimum_ask1": 137.0,
+        "maximum_ask1": 137.8
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132026.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1786586916000,
+      "signal_market_time": "10:08:36.000",
+      "base_short_sale_market_ts_ms": 1786586877000,
+      "seconds_since_base_short_sale": 39,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.292,
+      "bid1": 137.291,
+      "bid1_bonds": 3000.0,
+      "ask1": 137.294,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.001,
+      "loss_at_ask": 0.002,
+      "reference_price": 136.98,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 20380.0,
+      "recent_sell_bonds": 7000.0,
+      "existing_buy_order": {
+        "kind": "profitable_visible_bid_base_replenish",
+        "limit_price": 136.502,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786587432000,
+        "price": 137.0,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "active_deep_discount",
+        "seconds_after_signal": 516
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 137.291,
+        "maximum_bid1": 137.294,
+        "minimum_ask1": 137.292,
+        "maximum_ask1": 137.298
+      },
+      "future_120s": {
+        "ticks": 31,
+        "minimum_bid1": 135.803,
+        "maximum_bid1": 137.795,
+        "minimum_ask1": 137.264,
+        "maximum_ask1": 137.8
+      },
+      "future_600s": {
+        "ticks": 156,
+        "minimum_bid1": 135.803,
+        "maximum_bid1": 137.795,
+        "minimum_ask1": 137.0,
+        "maximum_ask1": 137.8
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786590312000,
+      "signal_market_time": "11:05:12.000",
+      "base_short_sale_market_ts_ms": 1786590024000,
+      "seconds_since_base_short_sale": 288,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.898,
+      "bid1": 136.601,
+      "bid1_bonds": 1000.0,
+      "ask1": 136.749,
+      "ask1_bonds": 380.0,
+      "profit_at_bid": 0.297,
+      "loss_at_ask": -0.149,
+      "reference_price": 136.874,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "falling",
+      "recent_buy_bonds": 4000.0,
+      "recent_sell_bonds": 3000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786590441000,
+        "price": 136.602,
+        "quantity_bonds": 380.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 129
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 136.601,
+        "maximum_bid1": 136.751,
+        "minimum_ask1": 136.987,
+        "maximum_ask1": 136.987
+      },
+      "future_120s": {
+        "ticks": 14,
+        "minimum_bid1": 136.601,
+        "maximum_bid1": 136.793,
+        "minimum_ask1": 136.987,
+        "maximum_ask1": 136.988
+      },
+      "future_600s": {
+        "ticks": 90,
+        "minimum_bid1": 136.601,
+        "maximum_bid1": 136.901,
+        "minimum_ask1": 136.811,
+        "maximum_ask1": 136.988
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786599894000,
+      "signal_market_time": "13:44:54.000",
+      "base_short_sale_market_ts_ms": 1786599894000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.347,
+      "bid1": 137.0,
+      "bid1_bonds": 1000.0,
+      "ask1": 137.337,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.347,
+      "loss_at_ask": -0.01,
+      "reference_price": 136.916,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_rise",
+      "recent_buy_bonds": 15760.0,
+      "recent_sell_bonds": 2000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786601097000,
+        "price": 136.613,
+        "quantity_bonds": 380.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 1203
+      },
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 137.0,
+        "maximum_bid1": 137.337,
+        "minimum_ask1": 137.325,
+        "maximum_ask1": 137.349
+      },
+      "future_120s": {
+        "ticks": 23,
+        "minimum_bid1": 137.0,
+        "maximum_bid1": 137.378,
+        "minimum_ask1": 137.299,
+        "maximum_ask1": 137.409
+      },
+      "future_600s": {
+        "ticks": 88,
+        "minimum_bid1": 136.911,
+        "maximum_bid1": 137.378,
+        "minimum_ask1": 136.997,
+        "maximum_ask1": 137.409
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132026.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1786599906000,
+      "signal_market_time": "13:45:06.000",
+      "base_short_sale_market_ts_ms": 1786599894000,
+      "seconds_since_base_short_sale": 12,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.347,
+      "bid1": 137.337,
+      "bid1_bonds": 1000.0,
+      "ask1": 137.349,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.01,
+      "loss_at_ask": 0.002,
+      "reference_price": 136.916,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 15760.0,
+      "recent_sell_bonds": 2000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786601097000,
+        "price": 136.613,
+        "quantity_bonds": 380.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 1191
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 137.0,
+        "maximum_bid1": 137.337,
+        "minimum_ask1": 137.325,
+        "maximum_ask1": 137.349
+      },
+      "future_120s": {
+        "ticks": 20,
+        "minimum_bid1": 137.0,
+        "maximum_bid1": 137.378,
+        "minimum_ask1": 137.299,
+        "maximum_ask1": 137.409
+      },
+      "future_600s": {
+        "ticks": 87,
+        "minimum_bid1": 136.911,
+        "maximum_bid1": 137.378,
+        "minimum_ask1": 136.997,
+        "maximum_ask1": 137.409
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786602651000,
+      "signal_market_time": "14:30:51.000",
+      "base_short_sale_market_ts_ms": 1786602651000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.288,
+      "bid1": 137.03,
+      "bid1_bonds": 1240.0,
+      "ask1": 137.289,
+      "ask1_bonds": 2340.0,
+      "profit_at_bid": 0.258,
+      "loss_at_ask": 0.001,
+      "reference_price": 136.913,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "rising",
+      "recent_buy_bonds": 20140.0,
+      "recent_sell_bonds": 5800.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786602834000,
+        "price": 137.069,
+        "quantity_bonds": 380.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 183
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 136.93,
+        "maximum_bid1": 137.03,
+        "minimum_ask1": 137.289,
+        "maximum_ask1": 137.289
+      },
+      "future_120s": {
+        "ticks": 16,
+        "minimum_bid1": 136.93,
+        "maximum_bid1": 137.031,
+        "minimum_ask1": 137.289,
+        "maximum_ask1": 137.289
+      },
+      "future_600s": {
+        "ticks": 114,
+        "minimum_bid1": 136.61,
+        "maximum_bid1": 137.121,
+        "minimum_ask1": 136.708,
+        "maximum_ask1": 137.297
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786602843000,
+      "signal_market_time": "14:34:03.000",
+      "base_short_sale_market_ts_ms": 1786602843000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.288,
+      "bid1": 137.068,
+      "bid1_bonds": 3620.0,
+      "ask1": 137.289,
+      "ask1_bonds": 1620.0,
+      "profit_at_bid": 0.22,
+      "loss_at_ask": 0.001,
+      "reference_price": 136.921,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_rise",
+      "recent_buy_bonds": 19140.0,
+      "recent_sell_bonds": 7940.0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 137.069,
+        "remaining_bonds": 620.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786602852000,
+        "price": 137.069,
+        "quantity_bonds": 380.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 9
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 137.068,
+        "maximum_bid1": 137.071,
+        "minimum_ask1": 137.289,
+        "maximum_ask1": 137.289
+      },
+      "future_120s": {
+        "ticks": 28,
+        "minimum_bid1": 136.61,
+        "maximum_bid1": 137.121,
+        "minimum_ask1": 136.998,
+        "maximum_ask1": 137.289
+      },
+      "future_600s": {
+        "ticks": 104,
+        "minimum_bid1": 136.61,
+        "maximum_bid1": 137.121,
+        "minimum_ask1": 136.708,
+        "maximum_ask1": 137.297
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786586700000,
+      "signal_market_time": "10:05:00.000",
+      "base_short_sale_market_ts_ms": 1786586700000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.796,
+      "bid1": 137.201,
+      "bid1_bonds": 1770.0,
+      "ask1": 137.797,
+      "ask1_bonds": 5000.0,
+      "profit_at_bid": 0.595,
+      "loss_at_ask": 0.001,
+      "reference_price": 137.499,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 3230.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 137.202,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786586733000,
+        "price": 137.202,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 33
+      },
+      "future_30s": {
+        "ticks": 6,
+        "minimum_bid1": 137.201,
+        "maximum_bid1": 137.201,
+        "minimum_ask1": 137.649,
+        "maximum_ask1": 137.797
+      },
+      "future_120s": {
+        "ticks": 30,
+        "minimum_bid1": 137.001,
+        "maximum_bid1": 137.201,
+        "minimum_ask1": 137.499,
+        "maximum_ask1": 137.797
+      },
+      "future_600s": {
+        "ticks": 134,
+        "minimum_bid1": 136.501,
+        "maximum_bid1": 137.201,
+        "minimum_ask1": 137.0,
+        "maximum_ask1": 137.797
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786588107000,
+      "signal_market_time": "10:28:27.000",
+      "base_short_sale_market_ts_ms": 1786588107000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.19,
+      "bid1": 136.707,
+      "bid1_bonds": 1000.0,
+      "ask1": 137.19,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.483,
+      "loss_at_ask": 0.0,
+      "reference_price": 136.95,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 4420.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.708,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786588416000,
+        "price": 136.712,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 309
+      },
+      "future_30s": {
+        "ticks": 10,
+        "minimum_bid1": 136.707,
+        "maximum_bid1": 136.707,
+        "minimum_ask1": 137.184,
+        "maximum_ask1": 137.19
+      },
+      "future_120s": {
+        "ticks": 40,
+        "minimum_bid1": 136.707,
+        "maximum_bid1": 136.817,
+        "minimum_ask1": 136.8,
+        "maximum_ask1": 137.19
+      },
+      "future_600s": {
+        "ticks": 123,
+        "minimum_bid1": 136.701,
+        "maximum_bid1": 137.151,
+        "minimum_ask1": 136.732,
+        "maximum_ask1": 137.19
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "bond_code": "132024.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1786588245000,
+      "signal_market_time": "10:30:45.000",
+      "base_short_sale_market_ts_ms": 1786588107000,
+      "seconds_since_base_short_sale": 138,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.19,
+      "bid1": 137.15,
+      "bid1_bonds": 1000.0,
+      "ask1": 137.156,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.04,
+      "loss_at_ask": -0.034,
+      "reference_price": 136.987,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 7420.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": {
+        "kind": "inventory_replenish",
+        "limit_price": 136.818,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786588416000,
+        "price": 136.712,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 171
+      },
+      "future_30s": {
+        "ticks": 10,
+        "minimum_bid1": 136.743,
+        "maximum_bid1": 137.151,
+        "minimum_ask1": 137.148,
+        "maximum_ask1": 137.156
+      },
+      "future_120s": {
+        "ticks": 29,
+        "minimum_bid1": 136.711,
+        "maximum_bid1": 137.151,
+        "minimum_ask1": 136.83,
+        "maximum_ask1": 137.156
+      },
+      "future_600s": {
+        "ticks": 108,
+        "minimum_bid1": 136.701,
+        "maximum_bid1": 137.151,
+        "minimum_ask1": 136.732,
+        "maximum_ask1": 137.156
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786671111000,
+      "signal_market_time": "09:31:51.000",
+      "base_short_sale_market_ts_ms": 1786671111000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.478,
+      "bid1": 135.001,
+      "bid1_bonds": 1000.0,
+      "ask1": 137.48,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 2.477,
+      "loss_at_ask": 0.002,
+      "reference_price": 136.922,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 135.002,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786671576000,
+        "price": 136.837,
+        "quantity_bonds": 380.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 465
+      },
+      "future_30s": {
+        "ticks": 2,
+        "minimum_bid1": 135.001,
+        "maximum_bid1": 135.001,
+        "minimum_ask1": 137.479,
+        "maximum_ask1": 137.479
+      },
+      "future_120s": {
+        "ticks": 19,
+        "minimum_bid1": 135.001,
+        "maximum_bid1": 135.501,
+        "minimum_ask1": 136.9,
+        "maximum_ask1": 137.479
+      },
+      "future_600s": {
+        "ticks": 146,
+        "minimum_bid1": 135.001,
+        "maximum_bid1": 136.911,
+        "minimum_ask1": 136.687,
+        "maximum_ask1": 137.479
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786673895000,
+      "signal_market_time": "10:18:15.000",
+      "base_short_sale_market_ts_ms": 1786673895000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.331,
+      "bid1": 136.728,
+      "bid1_bonds": 2000.0,
+      "ask1": 137.331,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.603,
+      "loss_at_ask": 0.0,
+      "reference_price": 137.051,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 7000.0,
+      "recent_sell_bonds": 2000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.729,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786673928000,
+        "price": 136.748,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 33
+      },
+      "future_30s": {
+        "ticks": 10,
+        "minimum_bid1": 136.728,
+        "maximum_bid1": 136.747,
+        "minimum_ask1": 137.206,
+        "maximum_ask1": 137.291
+      },
+      "future_120s": {
+        "ticks": 32,
+        "minimum_bid1": 136.67,
+        "maximum_bid1": 137.197,
+        "minimum_ask1": 136.747,
+        "maximum_ask1": 137.291
+      },
+      "future_600s": {
+        "ticks": 131,
+        "minimum_bid1": 136.12,
+        "maximum_bid1": 137.197,
+        "minimum_ask1": 136.659,
+        "maximum_ask1": 137.291
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786673955000,
+      "signal_market_time": "10:19:15.000",
+      "base_short_sale_market_ts_ms": 1786673955000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.198,
+      "bid1": 136.777,
+      "bid1_bonds": 1000.0,
+      "ask1": 137.198,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.421,
+      "loss_at_ask": 0.0,
+      "reference_price": 136.988,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 9000.0,
+      "recent_sell_bonds": 4000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.778,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786674018000,
+        "price": 136.672,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 63
+      },
+      "future_30s": {
+        "ticks": 5,
+        "minimum_bid1": 136.795,
+        "maximum_bid1": 136.796,
+        "minimum_ask1": 137.198,
+        "maximum_ask1": 137.198
+      },
+      "future_120s": {
+        "ticks": 26,
+        "minimum_bid1": 136.67,
+        "maximum_bid1": 137.197,
+        "minimum_ask1": 137.196,
+        "maximum_ask1": 137.198
+      },
+      "future_600s": {
+        "ticks": 131,
+        "minimum_bid1": 136.12,
+        "maximum_bid1": 137.197,
+        "minimum_ask1": 136.659,
+        "maximum_ask1": 137.198
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132026.SH",
+      "category": "rising_tight_ask_loss_le_005",
+      "signal_market_ts_ms": 1786674012000,
+      "signal_market_time": "10:20:12.000",
+      "base_short_sale_market_ts_ms": 1786673955000,
+      "seconds_since_base_short_sale": 57,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.198,
+      "bid1": 137.197,
+      "bid1_bonds": 3000.0,
+      "ask1": 137.198,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.001,
+      "loss_at_ask": 0.0,
+      "reference_price": 136.997,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 12000.0,
+      "recent_sell_bonds": 6000.0,
+      "existing_buy_order": {
+        "kind": "profitable_visible_bid_base_replenish",
+        "limit_price": 136.672,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786674018000,
+        "price": 136.672,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 6
+      },
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 136.671,
+        "maximum_bid1": 136.672,
+        "minimum_ask1": 137.197,
+        "maximum_ask1": 137.198
+      },
+      "future_120s": {
+        "ticks": 30,
+        "minimum_bid1": 136.671,
+        "maximum_bid1": 136.672,
+        "minimum_ask1": 137.012,
+        "maximum_ask1": 137.198
+      },
+      "future_600s": {
+        "ticks": 131,
+        "minimum_bid1": 136.12,
+        "maximum_bid1": 136.855,
+        "minimum_ask1": 136.659,
+        "maximum_ask1": 137.198
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786685295000,
+      "signal_market_time": "13:28:15.000",
+      "base_short_sale_market_ts_ms": 1786685295000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 135.989,
+      "bid1": 135.601,
+      "bid1_bonds": 2000.0,
+      "ask1": 135.989,
+      "ask1_bonds": 3000.0,
+      "profit_at_bid": 0.388,
+      "loss_at_ask": 0.0,
+      "reference_price": 135.795,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 11000.0,
+      "recent_sell_bonds": 13620.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 135.602,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786685304000,
+        "price": 135.602,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 9
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 135.601,
+        "maximum_bid1": 135.601,
+        "minimum_ask1": 135.9,
+        "maximum_ask1": 135.989
+      },
+      "future_120s": {
+        "ticks": 33,
+        "minimum_bid1": 135.6,
+        "maximum_bid1": 135.601,
+        "minimum_ask1": 135.7,
+        "maximum_ask1": 136.0
+      },
+      "future_600s": {
+        "ticks": 112,
+        "minimum_bid1": 135.6,
+        "maximum_bid1": 135.801,
+        "minimum_ask1": 135.7,
+        "maximum_ask1": 136.0
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786685322000,
+      "signal_market_time": "13:28:42.000",
+      "base_short_sale_market_ts_ms": 1786685322000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 135.899,
+      "bid1": 135.601,
+      "bid1_bonds": 1000.0,
+      "ask1": 135.959,
+      "ask1_bonds": 4000.0,
+      "profit_at_bid": 0.298,
+      "loss_at_ask": 0.06,
+      "reference_price": 135.79,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 12000.0,
+      "recent_sell_bonds": 10000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 135.602,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786685331000,
+        "price": 135.602,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 9
+      },
+      "future_30s": {
+        "ticks": 8,
+        "minimum_bid1": 135.6,
+        "maximum_bid1": 135.601,
+        "minimum_ask1": 135.7,
+        "maximum_ask1": 135.9
+      },
+      "future_120s": {
+        "ticks": 31,
+        "minimum_bid1": 135.6,
+        "maximum_bid1": 135.605,
+        "minimum_ask1": 135.7,
+        "maximum_ask1": 136.0
+      },
+      "future_600s": {
+        "ticks": 104,
+        "minimum_bid1": 135.6,
+        "maximum_bid1": 135.801,
+        "minimum_ask1": 135.7,
+        "maximum_ask1": 136.0
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132026.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786686267000,
+      "signal_market_time": "13:44:27.000",
+      "base_short_sale_market_ts_ms": 1786686267000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.195,
+      "bid1": 136.001,
+      "bid1_bonds": 1000.0,
+      "ask1": 137.196,
+      "ask1_bonds": 9000.0,
+      "profit_at_bid": 1.194,
+      "loss_at_ask": 0.001,
+      "reference_price": 136.922,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "rising",
+      "recent_buy_bonds": 6000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.001,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786686291000,
+        "price": 136.006,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 24
+      },
+      "future_30s": {
+        "ticks": 10,
+        "minimum_bid1": 136.0,
+        "maximum_bid1": 136.005,
+        "minimum_ask1": 136.799,
+        "maximum_ask1": 137.196
+      },
+      "future_120s": {
+        "ticks": 33,
+        "minimum_bid1": 135.801,
+        "maximum_bid1": 136.011,
+        "minimum_ask1": 135.814,
+        "maximum_ask1": 137.196
+      },
+      "future_600s": {
+        "ticks": 87,
+        "minimum_bid1": 135.801,
+        "maximum_bid1": 136.051,
+        "minimum_ask1": 135.814,
+        "maximum_ask1": 137.196
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786671113000,
+      "signal_market_time": "09:31:53.000",
+      "base_short_sale_market_ts_ms": 1786671113000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.267,
+      "bid1": 135.101,
+      "bid1_bonds": 7000.0,
+      "ask1": 137.268,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 2.166,
+      "loss_at_ask": 0.001,
+      "reference_price": 136.126,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "stable",
+      "recent_buy_bonds": 1000.0,
+      "recent_sell_bonds": 0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 135.102,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786671302000,
+        "price": 135.302,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 189
+      },
+      "future_30s": {
+        "ticks": 10,
+        "minimum_bid1": 135.101,
+        "maximum_bid1": 135.101,
+        "minimum_ask1": 136.999,
+        "maximum_ask1": 137.267
+      },
+      "future_120s": {
+        "ticks": 21,
+        "minimum_bid1": 135.101,
+        "maximum_bid1": 135.301,
+        "minimum_ask1": 136.799,
+        "maximum_ask1": 137.267
+      },
+      "future_600s": {
+        "ticks": 87,
+        "minimum_bid1": 135.101,
+        "maximum_bid1": 135.801,
+        "minimum_ask1": 135.301,
+        "maximum_ask1": 137.299
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786672457000,
+      "signal_market_time": "09:54:17.000",
+      "base_short_sale_market_ts_ms": 1786672448000,
+      "seconds_since_base_short_sale": 9,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.995,
+      "bid1": 136.612,
+      "bid1_bonds": 1000.0,
+      "ask1": 136.613,
+      "ask1_bonds": 190.0,
+      "profit_at_bid": 0.383,
+      "loss_at_ask": -0.382,
+      "reference_price": 136.613,
+      "reference_source": "current_midpoint",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 1380.0,
+      "recent_sell_bonds": 2000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786672580000,
+        "price": 136.202,
+        "quantity_bonds": 190.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 123
+      },
+      "future_30s": {
+        "ticks": 7,
+        "minimum_bid1": 135.951,
+        "maximum_bid1": 136.1,
+        "minimum_ask1": 136.989,
+        "maximum_ask1": 136.996
+      },
+      "future_120s": {
+        "ticks": 25,
+        "minimum_bid1": 135.951,
+        "maximum_bid1": 136.201,
+        "minimum_ask1": 136.599,
+        "maximum_ask1": 136.996
+      },
+      "future_600s": {
+        "ticks": 98,
+        "minimum_bid1": 135.951,
+        "maximum_bid1": 136.201,
+        "minimum_ask1": 136.499,
+        "maximum_ask1": 136.996
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786672736000,
+      "signal_market_time": "09:58:56.000",
+      "base_short_sale_market_ts_ms": 1786672736000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.988,
+      "bid1": 136.011,
+      "bid1_bonds": 2000.0,
+      "ask1": 136.957,
+      "ask1_bonds": 3000.0,
+      "profit_at_bid": 0.977,
+      "loss_at_ask": -0.031,
+      "reference_price": 136.126,
+      "reference_source": "previous_close",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 3190.0,
+      "recent_sell_bonds": 2000.0,
+      "existing_buy_order": {
+        "kind": "profitable_visible_bid_base_replenish",
+        "limit_price": 136.011,
+        "remaining_bonds": 810.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786672793000,
+        "price": 136.012,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 57
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 136.011,
+        "maximum_bid1": 136.011,
+        "minimum_ask1": 136.499,
+        "maximum_ask1": 136.95
+      },
+      "future_120s": {
+        "ticks": 21,
+        "minimum_bid1": 136.011,
+        "maximum_bid1": 136.201,
+        "minimum_ask1": 136.499,
+        "maximum_ask1": 136.95
+      },
+      "future_600s": {
+        "ticks": 53,
+        "minimum_bid1": 136.011,
+        "maximum_bid1": 136.211,
+        "minimum_ask1": 136.499,
+        "maximum_ask1": 136.95
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786674113000,
+      "signal_market_time": "10:21:53.000",
+      "base_short_sale_market_ts_ms": 1786674113000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.797,
+      "bid1": 136.601,
+      "bid1_bonds": 2000.0,
+      "ask1": 136.798,
+      "ask1_bonds": 1000.0,
+      "profit_at_bid": 0.196,
+      "loss_at_ask": 0.001,
+      "reference_price": 136.468,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_rise",
+      "recent_buy_bonds": 18000.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786674128000,
+        "price": 136.552,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 15
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 136.5,
+        "maximum_bid1": 136.6,
+        "minimum_ask1": 136.699,
+        "maximum_ask1": 136.798
+      },
+      "future_120s": {
+        "ticks": 28,
+        "minimum_bid1": 136.203,
+        "maximum_bid1": 136.6,
+        "minimum_ask1": 136.695,
+        "maximum_ask1": 136.798
+      },
+      "future_600s": {
+        "ticks": 130,
+        "minimum_bid1": 136.203,
+        "maximum_bid1": 137.0,
+        "minimum_ask1": 136.679,
+        "maximum_ask1": 137.299
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786674470000,
+      "signal_market_time": "10:27:50.000",
+      "base_short_sale_market_ts_ms": 1786674470000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 137.296,
+      "bid1": 136.617,
+      "bid1_bonds": 2000.0,
+      "ask1": 137.297,
+      "ask1_bonds": 4000.0,
+      "profit_at_bid": 0.679,
+      "loss_at_ask": 0.001,
+      "reference_price": 136.695,
+      "reference_source": "intraday_trade_anchor",
+      "reference_reliable": true,
+      "state": "possible_rise",
+      "recent_buy_bonds": 13000.0,
+      "recent_sell_bonds": 1000.0,
+      "existing_buy_order": null,
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786674947000,
+        "price": 136.602,
+        "quantity_bonds": 190.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 477
+      },
+      "future_30s": {
+        "ticks": 9,
+        "minimum_bid1": 136.617,
+        "maximum_bid1": 136.624,
+        "minimum_ask1": 136.999,
+        "maximum_ask1": 137.297
+      },
+      "future_120s": {
+        "ticks": 26,
+        "minimum_bid1": 136.617,
+        "maximum_bid1": 136.803,
+        "minimum_ask1": 136.949,
+        "maximum_ask1": 137.297
+      },
+      "future_600s": {
+        "ticks": 151,
+        "minimum_bid1": 136.401,
+        "maximum_bid1": 137.0,
+        "minimum_ask1": 136.699,
+        "maximum_ask1": 137.297
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786687328000,
+      "signal_market_time": "14:02:08.000",
+      "base_short_sale_market_ts_ms": 1786687328000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.297,
+      "bid1": 136.0,
+      "bid1_bonds": 1000.0,
+      "ask1": 136.298,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.297,
+      "loss_at_ask": 0.001,
+      "reference_price": 136.108,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "stable",
+      "recent_buy_bonds": 4000.0,
+      "recent_sell_bonds": 5000.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 135.957,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786687334000,
+        "price": 136.001,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 6
+      },
+      "future_30s": {
+        "ticks": 4,
+        "minimum_bid1": 135.956,
+        "maximum_bid1": 136.001,
+        "minimum_ask1": 136.289,
+        "maximum_ask1": 136.29
+      },
+      "future_120s": {
+        "ticks": 14,
+        "minimum_bid1": 135.956,
+        "maximum_bid1": 136.001,
+        "minimum_ask1": 136.199,
+        "maximum_ask1": 136.29
+      },
+      "future_600s": {
+        "ticks": 89,
+        "minimum_bid1": 135.956,
+        "maximum_bid1": 136.291,
+        "minimum_ask1": 136.009,
+        "maximum_ask1": 136.3
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132024.SH",
+      "category": "profitable_visible_bid_018",
+      "signal_market_ts_ms": 1786689506000,
+      "signal_market_time": "14:38:26.000",
+      "base_short_sale_market_ts_ms": 1786689506000,
+      "seconds_since_base_short_sale": 0,
+      "deficit_bonds": 1000.0,
+      "average_sale_price": 136.296,
+      "bid1": 136.0,
+      "bid1_bonds": 1000.0,
+      "ask1": 136.297,
+      "ask1_bonds": 2000.0,
+      "profit_at_bid": 0.296,
+      "loss_at_ask": 0.001,
+      "reference_price": 136.025,
+      "reference_source": "persistent_inside_market",
+      "reference_reliable": false,
+      "state": "possible_rise",
+      "recent_buy_bonds": 4190.0,
+      "recent_sell_bonds": 3810.0,
+      "existing_buy_order": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.001,
+        "remaining_bonds": 1000.0
+      },
+      "existing_model_next_buy": {
+        "market_ts_ms": 1786689524000,
+        "price": 136.001,
+        "quantity_bonds": 1000.0,
+        "fill_reason": "passive_buy",
+        "seconds_after_signal": 18
+      },
+      "future_30s": {
+        "ticks": 4,
+        "minimum_bid1": 135.999,
+        "maximum_bid1": 136.0,
+        "minimum_ask1": 136.199,
+        "maximum_ask1": 136.2
+      },
+      "future_120s": {
+        "ticks": 11,
+        "minimum_bid1": 135.999,
+        "maximum_bid1": 136.0,
+        "minimum_ask1": 136.099,
+        "maximum_ask1": 136.2
+      },
+      "future_600s": {
+        "ticks": 79,
+        "minimum_bid1": 135.606,
+        "maximum_bid1": 136.0,
+        "minimum_ask1": 135.899,
+        "maximum_ask1": 136.297
+      }
+    }
+  ]
+}

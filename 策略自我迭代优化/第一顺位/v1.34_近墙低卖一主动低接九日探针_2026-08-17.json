@@ -1,0 +1,310 @@
+{
+  "model_id": "maker_priority_v1_34_candidate",
+  "behavior_changed": false,
+  "source_database_opened_readonly": true,
+  "temporary_replay_database": true,
+  "selection_is_causal": true,
+  "future_fields_are_post_hoc_validation_only": true,
+  "dates": [
+    "2026-08-04",
+    "2026-08-05",
+    "2026-08-06",
+    "2026-08-07",
+    "2026-08-10",
+    "2026-08-11",
+    "2026-08-12",
+    "2026-08-13",
+    "2026-08-14"
+  ],
+  "codes": [
+    "132026.SH",
+    "132024.SH"
+  ],
+  "signals": [
+    {
+      "market_date": "2026-08-04",
+      "bond_code": "132024.SH",
+      "signal_market_ts_ms": 1785825244000,
+      "signal_market_time": "14:34:04.000",
+      "state": "falling",
+      "state_score": -4,
+      "current_reference_price": 138.316,
+      "current_reference_source": "intraday_trade_anchor",
+      "prior_working_reference_price": 138.31,
+      "prior_working_reference_age_seconds": 6,
+      "bid1": 137.991,
+      "bid1_bonds": 1000.0,
+      "ask1": 138.0,
+      "ask1_bonds": 3380.0,
+      "spread": 0.009,
+      "prior_reference_discount": 0.31,
+      "visible_wall_price": 137.99,
+      "visible_wall_bonds": 6000.0,
+      "ask_premium_to_wall": 0.01,
+      "visible_wall_seconds": 735,
+      "prior_120s_high_buy_bonds": 1380.0,
+      "prior_120s_high_buy_events": 1,
+      "most_recent_high_buy_time": "14:33:16",
+      "most_recent_high_buy_price": 138.199,
+      "inventory_before_decision_bonds": 1000.0,
+      "existing_buy_before_decision": {
+        "kind": "low_bid_reversion",
+        "limit_price": 137.991,
+        "created_market_ts_ms": 1785825238000
+      },
+      "assessment_evidence": [
+        "近5分钟主动卖出约5,620张，明显强于买入",
+        "近1分钟买卖中点下移0.108元",
+        "卖一近1分钟主动下压0.198元",
+        "近30秒卖一从阶段高位下压0.200元",
+        "前三档卖盘最大断档0.200元，上方供给稀疏"
+      ],
+      "model_inventory_after_decision_bonds": 1000.0,
+      "model_buy_after_decision": {
+        "kind": "low_bid_reversion",
+        "limit_price": 137.992
+      },
+      "last_matching_market_time": "14:34:04.000",
+      "matching_frame_count": 1,
+      "future_600s": {
+        "post_hoc_validation_only": true,
+        "first_later_high_buy": null,
+        "minimum_bid_30s": 137.99,
+        "minimum_bid_120s": 137.99,
+        "minimum_bid_600s": 137.99,
+        "maximum_bid_600s": 138.0
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "bond_code": "132026.SH",
+      "signal_market_ts_ms": 1785897720000,
+      "signal_market_time": "10:42:00.000",
+      "state": "falling",
+      "state_score": -3,
+      "current_reference_price": 134.923,
+      "current_reference_source": "persistent_inside_market",
+      "prior_working_reference_price": 134.923,
+      "prior_working_reference_age_seconds": 3,
+      "bid1": 134.71,
+      "bid1_bonds": 2000.0,
+      "ask1": 134.73,
+      "ask1_bonds": 2000.0,
+      "spread": 0.02,
+      "prior_reference_discount": 0.193,
+      "visible_wall_price": 134.7,
+      "visible_wall_bonds": 9000.0,
+      "ask_premium_to_wall": 0.03,
+      "visible_wall_seconds": 147,
+      "prior_120s_high_buy_bonds": 1000.0,
+      "prior_120s_high_buy_events": 1,
+      "most_recent_high_buy_time": "10:41:33",
+      "most_recent_high_buy_price": 134.984,
+      "inventory_before_decision_bonds": 1000.0,
+      "existing_buy_before_decision": null,
+      "assessment_evidence": [
+        "近1分钟买卖中点下移0.141元",
+        "卖一近1分钟主动下压0.261元",
+        "近30秒卖一从阶段高位下压0.254元",
+        "前三档卖盘最大断档0.248元，上方供给稀疏"
+      ],
+      "model_inventory_after_decision_bonds": 1000.0,
+      "model_buy_after_decision": {
+        "kind": "low_bid_reversion",
+        "limit_price": 134.71
+      },
+      "last_matching_market_time": "10:42:00.000",
+      "matching_frame_count": 1,
+      "future_600s": {
+        "post_hoc_validation_only": true,
+        "first_later_high_buy": {
+          "market_time": "10:42:36.000",
+          "price": 135.0,
+          "quantity_bonds": 2000.0,
+          "seconds_after_signal": 36,
+          "gross_edge_per_bond": 0.27
+        },
+        "minimum_bid_30s": 134.71,
+        "minimum_bid_120s": 134.71,
+        "minimum_bid_600s": 134.71,
+        "maximum_bid_600s": 135.409
+      }
+    },
+    {
+      "market_date": "2026-08-11",
+      "bond_code": "132026.SH",
+      "signal_market_ts_ms": 1786430374000,
+      "signal_market_time": "14:39:34.000",
+      "state": "possible_fall",
+      "state_score": -2,
+      "current_reference_price": 136.89,
+      "current_reference_source": "intraday_trade_anchor",
+      "prior_working_reference_price": 136.89,
+      "prior_working_reference_age_seconds": 3,
+      "bid1": 136.541,
+      "bid1_bonds": 4000.0,
+      "ask1": 136.56,
+      "ask1_bonds": 1000.0,
+      "spread": 0.019,
+      "prior_reference_discount": 0.33,
+      "visible_wall_price": 136.54,
+      "visible_wall_bonds": 5000.0,
+      "ask_premium_to_wall": 0.02,
+      "visible_wall_seconds": 378,
+      "prior_120s_high_buy_bonds": 2000.0,
+      "prior_120s_high_buy_events": 1,
+      "most_recent_high_buy_time": "14:38:01",
+      "most_recent_high_buy_price": 136.887,
+      "inventory_before_decision_bonds": 1000.0,
+      "existing_buy_before_decision": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.544,
+        "created_market_ts_ms": 1786430227000
+      },
+      "assessment_evidence": [
+        "近5分钟主动买入约2,000张，明显强于卖出",
+        "近1分钟买卖中点下移0.165元",
+        "卖一近1分钟主动下压0.327元",
+        "近30秒卖一从阶段高位下压0.327元"
+      ],
+      "model_inventory_after_decision_bonds": 1000.0,
+      "model_buy_after_decision": {
+        "kind": "low_bid_reversion",
+        "limit_price": 136.542
+      },
+      "last_matching_market_time": "14:39:34.000",
+      "matching_frame_count": 1,
+      "future_600s": {
+        "post_hoc_validation_only": true,
+        "first_later_high_buy": {
+          "market_time": "14:40:16.000",
+          "price": 136.887,
+          "quantity_bonds": 2000.0,
+          "seconds_after_signal": 42,
+          "gross_edge_per_bond": 0.327
+        },
+        "minimum_bid_30s": 136.541,
+        "minimum_bid_120s": 136.541,
+        "minimum_bid_600s": 136.541,
+        "maximum_bid_600s": 136.701
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132024.SH",
+      "signal_market_ts_ms": 1786686386000,
+      "signal_market_time": "13:46:26.000",
+      "state": "falling",
+      "state_score": -4,
+      "current_reference_price": 135.63,
+      "current_reference_source": "current_midpoint",
+      "prior_working_reference_price": 135.905,
+      "prior_working_reference_age_seconds": 3,
+      "bid1": 135.611,
+      "bid1_bonds": 1000.0,
+      "ask1": 135.649,
+      "ask1_bonds": 1000.0,
+      "spread": 0.038,
+      "prior_reference_discount": 0.256,
+      "visible_wall_price": 135.606,
+      "visible_wall_bonds": 6000.0,
+      "ask_premium_to_wall": 0.043,
+      "visible_wall_seconds": 15,
+      "prior_120s_high_buy_bonds": 2000.0,
+      "prior_120s_high_buy_events": 2,
+      "most_recent_high_buy_time": "13:46:11",
+      "most_recent_high_buy_price": 136.251,
+      "inventory_before_decision_bonds": 1000.0,
+      "existing_buy_before_decision": {
+        "kind": "low_bid_reversion",
+        "limit_price": 135.612,
+        "created_market_ts_ms": 1786686371000
+      },
+      "assessment_evidence": [
+        "近5分钟主动卖出约37,000张，明显强于买入",
+        "近1分钟买卖中点下移0.325元",
+        "卖一近1分钟主动下压0.648元",
+        "近30秒卖一从阶段高位下压0.625元",
+        "135.611附近可见买盘约50,000张，形成强承托区",
+        "前三档卖盘最大断档0.550元，上方供给稀疏"
+      ],
+      "model_inventory_after_decision_bonds": 1000.0,
+      "model_buy_after_decision": null,
+      "last_matching_market_time": "13:46:26.000",
+      "matching_frame_count": 1,
+      "future_600s": {
+        "post_hoc_validation_only": true,
+        "first_later_high_buy": {
+          "market_time": "13:48:59.000",
+          "price": 136.099,
+          "quantity_bonds": 1000.0,
+          "seconds_after_signal": 153,
+          "gross_edge_per_bond": 0.45
+        },
+        "minimum_bid_30s": 135.611,
+        "minimum_bid_120s": 135.611,
+        "minimum_bid_600s": 135.611,
+        "maximum_bid_600s": 136.181
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "bond_code": "132024.SH",
+      "signal_market_ts_ms": 1786686392000,
+      "signal_market_time": "13:46:32.000",
+      "state": "falling",
+      "state_score": -5,
+      "current_reference_price": 135.621,
+      "current_reference_source": "current_midpoint",
+      "prior_working_reference_price": 135.905,
+      "prior_working_reference_age_seconds": 3,
+      "bid1": 135.613,
+      "bid1_bonds": 1000.0,
+      "ask1": 135.63,
+      "ask1_bonds": 1000.0,
+      "spread": 0.017,
+      "prior_reference_discount": 0.275,
+      "visible_wall_price": 135.606,
+      "visible_wall_bonds": 6000.0,
+      "ask_premium_to_wall": 0.024,
+      "visible_wall_seconds": 21,
+      "prior_120s_high_buy_bonds": 1000.0,
+      "prior_120s_high_buy_events": 1,
+      "most_recent_high_buy_time": "13:46:11",
+      "most_recent_high_buy_price": 136.251,
+      "inventory_before_decision_bonds": 1000.0,
+      "existing_buy_before_decision": {
+        "kind": "low_bid_reversion",
+        "limit_price": 135.612,
+        "created_market_ts_ms": 1786686389000
+      },
+      "assessment_evidence": [
+        "近5分钟主动卖出约37,000张，明显强于买入",
+        "近1分钟买卖中点下移0.653元",
+        "卖一近1分钟主动下压0.667元",
+        "买一近1分钟后退0.638元",
+        "近30秒卖一从阶段高位下压0.644元",
+        "近期曾观察到135.611附近买盘约50,000张，形成强承托区",
+        "前三档卖盘最大断档0.570元，上方供给稀疏"
+      ],
+      "model_inventory_after_decision_bonds": 1000.0,
+      "model_buy_after_decision": null,
+      "last_matching_market_time": "13:46:32.000",
+      "matching_frame_count": 1,
+      "future_600s": {
+        "post_hoc_validation_only": true,
+        "first_later_high_buy": {
+          "market_time": "13:48:59.000",
+          "price": 136.099,
+          "quantity_bonds": 1000.0,
+          "seconds_after_signal": 147,
+          "gross_edge_per_bond": 0.469
+        },
+        "minimum_bid_30s": 135.613,
+        "minimum_bid_120s": 135.613,
+        "minimum_bid_600s": 135.613,
+        "maximum_bid_600s": 136.181
+      }
+    }
+  ]
+}

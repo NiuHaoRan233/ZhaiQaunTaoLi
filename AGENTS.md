@@ -1,6 +1,8 @@
 # Project Guide
 
-This repository records MiniQMT market data and runs paper-only M0 strategies.
+This repository records MiniQMT market data and runs paper-only M0 and
+exchangeable-bond maker strategies. It also contains read-only TDX audit,
+market-screen OCR, activity-scanning, and dashboard tools.
 
 ## Persistent Strategy Workflow
 
@@ -68,11 +70,45 @@ During each strategy discussion:
 - At the end of the work, summarize what strategy knowledge was added, what rules or code
   changed, and which questions remain open.
 
+## Repository and Documentation Routing
+
+- `README.md` is the public project entry point. Keep its setup commands, current paper
+  matrix, directory map, and local-data boundary aligned with the repository.
+- `docs/README.md` is the documentation index. Update it when a durable document or a
+  major subtool is added, renamed, or retired.
+- `docs/实时采集与模拟盘运行手册.md` owns daily startup, monitoring, shutdown, and
+  backup operations. `docs/Windows换机迁移教程.md` owns migration instructions.
+- `策略自我迭代优化/` contains curated candidate evidence, frozen manifests, and
+  research summaries. It is not a second implementation tree; executable truth remains
+  under `src/zhaiquant/` and `tests/`.
+- `成交委托数据截图保存/AGENTS.md` owns the daily TDX screenshot/OCR workflow. The
+  screenshots and structured OCR outputs are local evidence and are deliberately not
+  committed.
+- `债券活跃度观察/`, `实盘决策看板/`, and `行情屏幕高速读取/` are independent read-only
+  tools. Preserve their local `.gitignore` rules and keep their READMEs current.
+
+## Current Maker Paper Matrix
+
+- Production baselines remain `maker_priority_v1_1`, `maker_queue_v1_0`, and
+  `maker_windfall_v1_0`.
+- The current persisted real-time comparison order is
+  `maker_priority_v1_37_candidate`, `maker_priority_v1_43_candidate`, then
+  `maker_queue_v1_17_candidate`.
+- A candidate entering the real-time paper matrix is not a production promotion. Do not
+  describe it as deployed or current production, and do not merge its account, fills,
+  inventory, or PnL with another model.
+- Keep `config.example.toml`, the model registry, the formal specification, runtime model
+  registration, and tests consistent whenever this matrix changes.
+
 ## Safety
 
 - Keep the market connection read-only. Do not import or call `xttrader`.
 - Never send broker orders from this project.
 - `config.toml`, `data/`, `logs/`, and `backups/` are local runtime state and must not be committed.
+- `output/`, `成交委托数据截图保存/` contents, screen-reader runtime files, activity
+  scanner reports/snapshots, and `之前的工作的一些内容/` are also local-only. Do not
+  force-add them. The only committed file inside the TDX capture archive is its
+  `AGENTS.md` workflow.
 - Back up SQLite with `zhaiquant backup`; do not copy a live WAL database directly.
 
 ## Daily Maker Account Inputs
@@ -107,8 +143,13 @@ During each strategy discussion:
 
 - MiniQMT default port: `58611`.
 - Primary pair: `132026.SH` and `600900.SH`.
-- Additional recording-only code: `132024.SH` by default.
+- The maker paper engine also evaluates `132024.SH` using its mapped underlying
+  `600362.SH`. M0 still evaluates only the primary `132026.SH`/`600900.SH` pair.
 - Run tests with `.\.venv\Scripts\python.exe -m unittest discover -v`.
+- Run the standalone read-only tool tests with:
+  `.\.venv\Scripts\python.exe -m unittest discover -s 债券活跃度观察 -p "test_*.py" -v`,
+  `.\.venv\Scripts\python.exe -m unittest discover -s 实盘决策看板\tests -p "test_*.py" -v`,
+  and `.\.venv\Scripts\python.exe -m unittest discover -s 行情屏幕高速读取\tests -p "test_*.py" -v`.
 - Run diagnostics with `.\.venv\Scripts\python.exe -m zhaiquant --config config.toml doctor`.
 
 ## Data Semantics

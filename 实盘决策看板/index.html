@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>双债盯盘看板 · Paper Desk</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div>
+          <div class="eyebrow">DUAL-BOND PAPER DESK · 只读账本</div>
+          <h1>双债盯盘看板</h1>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="source-pill"><span class="pulse-dot"></span><span id="sourceLabel">正在连接两债纸面账本</span></div>
+        <div class="safety-pill">纸面模拟 · 不发送真实委托</div>
+        <button class="icon-button" id="refreshButton" type="button" aria-label="刷新">↻</button>
+      </div>
+    </header>
+
+    <section class="command-bar">
+      <div class="mode-switch" id="modeSwitch">
+        <button class="active" data-mode="live" type="button">实时快照</button>
+        <button data-mode="replay" type="button">模拟回看</button>
+      </div>
+      <div class="replay-controls" id="replayControls">
+        <label>交易日 <select id="replayDate" aria-label="回看交易日"></select></label>
+        <button class="play-button" id="replayPlay" type="button" aria-label="播放回看">▶</button>
+        <input id="replayTimeline" type="range" min="0" max="1" value="0" step="1000" aria-label="回看时间轴">
+        <strong class="replay-clock" id="replayClock">--:--:--</strong>
+        <select class="speed-select" id="replaySpeed" aria-label="回看倍速">
+          <option value="1">1×</option>
+          <option value="10">10×</option>
+          <option value="60" selected>60×</option>
+          <option value="300">300×</option>
+        </select>
+        <span class="causal-badge">双债同步 · 因果截断</span>
+      </div>
+      <div class="market-clock">
+        <span id="marketDate">—</span><strong id="marketTime">--:--:--</strong>
+        <span class="refresh-state" id="refreshState">等待数据</span>
+      </div>
+    </section>
+
+    <section class="market-grid" id="marketGrid" aria-label="双债盘口">
+      <div class="loading-desk">正在读取 G三峡EB2 与 26江铜EB……</div>
+    </section>
+
+    <section class="model-console panel">
+      <div class="model-console-head">
+        <div class="model-picker">
+          <span class="section-index">03</span>
+          <label for="modelSelect">观察模型</label>
+          <select id="modelSelect" aria-label="观察模型"></select>
+          <span class="status-badge" id="modelStatus">—</span>
+          <span class="model-note-inline" id="modelNote">默认只看一个模型；两债账户互不合并</span>
+        </div>
+        <span class="unit-note">数量单位：张 · 1手=10张</span>
+      </div>
+      <div class="selected-accounts" id="selectedAccounts"></div>
+    </section>
+
+    <section class="action-panel panel">
+      <div class="panel-head">
+        <div><span class="section-index">04</span><h2>模型动作流水</h2><span class="head-note">挂单、撤单、成交完整留痕</span></div>
+        <div class="action-controls">
+          <span id="actionCount">0 条</span>
+          <div class="segment-control" id="actionFilter">
+            <button class="active" data-action-filter="all" type="button">全部</button>
+            <button data-action-filter="submit" type="button">挂单</button>
+            <button data-action-filter="cancel" type="button">撤单</button>
+            <button data-action-filter="fill" type="button">成交</button>
+          </div>
+        </div>
+      </div>
+      <div class="action-columns"><span>时间</span><span>债券</span><span>动作</span><span>方向 / 价格 / 数量</span><span>原因与订单</span></div>
+      <div class="action-stream" id="actionStream"></div>
+    </section>
+
+    <footer>
+      <span>SQLite READ-ONLY · PAPER ONLY · NO XTTRADER</span>
+      <span id="servedAt">等待首个双债快照</span>
+    </footer>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -134,11 +134,12 @@ class MakerDashboardTests(unittest.TestCase):
             self.assertIn("132026.SH 做市模拟盘实时看板", output)
             self.assertIn("底仓持平", output)
             self.assertIn("137.198", output)
-            self.assertIn("[交易员思考与应对预案]", output)
+            self.assertIn("[本模型：交易员思考与应对预案]", output)
             self.assertIn("合理定价", output)
             self.assertIn("当前状态", output)
-            self.assertIn("向上应对", output)
-            self.assertIn("向下应对", output)
+            self.assertIn("本模型向上应对", output)
+            self.assertIn("本模型向下应对", output)
+            self.assertIn("[本模型：当前模拟挂单]", output)
             self.assertIn("底仓高卖", output)
             self.assertIn("5,000", output)
             self.assertIn("09:25-15:30内有新成交立即刷新", output)
@@ -146,6 +147,9 @@ class MakerDashboardTests(unittest.TestCase):
             self.assertIn("第一顺位（乐观成交假设", output)
             self.assertIn("本账户：今日全部成交流水", output)
             self.assertIn("本账户：今日尚未闭环交易", output)
+            self.assertIn("新一轮看板刷新", output)
+            self.assertIn("本轮刷新结束", output)
+            self.assertNotIn("[当前持仓批次]", output)
 
     def test_two_fill_modes_render_in_separate_account_sections(self) -> None:
         accounts = [
@@ -180,7 +184,22 @@ class MakerDashboardTests(unittest.TestCase):
             "bond_name": "G三峡EB2",
             "market": None,
             "accounts": accounts,
-            "orders": [],
+            "orders": [
+                {
+                    "strategy_id": "maker_v01_priority",
+                    "side": "buy", "kind": "low_bid_reversion",
+                    "limit_price": 136.111, "quantity": 1_000,
+                    "filled_quantity": 0, "queue_ahead": 0,
+                    "target_price": None,
+                },
+                {
+                    "strategy_id": "maker_v01_queue",
+                    "side": "buy", "kind": "low_bid_reversion",
+                    "limit_price": 136.222, "quantity": 1_000,
+                    "filled_quantity": 0, "queue_ahead": 2_000,
+                    "target_price": None,
+                },
+            ],
             "lots": [],
             "fills": [],
             "session": None,
@@ -193,12 +212,21 @@ class MakerDashboardTests(unittest.TestCase):
 
         self.assertIn("G三峡EB2（132026.SH）", output)
 
-        priority = output.index("模拟账户：第一顺位（乐观成交假设")
-        queue = output.index("模拟账户：排队成交（较保守成交假设")
+        priority = output.index(">>> 模型区块 1/2 开始  |  第一顺位")
+        queue = output.index(">>> 模型区块 2/2 开始  |  排队成交")
         self.assertLess(priority, queue)
         self.assertEqual(output.count("[本账户：今日全部成交流水]"), 2)
+        self.assertEqual(output.count("[本模型：交易员思考与应对预案]"), 2)
+        self.assertEqual(output.count("[本模型：当前模拟挂单]"), 2)
+        self.assertIn("改善一厘争取第一顺位", output[priority:queue])
+        self.assertIn("先消耗真实前方队列", output[queue:])
+        self.assertIn("136.111", output[priority:queue])
+        self.assertNotIn("136.222", output[priority:queue])
+        self.assertIn("136.222", output[queue:])
         self.assertIn("盯市毛收益 +100.00元", output[priority:queue])
         self.assertIn("盯市毛收益 +80.00元", output[queue:])
+        self.assertNotIn("[当前持仓批次]", output)
+        self.assertNotIn("\n[当前模拟挂单]", output)
 
     def test_daily_trade_pairing_handles_partial_replenishment_fifo(self) -> None:
         accounts = [{

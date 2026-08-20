@@ -2,9 +2,10 @@
 port = 58611
 bond_code = "132026.SH"
 stock_code = "600900.SH"
-# Extra instruments are recorded in full but are not traded by M0.
-watch_codes = ["132024.SH"]
-instrument_names = { "132026.SH" = "G三峡EB2", "132024.SH" = "26江铜EB" }
+# Extra instruments are recorded in full but are not traded by M0.  The
+# second bond's own underlying stock is required for causal maker replay.
+watch_codes = ["132024.SH", "600362.SH"]
+instrument_names = { "132026.SH" = "G三峡EB2", "132024.SH" = "26江铜EB", "600362.SH" = "江西铜业" }
 callback_queue_size = 100000
 stale_after_seconds = 3.0
 status_interval_seconds = 15.0
@@ -58,14 +59,26 @@ fill_modes = ["optimistic", "queue", "conservative"]
 # enough cash for another 1,000, and keeps inventory between 0 and 2,000.
 enabled = false
 bond_codes = ["132026.SH", "132024.SH"]
+underlying_stock_codes = { "132026.SH" = "600900.SH", "132024.SH" = "600362.SH" }
 initial_inventory_bonds = 1000.0
+additional_buying_capacity_bonds = 1000.0
 maximum_inventory_bonds = 2000.0
+# Legacy CNY ledger seed. Standard maker accounts use the explicit bond
+# capacity above and neutrally increase this funding base if actual prices
+# require more cash; the independent windfall account remains cash-limited.
 initial_cash_cny = 136800.0
 order_quantity_bonds = 1000.0
 price_tick = 0.001
 fill_modes = ["priority", "queue"]
+# Optional candidate models that run beside the baselines in real time. Each
+# uses an independent account and persists all paper orders/fills to SQLite.
+realtime_comparison_model_ids = [
+  "maker_priority_v1_37_candidate",
+  "maker_priority_v1_43_candidate",
+  "maker_queue_v1_17_candidate",
+]
 earliest_entry = "09:30:00.000"
-latest_entry = "14:56:30.000"
+latest_entry = "15:29:59.999"
 # Optional independent one-hand paper account for extreme deep-book bargains.
 super_windfall_enabled = false
 super_windfall_quantity_bonds = 10.0

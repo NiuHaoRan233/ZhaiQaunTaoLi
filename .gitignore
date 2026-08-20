@@ -10,7 +10,11 @@ config.toml
 data/
 logs/
 backups/
-成交委托数据截图保存/
+output/
+之前的工作的一些内容/
+成交委托数据截图保存/*
+!成交委托数据截图保存/AGENTS.md
+行情屏幕高速读取/runtime/
 *.sqlite3
 *.sqlite3-wal
 *.sqlite3-shm

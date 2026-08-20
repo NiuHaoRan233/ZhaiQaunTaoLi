@@ -1,0 +1,74 @@
+{
+  "frozen_at_asia_shanghai": "2026-08-17T05:18:47+08:00",
+  "git_head": "5550252eb5332304e4e109b20e4bb3c05ee8cec6",
+  "candidate_model_id": "maker_priority_v1_29_candidate",
+  "parent_model_id": "maker_priority_v1_28_candidate",
+  "production_comparator_model_id": "maker_priority_v1_1",
+  "execution_branch": "priority",
+  "supersedes_manifest": "v1.29_样本外冻结清单_2026-08-17.json",
+  "supersession_reason": "开盘前发现普通账户仍以陈旧136800元现金截断明确的额外1,000张买入能力；策略profile不变，账户容量模拟器和验收源码已修正并重新冻结。",
+  "instruments": [
+    "132026.SH",
+    "132024.SH"
+  ],
+  "calibration_dates": [
+    "2026-08-04",
+    "2026-08-05",
+    "2026-08-06",
+    "2026-08-07",
+    "2026-08-10",
+    "2026-08-11",
+    "2026-08-12",
+    "2026-08-13",
+    "2026-08-14"
+  ],
+  "first_eligible_sample_out_date": "2026-08-17",
+  "opening_account": {
+    "base_inventory_bonds": 1000,
+    "additional_buying_capacity_bonds": 1000,
+    "normal_minimum_inventory_bonds": 0,
+    "normal_maximum_inventory_bonds": 2000,
+    "legacy_cash_seed_is_not_a_quantity_limit": true,
+    "funding_adjustment_is_pnl_neutral": true,
+    "force_end_of_day_base_replenishment": false,
+    "carry_previous_day_terminal_state_into_independent_replay": false
+  },
+  "shared_parameters": {
+    "price_tick": 0.001,
+    "order_quantity_bonds": 1000,
+    "minimum_anchor_bonds": 5000,
+    "minimum_entry_edge": 0.2,
+    "minimum_active_entry_edge": 0.5,
+    "minimum_base_high_sell_edge": 0.3,
+    "maximum_active_turnover_spread": 0.02,
+    "market_temperature_window_seconds": 300,
+    "priority_rising_base_short_after_extra_exit_isolation_seconds": 15,
+    "confirmed_rising_base_short_stop_seconds": 30,
+    "profitable_visible_bid_base_replenishment_enabled": true,
+    "minimum_rising_base_short_reliable_reference_edge": 0.2
+  },
+  "policy_profile_sha256": "7383B938DE915BE6B91738DFD43585FAF65EA729E16AEE73D481D4C2390C5141",
+  "source_sha256": {
+    "src/zhaiquant/config.py": "47DFBAE746BC8E8027FD44CE8A3F3619536B93958C629E281CD5E32E60650FB2",
+    "src/zhaiquant/maker_paper.py": "1C91CAC3DD5ECB40882F5A6BD65F536A5EA5218A66624D6781B71441DCE2CE76",
+    "src/zhaiquant/maker.py": "FB6E236D4F53EC19166D96693E54D35D4EBD20D7C1A78B2573A1F14E4706518C",
+    "src/zhaiquant/opportunity_audit.py": "A63715F6105F9CE0C3F68B0B92164DAFFB5397EC5802466EF60984966900830C",
+    "src/zhaiquant/maker_dashboard.py": "A8EC76C511E8020C710BE6E633FE461DC511372BD2B5448BE3AA8275B096D00A",
+    "tests/test_config.py": "D498D15718BD1CFC83FFEAFE09221478D4F24AC52AC42F74276B944176B0015D",
+    "tests/test_maker_paper.py": "39BD9EEC38A811D00501C384FD8E613CD842803985FBE93FC065F129F24F7824",
+    "scripts/audit_priority_sample_out.py": "8F0CAC796E16EEF5773881D8B904E648FF071ABFB3C7D7A70E60BE1029621F7B"
+  },
+  "validation_invariants": {
+    "same_model_and_parameters_for_both_instruments": true,
+    "security_code_specific_conditions_forbidden": true,
+    "future_information_forbidden": true,
+    "tdx_trade_side_is_post_trade_validation_only": true,
+    "market_data_access_read_only": true,
+    "broker_order_submission_forbidden": true,
+    "priority_changes_must_not_propagate_to_queue_or_windfall": true,
+    "profit_must_be_reported_per_instrument_without_cross_instrument_offset": true,
+    "end_of_day_exposure_is_reported_but_not_forced_closed": true,
+    "standard_account_capacity_is_bond_denominated": true,
+    "windfall_remains_cash_limited": true
+  }
+}
