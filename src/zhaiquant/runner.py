@@ -92,7 +92,10 @@ class MarketProcessor:
         maker_codes = configured_maker_bond_codes(config)
         self.maker_paper = (
             MakerPaperEngine(config, store, bond_code=maker_codes[0])
-            if len(maker_codes) == 1
+            if (
+                len(maker_codes) == 1
+                and not config.maker_paper.realtime_comparison_model_ids
+            )
             else MakerPaperPortfolio(config, store)
         )
         self.processed_ticks = 0

@@ -18,6 +18,12 @@ from typing import Any, Iterable
 ROOT = Path(__file__).resolve().parent
 DEFAULT_CONFIG = ROOT / "config.json"
 CATEGORY_ORDER = ("信用债",)
+DEFAULT_SCORE_WEIGHTS = {
+    "amount": 0.30,
+    "transaction_count": 0.30,
+    "price_range": 0.30,
+    "active_intervals": 0.10,
+}
 
 
 @dataclass
@@ -34,8 +40,16 @@ class BondRow:
     previous_close: float = 0.0
     history: list[tuple[str, float]] = field(default_factory=list)
     activity_history: list[tuple[str, int]] = field(default_factory=list)
+    transaction_history: list[tuple[str, int]] = field(default_factory=list)
+    price_range_history: list[tuple[str, float]] = field(default_factory=list)
     today_active_intervals: int = 0
     recent_average_active_intervals: float | None = None
+    today_transaction_count: int = 0
+    recent_average_transaction_count: float | None = None
+    today_price_range: float = 0.0
+    recent_average_price_range: float | None = None
+    today_trade_value_ratio: float | None = None
+    recent_trade_value_ratio: float | None = None
     today_percentile: float | None = None
     recent_percentile: float | None = None
     previous_average_cny: float | None = None
@@ -192,12 +206,22 @@ def gather_qmt_rows(config: dict[str, Any], target_date: str) -> list[BondRow]:
     return rows
 
 
-def _tick_frame_history(frame: Any) -> tuple[list[tuple[str, float]], list[tuple[str, int]]]:
+def _tick_frame_history(
+    frame: Any,
+) -> tuple[
+    list[tuple[str, float]],
+    list[tuple[str, int]],
+    list[tuple[str, int]],
+    list[tuple[str, float]],
+]:
     if frame is None or frame.empty or "amount" not in frame.columns:
-        return [], []
+        return [], [], [], []
     amount_by_day: dict[str, float] = {}
     intervals_by_day: dict[str, set[str]] = {}
     previous_by_day: dict[str, float] = {}
+    transactions_by_day: dict[str, int] = {}
+    high_by_day: dict[str, float] = {}
+    low_by_day: dict[str, float] = {}
     for index, payload in frame.sort_index().iterrows():
         stamp = str(index)
         if len(stamp) < 12:
@@ -212,9 +236,24 @@ def _tick_frame_history(frame: Any) -> tuple[list[tuple[str, float]], list[tuple
             intervals_by_day.setdefault(day, set()).add(bucket)
         previous_by_day[day] = current
         amount_by_day[day] = max(amount_by_day.get(day, 0.0), current)
+        transactions_by_day[day] = max(
+            transactions_by_day.get(day, 0),
+            int(number(payload.get("transactionNum"))),
+        )
+        high = number(payload.get("high"))
+        low = number(payload.get("low"))
+        if high > 0:
+            high_by_day[day] = max(high_by_day.get(day, 0.0), high)
+        if low > 0:
+            low_by_day[day] = min(low_by_day.get(day, low), low)
     amount_history = [(day, amount_by_day[day]) for day in sorted(amount_by_day)]
     activity_history = [(day, len(intervals_by_day.get(day, set()))) for day in sorted(amount_by_day)]
-    return amount_history, activity_history
+    transaction_history = [(day, transactions_by_day.get(day, 0)) for day in sorted(amount_by_day)]
+    price_range_history = [
+        (day, max(0.0, high_by_day.get(day, 0.0) - low_by_day.get(day, 0.0)))
+        for day in sorted(amount_by_day)
+    ]
+    return amount_history, activity_history, transaction_history, price_range_history
 
 
 def attach_qmt_tick_histories(rows: list[BondRow], target_date: str, recent_days: int) -> None:
@@ -243,7 +282,12 @@ def attach_qmt_tick_histories(rows: list[BondRow], target_date: str, recent_days
         fill_data=False,
     )
     for row in rows:
-        row.history, row.activity_history = _tick_frame_history(frames.get(row.full_code))
+        (
+            row.history,
+            row.activity_history,
+            row.transaction_history,
+            row.price_range_history,
+        ) = _tick_frame_history(frames.get(row.full_code))
 
 
 def percentile_map(rows: Iterable[BondRow], attribute: str) -> dict[str, float]:
@@ -257,10 +301,37 @@ def percentile_map(rows: Iterable[BondRow], attribute: str) -> dict[str, float]:
     }
 
 
-def ratio_score(ratio: float, very_active_ratio: float) -> float:
-    if ratio <= 0 or very_active_ratio <= 0:
+def normalized_score_weights(score_weights: dict[str, float] | None) -> dict[str, float]:
+    weights = dict(DEFAULT_SCORE_WEIGHTS if score_weights is None else score_weights)
+    if set(weights) != set(DEFAULT_SCORE_WEIGHTS):
+        raise ValueError(f"交易价值权重必须包含：{', '.join(DEFAULT_SCORE_WEIGHTS)}")
+    if any(number(value) < 0 for value in weights.values()):
+        raise ValueError("交易价值权重不能为负数")
+    total = sum(number(value) for value in weights.values())
+    if total <= 0:
+        raise ValueError("交易价值权重合计必须大于0")
+    return {key: number(value) / total for key, value in weights.items()}
+
+
+def _positive_reference(rows: Iterable[BondRow], attribute: str) -> float | None:
+    values = [number(getattr(row, attribute)) for row in rows]
+    positive = [value for value in values if value > 0]
+    return min(positive) if positive else None
+
+
+def _weighted_trade_value_ratio(
+    values: dict[str, float],
+    references: dict[str, float | None],
+    weights: dict[str, float],
+) -> float:
+    available = [key for key in weights if references.get(key) and number(references[key]) > 0]
+    available_weight = sum(weights[key] for key in available)
+    if available_weight <= 0:
         return 0.0
-    return min(100.0, max(0.0, 80.0 + 20.0 * math.log10(ratio / very_active_ratio)))
+    return sum(
+        weights[key] * min(max(number(values.get(key)) / number(references[key]), 0.0), 1.0)
+        for key in available
+    ) / available_weight
 
 
 def calculate_metrics(
@@ -268,8 +339,9 @@ def calculate_metrics(
     target_date: str,
     recent_days: int,
     benchmark_codes: set[str],
-    very_active_ratio: float,
+    score_weights: dict[str, float] | None = None,
 ) -> None:
+    weights = normalized_score_weights(score_weights)
     target_compact = target_date.replace("-", "")
     benchmark_rows = [row for row in rows if row.full_code in benchmark_codes]
     calendar_dates = sorted(
@@ -283,11 +355,19 @@ def calculate_metrics(
     for row in rows:
         amount_map = dict(row.history)
         activity_map = dict(row.activity_history)
+        transaction_map = dict(row.transaction_history)
+        price_range_map = dict(row.price_range_history)
         recent_amounts = [amount_map.get(day, 0.0) for day in recent_dates]
         previous_amounts = [amount_map.get(day, 0.0) for day in previous_dates]
         recent_intervals = [activity_map.get(day, 0) for day in recent_dates]
+        recent_transactions = [transaction_map.get(day, 0) for day in recent_dates]
+        recent_price_ranges = [price_range_map.get(day, 0.0) for day in recent_dates]
         row.today_active_intervals = activity_map.get(target_compact, 0)
         row.recent_average_active_intervals = statistics.fmean(recent_intervals)
+        row.today_transaction_count = transaction_map.get(target_compact, 0)
+        row.recent_average_transaction_count = statistics.fmean(recent_transactions)
+        row.today_price_range = price_range_map.get(target_compact, 0.0)
+        row.recent_average_price_range = statistics.fmean(recent_price_ranges)
         row.recent_average_cny = statistics.fmean(recent_amounts)
         threshold = row.recent_average_cny * 0.5
         row.continuity_days = sum(amount >= threshold and amount > 0 for amount in recent_amounts)
@@ -303,38 +383,59 @@ def calculate_metrics(
         row.today_percentile = today_percentiles.get(row.full_code)
         row.recent_percentile = recent_percentiles.get(row.full_code)
 
-    benchmark_today_values = [row.today_active_intervals for row in benchmark_rows if row.today_active_intervals > 0]
-    benchmark_recent_values = [
-        row.recent_average_active_intervals
-        for row in benchmark_rows
-        if row.recent_average_active_intervals is not None and row.recent_average_active_intervals > 0
-    ]
-    benchmark_today = min(benchmark_today_values) if benchmark_today_values else None
-    benchmark_recent = min(benchmark_recent_values) if benchmark_recent_values else None
-    if benchmark_today is None and benchmark_recent is None:
-        raise ValueError("江铜、三峡满分参照均无有效QMT成交时段，无法计算活跃度")
+    today_references = {
+        "amount": _positive_reference(benchmark_rows, "amount_cny"),
+        "transaction_count": _positive_reference(benchmark_rows, "today_transaction_count"),
+        "price_range": _positive_reference(benchmark_rows, "today_price_range"),
+        "active_intervals": _positive_reference(benchmark_rows, "today_active_intervals"),
+    }
+    recent_references = {
+        "amount": _positive_reference(benchmark_rows, "recent_average_cny"),
+        "transaction_count": _positive_reference(benchmark_rows, "recent_average_transaction_count"),
+        "price_range": _positive_reference(benchmark_rows, "recent_average_price_range"),
+        "active_intervals": _positive_reference(benchmark_rows, "recent_average_active_intervals"),
+    }
+    if not any(today_references.values()) and not any(recent_references.values()):
+        raise ValueError("江铜、三峡满分参照均无有效QMT交易价值数据，无法计算活跃度")
 
     for row in rows:
-        ratios: list[float] = []
-        if benchmark_today is not None:
-            ratios.append(row.today_active_intervals / benchmark_today)
-        if benchmark_recent is not None and row.recent_average_active_intervals is not None:
-            ratios.append(row.recent_average_active_intervals / benchmark_recent)
-        row.benchmark_ratio = max(ratios) if ratios else 0.0
-        row.score = ratio_score(row.benchmark_ratio, very_active_ratio)
-        if row.full_code in benchmark_codes and row.benchmark_ratio > 0:
-            row.benchmark_ratio = max(row.benchmark_ratio, 1.0)
+        row.today_trade_value_ratio = _weighted_trade_value_ratio(
+            {
+                "amount": row.amount_cny,
+                "transaction_count": row.today_transaction_count,
+                "price_range": row.today_price_range,
+                "active_intervals": row.today_active_intervals,
+            },
+            today_references,
+            weights,
+        )
+        row.recent_trade_value_ratio = _weighted_trade_value_ratio(
+            {
+                "amount": number(row.recent_average_cny),
+                "transaction_count": number(row.recent_average_transaction_count),
+                "price_range": number(row.recent_average_price_range),
+                "active_intervals": number(row.recent_average_active_intervals),
+            },
+            recent_references,
+            weights,
+        )
+        row.benchmark_ratio = max(row.today_trade_value_ratio, row.recent_trade_value_ratio)
+        if row.full_code in benchmark_codes:
+            row.today_trade_value_ratio = 1.0
+            row.recent_trade_value_ratio = 1.0
+            row.benchmark_ratio = 1.0
             row.score = 100.0
+        else:
+            row.benchmark_ratio = min(row.benchmark_ratio, 0.99)
+            row.score = 100.0 * row.benchmark_ratio
 
         if row.full_code in benchmark_codes:
             row.label = "满分参照"
-        elif row.benchmark_ratio >= 1.0:
-            row.label = "满分级"
-        elif row.benchmark_ratio >= very_active_ratio:
+        elif row.score >= 80.0:
             row.label = "非常活跃"
-        elif row.benchmark_ratio >= very_active_ratio / 10.0:
+        elif row.score >= 60.0:
             row.label = "较活跃"
-        elif row.benchmark_ratio >= very_active_ratio / 100.0:
+        elif row.score >= 40.0:
             row.label = "相对活跃"
         else:
             row.label = "观察"
@@ -350,10 +451,6 @@ def format_amount(value: float | None) -> str:
     return f"{value:.0f}"
 
 
-def format_ratio(value: float | None) -> str:
-    return "—" if value is None else f"{value:.2f}x"
-
-
 def csv_record(row: BondRow) -> dict[str, Any]:
     return {
         "代码": row.full_code,
@@ -367,8 +464,14 @@ def csv_record(row: BondRow) -> dict[str, Any]:
         "QMT当日成交额元": f"{row.amount_cny:.2f}",
         "前5日均额元": "" if row.previous_average_cny is None else f"{row.previous_average_cny:.2f}",
         "近5日均额元": "" if row.recent_average_cny is None else f"{row.recent_average_cny:.2f}",
+        "当日成交笔数": row.today_transaction_count,
+        "近5日平均成交笔数": "" if row.recent_average_transaction_count is None else f"{row.recent_average_transaction_count:.2f}",
+        "当日成交价差元": f"{row.today_price_range:.4f}",
+        "近5日平均成交价差元": "" if row.recent_average_price_range is None else f"{row.recent_average_price_range:.4f}",
         "当日活跃时段": row.today_active_intervals,
         "近5日平均活跃时段": "" if row.recent_average_active_intervals is None else f"{row.recent_average_active_intervals:.2f}",
+        "今日交易价值分": "" if row.today_trade_value_ratio is None else f"{100.0 * row.today_trade_value_ratio:.2f}",
+        "近5日交易价值分": "" if row.recent_trade_value_ratio is None else f"{100.0 * row.recent_trade_value_ratio:.2f}",
         "今日除以前5日": "" if row.today_vs_previous is None else f"{row.today_vs_previous:.4f}",
         "连续活跃天数": "" if row.continuity_days is None else row.continuity_days,
         "相对满分参照": "" if row.benchmark_ratio is None else f"{row.benchmark_ratio:.6f}",
@@ -409,8 +512,14 @@ def load_latest_snapshot(snapshot_dir: Path) -> list[BondRow]:
                     amount_cny=number(amount),
                     previous_average_cny=number(item.get("前5日均额元")) or None,
                     recent_average_cny=number(item.get("近5日均额元")) or None,
+                    today_transaction_count=int(number(item.get("当日成交笔数"), 0)),
+                    recent_average_transaction_count=number(item.get("近5日平均成交笔数")) or None,
+                    today_price_range=number(item.get("当日成交价差元")),
+                    recent_average_price_range=number(item.get("近5日平均成交价差元")) or None,
                     today_active_intervals=int(number(item.get("当日活跃时段"), 0)),
                     recent_average_active_intervals=number(item.get("近5日平均活跃时段")) or None,
+                    today_trade_value_ratio=(number(item.get("今日交易价值分")) / 100.0) or None,
+                    recent_trade_value_ratio=(number(item.get("近5日交易价值分")) / 100.0) or None,
                     today_vs_previous=number(item.get("今日除以前5日")) or None,
                     continuity_days=int(number(item.get("连续活跃天数"), 0)),
                     benchmark_ratio=number(item.get("相对满分参照")) or None,
@@ -424,34 +533,51 @@ def load_latest_snapshot(snapshot_dir: Path) -> list[BondRow]:
 def ranked_credit_rows(rows: list[BondRow]) -> list[BondRow]:
     return sorted(
         (row for row in rows if row.category == "信用债"),
-        key=lambda row: (row.benchmark_ratio or 0.0, row.amount_cny),
+        key=lambda row: (row.score, row.amount_cny),
         reverse=True,
     )
 
 
-def report_rows(rows: list[BondRow], top: int) -> list[BondRow]:
+def ranked_benchmark_rows(rows: list[BondRow], benchmark_codes: set[str]) -> list[BondRow]:
+    return sorted(
+        (row for row in rows if row.full_code in benchmark_codes),
+        key=lambda row: (row.score, row.amount_cny),
+        reverse=True,
+    )
+
+
+def report_rows(
+    rows: list[BondRow],
+    top: int,
+    benchmark_codes: set[str] | None = None,
+) -> list[BondRow]:
+    benchmark_codes = benchmark_codes or {row.full_code for row in rows if row.label == "满分参照"}
     selected = {row.full_code: row for row in ranked_credit_rows(rows)[:top]}
+    for row in ranked_benchmark_rows(rows, benchmark_codes):
+        selected[row.full_code] = row
     for issuer_hint in ("地产线索", "城投线索"):
         ranked = [row for row in ranked_credit_rows(rows) if row.issuer_hint == issuer_hint]
         for row in ranked[: min(top, 5)]:
             selected[row.full_code] = row
-    return list(selected.values())
+    return sorted(selected.values(), key=lambda row: (row.score, row.amount_cny), reverse=True)
 
 
 def _append_report_table(lines: list[str], rows: list[BondRow]) -> None:
     lines.extend(
         [
-            "| 标签 | 代码 | 名称 | 主体线索 | 综合分 | 参照比例 | 今日活跃时段 | 近5日均活跃时段 | QMT当日额 |",
-            "|---|---|---|---|---:|---:|---:|---:|---:|",
+            "| 标签 | 代码 | 名称 | 类别/线索 | 综合分 | 今日分 | 近5日分 | 场内成交额 | 成交笔数 | 成交价差 | 活跃时段 |",
+            "|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|",
         ]
     )
     if not rows:
-        lines.append("| — | — | 暂无有效QMT成交数据 | — | — | — | — | — | — |")
+        lines.append("| — | — | 暂无有效QMT成交数据 | — | — | — | — | — | — | — | — |")
     for row in rows:
+        category_hint = row.issuer_hint if row.category == "信用债" else row.category
         lines.append(
-            f"| {row.label} | `{row.full_code}` | {row.name} | {row.issuer_hint} | {row.score:.1f} | "
-            f"{format_ratio(row.benchmark_ratio)} | {row.today_active_intervals} | "
-            f"{row.recent_average_active_intervals or 0.0:.1f} | {format_amount(row.amount_cny)} |"
+            f"| {row.label} | `{row.full_code}` | {row.name} | {category_hint} | {row.score:.1f} | "
+            f"{100.0 * number(row.today_trade_value_ratio):.1f} | "
+            f"{100.0 * number(row.recent_trade_value_ratio):.1f} | {format_amount(row.amount_cny)} | "
+            f"{row.today_transaction_count} | {row.today_price_range:.3f} | {row.today_active_intervals} |"
         )
     lines.append("")
 
@@ -464,7 +590,6 @@ def write_markdown(
     top: int,
     offline: bool,
     benchmark_codes: set[str],
-    very_active_ratio: float,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
@@ -472,14 +597,16 @@ def write_markdown(
         "",
         f"生成时间：{generated_at:%Y-%m-%d %H:%M:%S}（Asia/Shanghai本机时间）  ",
         f"数据状态：{'本地QMT快照，不代表实时' if offline else 'MiniQMT xtdata，只读'}",
-        f"满分参照：{', '.join(sorted(benchmark_codes))}；达到参照的{very_active_ratio:.0%}即为“非常活跃”",
+        f"满分参照：{', '.join(sorted(benchmark_codes))}；两只参照固定100分并保留在总榜",
         "",
-        "> 只列QMT当天累计成交额大于0的信用债，已排除可转债、可交换债和利率债。是否属于合格机构投资者品种以及账户能否买入，仍须在QMT终端逐券核验。",
+        "> 总榜包含两只满分可交换债参照及QMT当天累计成交额大于0的信用债；其余可转债、可交换债和利率债仍排除。账户能否买入须在QMT终端逐券核验。",
         "",
-        "## 信用债活跃榜",
+        "## 交易价值活跃榜（含满分参照）",
         "",
     ]
-    _append_report_table(lines, ranked_credit_rows(rows)[:top])
+    main_rows = ranked_benchmark_rows(rows, benchmark_codes) + ranked_credit_rows(rows)[:top]
+    main_rows.sort(key=lambda row: (row.score, row.amount_cny), reverse=True)
+    _append_report_table(lines, main_rows)
 
     sector_rows: list[BondRow] = []
     for issuer_hint in ("地产线索", "城投线索"):
@@ -493,8 +620,10 @@ def write_markdown(
             "## 怎么看这张表",
             "",
             "- 候选代码、简称、当日累计成交额和历史tick全部来自当前MiniQMT；不使用新浪或其他第三方行情。",
+            "- `综合分`按场内成交额30%、成交笔数30%、实际成交价差30%、五分钟活跃时段10%计算；取今日与近5日中较高者。",
+            "- 每个维度相对江铜、三峡中较低的有效值计分并封顶；除两只人工确认参照外，其他债最高99分。",
             "- 一个`活跃时段`是QMT历史tick累计成交额至少增加过一次的五分钟区间；单笔大宗成交只计一个时段。",
-            "- `参照比例`取今日和近5日平均活跃时段比例中较高者；江铜、三峡中较低者是100分门槛。",
+            "- `成交笔数`直接读取QMT的累计`transactionNum`；`成交价差`是当日累计最高成交价减最低成交价。",
             "- `主体线索`只由简称推断；发行人性质、合格投资者限制和账户权限必须在QMT终端核验。",
             "- 报告是只读观察名单，不是买卖建议，不调用`xttrader`，不会发送委托。",
             "",
@@ -531,23 +660,29 @@ def main() -> int:
         report_dir = args.output_dir / "reports"
         generated_at = datetime.now()
         if args.offline:
+            print("正在读取最近一次本地 QMT 快照...", flush=True)
             rows = load_latest_snapshot(snapshot_dir)
         else:
             port = resolve_qmt_port(config)
+            print(f"正在连接 MiniQMT（端口 {port}）...", flush=True)
             connect_qmt(port)
+            print("连接成功，正在读取当日债券快照...", flush=True)
             rows = gather_qmt_rows(config, args.date)
             if not rows:
                 raise RuntimeError("QMT没有返回当天有效信用债行情")
+            print(f"已取得 {len(rows)} 只候选及参考债，正在更新历史 tick...", flush=True)
             attach_qmt_tick_histories(rows, args.date, int(config["recent_trading_days"]))
+            print("历史 tick 更新完成，正在计算活跃度并生成报告...", flush=True)
             calculate_metrics(
                 rows,
                 args.date,
                 int(config["recent_trading_days"]),
                 benchmark_codes=set(config["full_score_benchmarks"]),
-                very_active_ratio=float(config["very_active_ratio"]),
+                score_weights=config.get("score_weights"),
             )
 
-        selected = report_rows(rows, top)
+        benchmark_codes = set(config["full_score_benchmarks"])
+        selected = report_rows(rows, top, benchmark_codes=benchmark_codes)
         stamp = generated_at.strftime("%Y%m%d_%H%M%S")
         snapshot_path = snapshot_dir / f"{args.date}.csv"
         detail_path = report_dir / f"{args.date}_{stamp}.csv"
@@ -562,8 +697,7 @@ def main() -> int:
             generated_at,
             top,
             args.offline,
-            benchmark_codes=set(config["full_score_benchmarks"]),
-            very_active_ratio=float(config["very_active_ratio"]),
+            benchmark_codes=benchmark_codes,
         )
         latest_path = report_dir / "latest.md"
         shutil.copyfile(markdown_path, latest_path)

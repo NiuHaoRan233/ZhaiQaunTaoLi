@@ -1360,6 +1360,9 @@ def replay_registered_models_readonly(
                     order["initial_queue_ahead_bonds"] = float(
                         metadata.get("initial_queue_ahead_bonds", order["queue_ahead"])
                     )
+                    order["queue_position_kind"] = metadata.get(
+                        "queue_position_kind"
+                    )
                     orders.append(order)
             finally:
                 store.close()

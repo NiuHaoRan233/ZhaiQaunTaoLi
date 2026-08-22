@@ -3,6 +3,40 @@ const BONDS = [
   {code: "132024.SH", name: "26江铜EB"},
 ];
 
+const SOUND_PREFERENCE_KEY = "maker-dashboard-sound-enabled";
+const ORDER_EVENT_TYPES = new Set(["submit", "cancel", "complete"]);
+const ACTION_REASON_LABELS = {
+  active_deep_discount: "深度折价主动买入",
+  active_downside_risk_exit: "下行风险主动卖出",
+  active_entry_replaced_passive_buy: "主动买入替换被动买单",
+  active_inventory_turn_replenish: "主动库存周转回补",
+  active_medium_base_short_replenishment: "主动中等底仓缺口回补",
+  active_risk_exit_replaced_passive_sell: "风险退出替换被动卖单",
+  active_tail_sweep: "主动扫尾买入",
+  active_tight_spread_turnover: "窄价差主动周转卖出",
+  active_turnover_replaced_passive_sell: "主动周转替换被动卖单",
+  dynamic_medium_base_short_replenishment: "中等底仓缺口动态变化",
+  entry_context_changed: "买入条件变化",
+  exit_context_changed: "卖出条件变化",
+  inventory_turn_replenish: "库存周转回补",
+  inventory_turnover_exit: "库存周转卖出",
+  maker_reprice: "做市比价改价",
+  passive_buy: "被动买入成交",
+  passive_sell: "被动卖出成交",
+  profitable_visible_bid_base_replenish: "盈利可见买盘底仓回补",
+  queue_cleared_crossed_residual_fill: "排队清空后的穿价余量成交",
+  queue_cleared_next_frame_fill: "排队清空后的下一帧成交",
+  super_windfall_better_anomaly: "超级捡漏出现更优异常价",
+};
+
+function loadSoundPreference() {
+  try {
+    return typeof localStorage !== "undefined" && localStorage.getItem(SOUND_PREFERENCE_KEY) === "on";
+  } catch (_) {
+    return false;
+  }
+}
+
 const state = {
   snapshots: {},
   modelId: "maker_priority_v1_1",
@@ -18,12 +52,24 @@ const state = {
   loading: false,
   requestId: 0,
   requestController: null,
+  soundEnabled: loadSoundPreference(),
+  soundReady: false,
+  audioContext: null,
+  knownActionKeys: null,
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+const BOOK_ROW_HEIGHT = 41;
 const fmtPrice = value => Number.isFinite(Number(value)) ? Number(value).toFixed(3) : "—";
 const fmtQty = value => Number(value || 0).toLocaleString("zh-CN", {maximumFractionDigits: 0});
+const orderBoundaryShortLabel = order => order.side === "buy" ? "上限" : "下限";
+const orderBoundaryValue = order => order.price_boundary != null
+  && Number.isFinite(Number(order.price_boundary))
+  ? fmtPrice(order.price_boundary)
+  : "未记录";
+const orderBoundaryDetailLabel = order => order.price_boundary_label
+  || (order.side === "buy" ? "最高买价" : "最低卖价");
 const fmtPnl = value => {
   const number = Number(value || 0);
   return `${number >= 0 ? "+" : ""}${number.toLocaleString("zh-CN", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -34,6 +80,71 @@ const BOOK_PRICE_EPSILON = .0005;
 
 function bookRowKey(side, row) {
   return `${side}:${row.level}`;
+}
+
+function normalizedPriceGap(firstPrice, secondPrice) {
+  const first = Number(firstPrice);
+  const second = Number(secondPrice);
+  if (!Number.isFinite(first) || !Number.isFinite(second) || first <= 0 || second <= 0) return 0;
+  return Math.round(Math.abs(first - second) * 1000) / 1000;
+}
+
+function sameSidePriceGapUnits(firstPrice, secondPrice) {
+  const gap = normalizedPriceGap(firstPrice, secondPrice);
+  if (gap >= 1) return 1;
+  if (gap >= .5) return .75;
+  if (gap >= .2) return .5;
+  if (gap >= .05) return .25;
+  return 0;
+}
+
+function spreadGapUnits(spread) {
+  const numericSpread = Number(spread);
+  const gap = Math.round(numericSpread * 1000) / 1000;
+  if (!Number.isFinite(gap) || gap <= 0) return .5;
+  if (gap >= 1) return 2;
+  if (gap >= .5) return 1.5;
+  if (gap >= .2) return 1;
+  if (gap >= .05) return .75;
+  return .5;
+}
+
+function bookSideGapUnits(rows) {
+  return (rows || []).slice(0, -1).reduce((total, row, index) =>
+    total + sameSidePriceGapUnits(row.price, rows[index + 1].price), 0);
+}
+
+function synchronizedSpreadLayouts(snapshots) {
+  const raw = (snapshots || []).map(snapshot => {
+    const askGapUnits = bookSideGapUnits(snapshot.book?.asks || []);
+    const spreadUnits = spreadGapUnits(snapshot.market?.spread);
+    return {
+      code: snapshot.bond.code,
+      askGapUnits,
+      spreadUnits,
+      centerUnits: askGapUnits + spreadUnits / 2,
+    };
+  });
+  const sharedCenterUnits = Math.max(0, ...raw.map(item => item.centerUnits));
+  return Object.fromEntries(raw.map(item => [item.code, {
+    ...item,
+    alignUnits: Math.round((sharedCenterUnits - item.centerUnits) * 1000) / 1000,
+  }]));
+}
+
+function priceGapLabel(firstPrice, secondPrice) {
+  const gap = normalizedPriceGap(firstPrice, secondPrice);
+  return gap >= .2 ? `差 ${fmtPrice(gap)}` : "";
+}
+
+function priceGapFontSizePx(gapUnits) {
+  const units = Math.max(0, Number(gapUnits) || 0);
+  return Math.max(12, Math.min(20, Math.round((8 + units * 12) * 100) / 100));
+}
+
+function spreadFontSizePx(spreadUnits) {
+  const units = Math.max(.5, Math.min(2, Number(spreadUnits) || .5));
+  return Math.round((8 + units * 8) * 100) / 100;
 }
 
 function placeBookOrders(book, orders) {
@@ -123,6 +234,161 @@ function marketTradesAscending(trades) {
   return [...(trades || [])].sort((left, right) => Number(left.ts) - Number(right.ts));
 }
 
+function actionReasonLabel(value) {
+  const reason = String(value ?? "").trim();
+  if (!reason) return "未记录原因";
+  if (ACTION_REASON_LABELS[reason]) return ACTION_REASON_LABELS[reason];
+  return /[A-Za-z]/.test(reason) ? "其他未登记原因" : reason;
+}
+
+function actionNotificationKey(action) {
+  return [
+    action.bond_code,
+    action.model_id,
+    action.event_type,
+    action.order_id ?? "none",
+    action.ts,
+    action.side,
+    action.price,
+  ].join("|");
+}
+
+function detectActionAlert(knownKeys, actions) {
+  const relevant = (actions || []).filter(action => action.event_type === "fill" || ORDER_EVENT_TYPES.has(action.event_type));
+  const newActions = relevant.filter(action => !knownKeys.has(actionNotificationKey(action)));
+  return {
+    newActions,
+    alertType: newActions.some(action => action.event_type === "fill")
+      ? "fill"
+      : newActions.length ? "order" : null,
+  };
+}
+
+function currentModelActions(payloads) {
+  return payloads.flatMap(item => item.actions || []).filter(action => action.model_id === state.modelId);
+}
+
+function resetActionNotificationBaseline() {
+  state.knownActionKeys = null;
+}
+
+function rememberActions(actions) {
+  if (state.knownActionKeys === null) state.knownActionKeys = new Set();
+  actions.forEach(action => state.knownActionKeys.add(actionNotificationKey(action)));
+}
+
+function processActionNotifications(payloads) {
+  if (state.mode !== "live") return;
+  const actions = currentModelActions(payloads);
+  if (state.knownActionKeys === null) {
+    rememberActions(actions);
+    return;
+  }
+  const {alertType} = detectActionAlert(state.knownActionKeys, actions);
+  rememberActions(actions);
+  if (alertType && state.soundEnabled) {
+    void playAlertSound(alertType).catch(() => {
+      state.soundReady = false;
+      updateSoundButton();
+      showToast("声音提醒播放失败，请点击按钮重新激活");
+    });
+  }
+}
+
+function audioContextClass() {
+  return typeof window !== "undefined" ? (window.AudioContext || window.webkitAudioContext) : null;
+}
+
+async function activateSound() {
+  const Context = audioContextClass();
+  if (!Context) {
+    showToast("当前浏览器不支持声音提醒");
+    return false;
+  }
+  if (!state.audioContext) {
+    state.audioContext = new Context();
+    state.audioContext.onstatechange = () => {
+      state.soundReady = state.audioContext?.state === "running";
+      updateSoundButton();
+    };
+  }
+  try {
+    if (state.audioContext.state === "suspended") await state.audioContext.resume();
+  } catch (_) {
+    // The button remains in the pending state so the user can try again.
+  }
+  state.soundReady = state.audioContext.state === "running";
+  updateSoundButton();
+  return state.soundReady;
+}
+
+function scheduleTone(context, {start, frequency, endFrequency = frequency, duration, gain, type = "sine"}) {
+  const oscillator = context.createOscillator();
+  const envelope = context.createGain();
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, start);
+  oscillator.frequency.exponentialRampToValueAtTime(endFrequency, start + duration);
+  envelope.gain.setValueAtTime(.0001, start);
+  envelope.gain.exponentialRampToValueAtTime(gain, start + .012);
+  envelope.gain.exponentialRampToValueAtTime(.0001, start + duration);
+  oscillator.connect(envelope);
+  envelope.connect(context.destination);
+  oscillator.start(start);
+  oscillator.stop(start + duration + .015);
+}
+
+async function playAlertSound(alertType) {
+  if (!state.soundEnabled) return;
+  if ((!state.soundReady || state.audioContext?.state !== "running") && !await activateSound()) {
+    updateSoundButton();
+    return;
+  }
+  const context = state.audioContext;
+  const start = context.currentTime + .015;
+  if (alertType === "fill") {
+    scheduleTone(context, {start, frequency: 620, endFrequency: 790, duration: .20, gain: .105, type: "triangle"});
+    scheduleTone(context, {start: start + .16, frequency: 790, endFrequency: 1050, duration: .28, gain: .13, type: "triangle"});
+    return;
+  }
+  scheduleTone(context, {start, frequency: 1120, endFrequency: 1420, duration: .12, gain: .052});
+}
+
+function saveSoundPreference() {
+  try {
+    localStorage.setItem(SOUND_PREFERENCE_KEY, state.soundEnabled ? "on" : "off");
+  } catch (_) {
+    // Sound still works for this page when browser storage is unavailable.
+  }
+}
+
+function updateSoundButton() {
+  const button = $("#soundToggle");
+  if (!button) return;
+  button.classList.toggle("enabled", state.soundEnabled && state.soundReady);
+  button.classList.toggle("pending", state.soundEnabled && !state.soundReady);
+  button.setAttribute("aria-pressed", String(state.soundEnabled));
+  $("#soundLabel").textContent = !state.soundEnabled
+    ? "声音提醒 · 开启"
+    : state.soundReady ? "声音提醒 · 已开启" : "声音提醒 · 点此激活";
+}
+
+async function toggleSound() {
+  if (state.soundEnabled && state.soundReady && state.audioContext?.state === "running") {
+    state.soundEnabled = false;
+    state.soundReady = false;
+    saveSoundPreference();
+    updateSoundButton();
+    showToast("声音提醒已关闭");
+    return;
+  }
+  state.soundEnabled = true;
+  saveSoundPreference();
+  if (await activateSound()) {
+    await playAlertSound("order");
+    showToast("声音提醒已开启：轻叮为委托，双音为成交");
+  }
+}
+
 async function loadSnapshots({manual = false} = {}) {
   if (state.mode === "replay" && (!state.replayDate || state.replayTs === null)) return;
   const requestId = ++state.requestId;
@@ -142,6 +408,7 @@ async function loadSnapshots({manual = false} = {}) {
     });
     const payloads = await Promise.all(requests);
     if (requestId !== state.requestId) return;
+    processActionNotifications(payloads);
     state.snapshots = Object.fromEntries(payloads.map(item => [item.bond.code, item]));
     if (state.mode === "replay") {
       $("#replayTimeline").value = String(state.replayTs);
@@ -260,7 +527,8 @@ function render() {
   $("#marketTime").textContent = latest.market.market_time.slice(0, 8);
   $("#refreshState").textContent = state.mode === "replay" ? "历史模拟回看" : latest.refresh.label;
   $("#refreshState").classList.toggle("active", state.mode === "live" && latest.refresh.active);
-  $("#marketGrid").innerHTML = data.map(renderBondDesk).join("");
+  const spreadLayouts = synchronizedSpreadLayouts(data);
+  $("#marketGrid").innerHTML = data.map(item => renderBondDesk(item, spreadLayouts[item.bond.code])).join("");
   $$(".market-trades").forEach(list => {
     list.scrollTop = list.scrollHeight;
   });
@@ -272,15 +540,18 @@ function render() {
     : `双债快照 ${latest.refresh.served_at.replace("T", " ")}`;
 }
 
-function renderBondDesk(data) {
+function renderBondDesk(data, spreadLayout = null) {
   const {market, assessment} = data;
   const selectedOrders = data.open_orders.filter(order => order.model_id === state.modelId);
   const placedOrders = placeBookOrders(data.book, selectedOrders);
-  const asks = data.book.asks.map(row => renderBookRow(row, "ask", placedOrders.byRow[bookRowKey("ask", row)] || [])).join("");
-  const bids = data.book.bids.map(row => renderBookRow(row, "bid", placedOrders.byRow[bookRowKey("bid", row)] || [])).join("");
-  const outsideStrip = placedOrders.outside.length ? `<div class="outside-order-strip"><span>盘口外（超出五档）</span>${placedOrders.outside.map(order =>
-    `<strong class="${order.side === "buy" ? "order-buy" : "order-sell"}">${order.side === "buy" ? "B" : "S"} ${fmtPrice(order.limit_price)} · ${fmtQty(order.remaining)}张</strong>`
-  ).join("")}</div>` : "";
+  const asks = renderBookSide(data.book.asks, "ask", placedOrders.byRow);
+  const bids = renderBookSide(data.book.bids, "bid", placedOrders.byRow);
+  const spreadUnits = spreadLayout?.spreadUnits ?? spreadGapUnits(market.spread);
+  const spreadAlignUnits = spreadLayout?.alignUnits ?? 0;
+  const spreadFontSize = spreadFontSizePx(spreadUnits);
+  const outsideStrip = `<div class="outside-order-strip ${placedOrders.outside.length ? "" : "empty"}"><span>盘口外（超出五档）</span>${placedOrders.outside.map(order =>
+    `<strong class="${order.side === "buy" ? "order-buy" : "order-sell"}">${order.side === "buy" ? "B" : "S"} ${fmtPrice(order.limit_price)} · ${fmtQty(order.remaining)}张 · ${orderBoundaryShortLabel(order)}${orderBoundaryValue(order)}</strong>`
+  ).join("")}</div>`;
   const trades = data.market_trades.length
     ? marketTradesAscending(data.market_trades).map(renderMarketTrade).join("")
     : `<div class="empty-inline">当前时点前暂无市场成交增量</div>`;
@@ -313,8 +584,9 @@ function renderBondDesk(data) {
           <div class="micro-head"><h3>五档盘口</h3><span>当前模型活动单 ${selectedOrders.length} 笔</span></div>
           ${outsideStrip}
           <div class="book-columns"><span>档位</span><span>价格</span><span>市场量</span><span>模拟挂单</span></div>
+          <div class="book-top-align-spacer" aria-hidden="true" style="--book-top-align-height:${spreadAlignUnits * BOOK_ROW_HEIGHT}px"></div>
           ${asks}
-          <div class="spread-row"><strong>买卖价差 ${fmtPrice(market.spread)}</strong></div>
+          <div class="spread-row" data-gap-units="${spreadUnits}" style="--spread-height:${spreadUnits * BOOK_ROW_HEIGHT}px;--spread-font-size:${spreadFontSize}px"><strong>买卖价差 ${fmtPrice(market.spread)}</strong></div>
           ${bids}
         </section>
         <section class="market-tape-card">
@@ -327,9 +599,25 @@ function renderBondDesk(data) {
   </article>`;
 }
 
+function renderBookSide(rows, side, ordersByRow) {
+  return (rows || []).map((row, index) => {
+    const next = rows[index + 1];
+    const rowHtml = renderBookRow(row, side, ordersByRow[bookRowKey(side, row)] || []);
+    return rowHtml + (next ? renderBookPriceGap(row.price, next.price) : "");
+  }).join("");
+}
+
+function renderBookPriceGap(firstPrice, secondPrice) {
+  const gapUnits = sameSidePriceGapUnits(firstPrice, secondPrice);
+  if (gapUnits <= 0) return "";
+  const label = priceGapLabel(firstPrice, secondPrice);
+  const fontSize = priceGapFontSizePx(gapUnits);
+  return `<div class="book-price-gap ${label ? "labeled" : ""}" data-gap-units="${gapUnits}" style="--price-gap-height:${gapUnits * BOOK_ROW_HEIGHT}px;--price-gap-font-size:${fontSize}px">${label ? `<span>${label}</span>` : ""}</div>`;
+}
+
 function renderBookRow(row, side, orders) {
   const chips = orders.map(order =>
-    `<span class="order-chip ${order.side === "buy" ? "order-buy" : "order-sell"}" title="${escapeHtml(order.kind_label)} · ${fmtPrice(order.limit_price)} · ${fmtQty(order.remaining)}张"><b>${order.side === "buy" ? "B" : "S"}</b><span>${fmtPrice(order.limit_price)}</span><small>${fmtQty(order.remaining)}张</small></span>`
+    `<span class="order-chip ${order.side === "buy" ? "order-buy" : "order-sell"}" title="${escapeHtml(order.kind_label)} · 委托价 ${fmtPrice(order.limit_price)} · ${fmtQty(order.remaining)}张 · ${escapeHtml(orderBoundaryDetailLabel(order))} ${orderBoundaryValue(order)}"><b>${order.side === "buy" ? "B" : "S"}</b><span>${fmtPrice(order.limit_price)}</span><small>${fmtQty(order.remaining)}张</small><small class="order-boundary">${orderBoundaryShortLabel(order)}${orderBoundaryValue(order)}</small></span>`
   ).join("");
   const maxQuantity = 5000;
   return `<div class="book-row ${side}-row" style="--depth:${Math.max(2, Math.min(100, Number(row.quantity) / maxQuantity * 100))}%">
@@ -431,34 +719,53 @@ function renderSelectedAccounts(data) {
   }).join("");
 }
 
+function actionsForBond(actions, bondCode) {
+  return (actions || []).filter(item => item.bond_code === bondCode);
+}
+
 function renderActions(data) {
-  let actions = data.flatMap(item => item.actions).filter(item => item.model_id === state.modelId);
+  let actions = data.flatMap(item => item.actions).filter(
+    item => item.model_id === state.modelId && item.event_type !== "complete"
+  );
   if (state.actionFilter !== "all") {
-    actions = actions.filter(item => state.actionFilter === "fill" ? item.event_type === "fill" : item.event_type === state.actionFilter);
+    actions = actions.filter(item => state.actionFilter === "order"
+      ? ["submit", "cancel"].includes(item.event_type)
+      : item.event_type === state.actionFilter);
   }
   actions.sort((left, right) => Number(right.ts) - Number(left.ts));
-  $("#actionCount").textContent = `${actions.length} 条`;
-  if (!actions.length) {
-    $("#actionStream").innerHTML = `<div class="empty-inline">当前模型在该时点前暂无此类动作</div>`;
-    return;
-  }
-  $("#actionStream").innerHTML = actions.map(item => {
-    const eventClass = `event-${item.event_type}`;
-    const sideClass = item.side === "buy" ? "buy" : "sell";
-    const orderText = `${item.side === "buy" ? "买" : "卖"} ${fmtPrice(item.price)} × ${fmtQty(item.quantity)}张`;
-    return `<div class="action-row">
-      <span class="action-time">${escapeHtml(item.time)}</span>
-      <span class="action-bond">${escapeHtml(bondName(item.bond_code))}</span>
-      <span class="event-badge ${eventClass}">${escapeHtml(item.event_label)}</span>
-      <span class="action-order ${sideClass}">${orderText}</span>
-      <span class="action-detail">${escapeHtml(item.detail)}<code>#${item.order_id ?? "—"}</code></span>
-    </div>`;
-  }).join("");
+  $("#actionCount").textContent = `总计 ${actions.length} 条`;
+  BONDS.forEach(bond => {
+    const bondActions = actionsForBond(actions, bond.code);
+    const suffix = bond.code.replace(".", "-");
+    $(`#actionCount-${suffix}`).textContent = `${bondActions.length} 条`;
+    const stream = $(`#actionStream-${suffix}`);
+    if (!bondActions.length) {
+      stream.innerHTML = `<div class="empty-inline">当前模型在该时点前暂无此类动作</div>`;
+      return;
+    }
+    stream.innerHTML = bondActions.map(item => {
+      const eventClass = item.event_type === "fill"
+        ? `event-fill event-fill-${item.side}`
+        : `event-${item.event_type}`;
+      const sideClass = item.side === "buy" ? "buy" : "sell";
+      const orderText = `${item.side === "buy" ? "买" : "卖"} ${fmtPrice(item.price)} × ${fmtQty(item.quantity)}张`;
+      const pnlText = item.is_closing
+        ? `<strong class="action-pnl ${Number(item.realized_pnl) >= 0 ? "up" : "down"}">本笔收益 ${fmtPnl(item.realized_pnl)}元</strong>`
+        : "";
+      return `<div class="action-row">
+        <span class="action-time">${escapeHtml(item.time)}</span>
+        <span class="event-badge ${eventClass}">${escapeHtml(item.event_label)}</span>
+        <span class="action-order ${sideClass}">${orderText}</span>
+        <span class="action-detail"><span class="reason-text">${escapeHtml(actionReasonLabel(item.detail))}</span>${pnlText}<code>#${item.order_id ?? "—"}</code></span>
+      </div>`;
+    }).join("");
+  });
 }
 
 async function setMode(mode) {
   if (mode === state.mode) return;
   state.mode = mode;
+  resetActionNotificationBaseline();
   stopReplay();
   $$("#modeSwitch button").forEach(button => button.classList.toggle("active", button.dataset.mode === mode));
   $(".command-bar").classList.toggle("replay-active", mode === "replay");
@@ -480,6 +787,8 @@ function showToast(message) {
 }
 
 function bindEvents() {
+  updateSoundButton();
+  $("#soundToggle").addEventListener("click", toggleSound);
   $$("#modeSwitch button").forEach(button => button.addEventListener("click", () => setMode(button.dataset.mode)));
   $("#refreshButton").addEventListener("click", () => loadSnapshots({manual: true}));
   $("#replayDate").addEventListener("change", () => {
@@ -503,6 +812,7 @@ function bindEvents() {
   $("#replayPlay").addEventListener("click", toggleReplay);
   $("#modelSelect").addEventListener("change", event => {
     state.modelId = event.target.value;
+    resetActionNotificationBaseline();
     render();
     loadSnapshots({manual: true});
   });
@@ -522,10 +832,21 @@ function bindEvents() {
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     advanceReplayTimestamp,
+    actionReasonLabel,
+    actionsForBond,
     bookRowKey,
     marketTradesAscending,
     normalizeReplayScrubTimestamp,
+    actionNotificationKey,
+    detectActionAlert,
     placeBookOrders,
+    priceGapFontSizePx,
+    priceGapLabel,
+    renderBookPriceGap,
+    sameSidePriceGapUnits,
+    spreadFontSizePx,
+    spreadGapUnits,
+    synchronizedSpreadLayouts,
     renderBookRow,
     replayLunchWindow,
   };

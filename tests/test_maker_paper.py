@@ -66,6 +66,7 @@ from zhaiquant.maker_paper import (
     PRIORITY_POLICY_V141_CANDIDATE,
     PRIORITY_POLICY_V142_CANDIDATE,
     PRIORITY_POLICY_V143_CANDIDATE,
+    PRIORITY_POLICY_V144_CANDIDATE,
     QUEUE_POLICY_V10,
     QUEUE_POLICY_V11_CANDIDATE,
     QUEUE_POLICY_V12_CANDIDATE,
@@ -84,9 +85,12 @@ from zhaiquant.maker_paper import (
     QUEUE_POLICY_V115_CANDIDATE,
     QUEUE_POLICY_V116_CANDIDATE,
     QUEUE_POLICY_V117_CANDIDATE,
+    QUEUE_POLICY_V118_CANDIDATE,
+    QUEUE_POLICY_V119_CANDIDATE,
     WINDFALL_POLICY_V10,
     WINDFALL_POLICY_V11_CANDIDATE,
     _floor_to_tick,
+    maker_strategy_ids,
 )
 from zhaiquant.runner import MarketProcessor
 from zhaiquant.types import SHANGHAI
@@ -5348,6 +5352,9 @@ class MakerPaperTests(unittest.TestCase):
                 self.assertEqual(
                     metadata["repeated_turn_replenishment_price"], 136.797,
                 )
+                self.assertEqual(metadata["price_boundary_kind"], "sell_floor")
+                self.assertEqual(metadata["price_boundary"], 136.977)
+                self.assertEqual(sell_order.price_boundary, 136.977)
 
                 engine._fill_sell(
                     account, tick, sell_order, 1_000.0,
@@ -6104,6 +6111,91 @@ class MakerPaperTests(unittest.TestCase):
             )
             store.close()
 
+    def test_live_matrix_can_disable_baselines_and_add_queue_v118(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            base = test_config(Path(temp) / "maker-current-matrix.sqlite3")
+            config = replace(base, maker_paper=MakerPaperConfig(
+                enabled=True,
+                bond_codes=(base.qmt.bond_code, "132024.SH"),
+                underlying_stock_codes={
+                    base.qmt.bond_code: base.qmt.stock_code,
+                    "132024.SH": "600362.SH",
+                },
+                fill_modes=(),
+                realtime_comparison_model_ids=(
+                    "maker_priority_v1_37_candidate",
+                    "maker_priority_v1_43_candidate",
+                    "maker_queue_v1_17_candidate",
+                    "maker_queue_v1_18_candidate",
+                ),
+                super_windfall_enabled=True,
+            ))
+            store = SQLiteStore(config)
+            try:
+                legacy_config = replace(config, maker_paper=replace(
+                    config.maker_paper,
+                    fill_modes=("priority", "queue"),
+                    realtime_comparison_model_ids=(),
+                    super_windfall_enabled=False,
+                ))
+                MakerPaperPortfolio(legacy_config, store).rebuild_date(
+                    "2026-08-21"
+                )
+
+                portfolio = MakerPaperPortfolio(config, store)
+                portfolio.rebuild_date("2026-08-21")
+
+                expected = {
+                    "maker_v01_super_windfall",
+                    "maker_v01_priority_v1_37_candidate",
+                    "maker_v01_priority_v1_43_candidate",
+                    "maker_v01_queue_v1_17_candidate",
+                    "maker_v01_queue_v1_18_candidate",
+                    "maker_132024_v01_super_windfall",
+                    "maker_132024_v01_priority_v1_37_candidate",
+                    "maker_132024_v01_priority_v1_43_candidate",
+                    "maker_132024_v01_queue_v1_17_candidate",
+                    "maker_132024_v01_queue_v1_18_candidate",
+                }
+                self.assertEqual(set(portfolio.accounts), expected)
+                self.assertNotIn("maker_v01_priority", portfolio.accounts)
+                self.assertNotIn("maker_v01_queue", portfolio.accounts)
+                self.assertEqual(
+                    maker_strategy_ids(config, base.qmt.bond_code),
+                    (
+                        "maker_v01_super_windfall",
+                        "maker_v01_priority_v1_37_candidate",
+                        "maker_v01_priority_v1_43_candidate",
+                        "maker_v01_queue_v1_17_candidate",
+                        "maker_v01_queue_v1_18_candidate",
+                    ),
+                )
+                assignments = {
+                    row["strategy_id"]: row["model_id"]
+                    for row in store.connection.execute(
+                        "SELECT strategy_id,model_id "
+                        "FROM maker_paper_model_assignments"
+                    )
+                }
+                self.assertEqual(
+                    set(assignments),
+                    expected | {
+                        "maker_v01_priority", "maker_v01_queue",
+                        "maker_132024_v01_priority",
+                        "maker_132024_v01_queue",
+                    },
+                )
+                self.assertEqual(
+                    assignments["maker_v01_queue_v1_18_candidate"],
+                    "maker_queue_v1_18_candidate",
+                )
+                self.assertEqual(
+                    assignments["maker_v01_priority"],
+                    "maker_priority_v1_1",
+                )
+            finally:
+                store.close()
+
     def test_realtime_candidate_fills_persist_and_rebuild_idempotently(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             base = test_config(Path(temp) / "maker-realtime.sqlite3")
@@ -6179,6 +6271,192 @@ class MakerPaperTests(unittest.TestCase):
                 2_000,
             )
             store.close()
+
+    def test_public_opening_caution_starts_at_0920_and_requires_one_yuan(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            base = test_config(Path(temp) / "maker-opening-caution.sqlite3")
+            config = replace(base, maker_paper=MakerPaperConfig(
+                enabled=True,
+                initial_inventory_bonds=1_000,
+                additional_buying_capacity_bonds=1_000,
+                maximum_inventory_bonds=2_000,
+                initial_cash_cny=137_000,
+                order_quantity_bonds=1_000,
+                fill_modes=("priority", "queue"),
+                super_windfall_enabled=True,
+            ))
+            store = SQLiteStore(config)
+            try:
+                engine = MakerPaperEngine(config, store)
+
+                before_start = datetime(
+                    2026, 8, 21, 9, 19, 59, tzinfo=SHANGHAI,
+                )
+                engine.on_replay_tick(self._replay_tick(
+                    before_start,
+                    last=136.000,
+                    bid=133.900,
+                    ask=138.100,
+                    previous_close=136.000,
+                    bid_bonds=5_000,
+                ), persist=True)
+                for account in engine.accounts.values():
+                    self.assertIsNone(account.buy_order)
+                    self.assertEqual(account.sell_orders, {})
+
+                # A few tenths of ordinary edge is deliberately ignored in the
+                # volatile 09:20--09:30 opening window on both execution branches.
+                cautious_small = before_start.replace(
+                    hour=9, minute=20, second=0,
+                )
+                engine.on_replay_tick(self._replay_tick(
+                    cautious_small,
+                    last=136.000,
+                    bid=135.600,
+                    ask=136.400,
+                    previous_close=136.000,
+                    bid_bonds=5_000,
+                ), persist=True)
+                for account in engine._standard_accounts():
+                    self.assertIsNone(account.buy_order)
+                    self.assertEqual(account.sell_orders, {})
+
+                # At least one yuan of causal room permits both ordinary sides;
+                # Windfall also starts at 09:20 and keeps its stricter 1.50 edge.
+                cautious_wide = cautious_small + timedelta(seconds=3)
+                engine.on_replay_tick(self._replay_tick(
+                    cautious_wide,
+                    last=136.000,
+                    bid=134.000,
+                    ask=138.000,
+                    previous_close=136.000,
+                    bid_bonds=5_000,
+                ), persist=True)
+                for account in engine._standard_accounts():
+                    self.assertIsNotNone(account.buy_order)
+                    self.assertTrue(account.sell_orders)
+                windfall = engine.accounts["maker_v01_super_windfall"]
+                self.assertIsNotNone(windfall.buy_order)
+            finally:
+                store.close()
+
+    def test_public_opening_caution_ends_at_0930_and_preserves_old_dates(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            base = test_config(Path(temp) / "maker-opening-boundaries.sqlite3")
+            config = replace(base, maker_paper=MakerPaperConfig(
+                enabled=True,
+                initial_inventory_bonds=1_000,
+                additional_buying_capacity_bonds=1_000,
+                maximum_inventory_bonds=2_000,
+                initial_cash_cny=137_000,
+                order_quantity_bonds=1_000,
+                fill_modes=("priority", "queue"),
+            ))
+            store = SQLiteStore(config)
+            try:
+                engine = MakerPaperEngine(config, store)
+                normal_open = datetime(
+                    2026, 8, 21, 9, 30, 0, tzinfo=SHANGHAI,
+                )
+                engine.on_replay_tick(self._replay_tick(
+                    normal_open,
+                    last=136.000,
+                    bid=135.600,
+                    ask=137.100,
+                    previous_close=136.000,
+                    bid_bonds=5_000,
+                ), persist=True)
+                for account in engine._standard_accounts():
+                    self.assertIsNotNone(account.buy_order)
+                    self.assertTrue(account.sell_orders)
+
+                historical = MakerPaperEngine(config, store)
+                old_open = datetime(
+                    2026, 8, 20, 9, 25, 0, tzinfo=SHANGHAI,
+                )
+                historical.on_replay_tick(self._replay_tick(
+                    old_open,
+                    last=136.000,
+                    bid=135.600,
+                    ask=137.100,
+                    previous_close=136.000,
+                    bid_bonds=5_000,
+                ), persist=False)
+                for account in historical._standard_accounts():
+                    self.assertIsNone(account.buy_order)
+                    self.assertTrue(account.sell_orders)
+            finally:
+                store.close()
+
+    def test_public_opening_caution_applies_to_active_sweep_edge(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            base = test_config(Path(temp) / "maker-opening-sweep.sqlite3")
+            config = replace(base, maker_paper=MakerPaperConfig(
+                enabled=True,
+                initial_inventory_bonds=1_000,
+                additional_buying_capacity_bonds=1_000,
+                maximum_inventory_bonds=2_000,
+                initial_cash_cny=137_000,
+                order_quantity_bonds=1_000,
+                fill_modes=("priority",),
+            ))
+            store = SQLiteStore(config)
+            try:
+                engine = MakerPaperEngine(config, store)
+                moment = datetime(
+                    2026, 8, 21, 9, 25, 0, tzinfo=SHANGHAI,
+                )
+                engine._start_date(moment.date().isoformat())
+                account = engine.accounts["maker_v01_priority"]
+                tick = self._replay_tick(
+                    moment,
+                    last=135.500,
+                    bid=135.400,
+                    ask=135.500,
+                    previous_close=136.000,
+                )
+                anchor = AnchorState(
+                    support_price=135.500,
+                    exit_price=136.000,
+                    band_midpoint=135.750,
+                    reference_price=136.000,
+                    confidence=1.0,
+                    buy_effective_bonds=5_000,
+                    sell_effective_bonds=0,
+                    downside_pressure=0,
+                    stock_return_5m=0,
+                    stock_factor=1.0,
+                    buy_clusters=(),
+                    sell_reference_price=None,
+                )
+                narrow = Opportunity(
+                    kind="sweep_tail",
+                    signal_ts_ms=tick.market_ts_ms,
+                    market_time=tick.market_time,
+                    entry_price=135.500,
+                    quantity_bonds=1_000,
+                    target_exit_price=136.000,
+                    priority_exit_price=136.000,
+                    theoretical_edge=0.500,
+                    anchor=anchor,
+                )
+                engine._active_sweep(account, tick, narrow, persist=True)
+                self.assertEqual(account.inventory, 1_000)
+
+                safe = replace(
+                    narrow,
+                    target_exit_price=136.600,
+                    priority_exit_price=136.600,
+                    theoretical_edge=1.100,
+                )
+                engine._active_sweep(account, tick, safe, persist=True)
+                self.assertEqual(account.inventory, 2_000)
+            finally:
+                store.close()
 
     @staticmethod
     def _replay_tick(
@@ -9699,10 +9977,21 @@ class MakerPaperTests(unittest.TestCase):
                         engine._refresh_orders(
                             account, tick, assessment, persist=True,
                         )
+                    metadata = (
+                        json.loads(store.connection.execute(
+                            "SELECT metadata_json FROM maker_paper_orders "
+                            "WHERE id=?",
+                            (account.buy_order.db_id,),
+                        ).fetchone()[0])
+                        if account.buy_order else {}
+                    )
                     return (
                         account.buy_order.kind if account.buy_order else None,
                         account.buy_order.limit_price
                         if account.buy_order else None,
+                        account.buy_order.price_boundary
+                        if account.buy_order else None,
+                        metadata.get("price_boundary_kind"),
                     )
                 finally:
                     store.close()
@@ -9712,15 +10001,316 @@ class MakerPaperTests(unittest.TestCase):
         # live first-position recovery quote.
         self.assertEqual(
             quoted_buy(policy, 135.995),
-            ("dynamic_customer_base_replenish", 135.645),
+            (
+                "dynamic_customer_base_replenish", 135.645,
+                135.831, "buy_ceiling",
+            ),
         )
-        self.assertEqual(quoted_buy(parent, 135.995), (None, None))
+        self.assertEqual(
+            quoted_buy(parent, 135.995),
+            (None, None, None, None),
+        )
         # A fixed profit threshold is not required: a near-flat recovery still
         # quotes passively while the current causal fair region supports it.
         self.assertEqual(
             quoted_buy(policy, 135.650),
-            ("dynamic_customer_base_replenish", 135.645),
+            (
+                "dynamic_customer_base_replenish", 135.645,
+                135.665, "buy_ceiling",
+            ),
         )
+
+    def test_queue_v118_quotes_the_empty_slot_before_level_two(self) -> None:
+        self.assertEqual(
+            QUEUE_POLICY_V118_CANDIDATE.parent_model_id,
+            QUEUE_POLICY_V117_CANDIDATE.model_id,
+        )
+        self.assertFalse(QUEUE_POLICY_V117_CANDIDATE.quote_at_second_level_front)
+        self.assertTrue(QUEUE_POLICY_V118_CANDIDATE.quote_at_second_level_front)
+
+        with tempfile.TemporaryDirectory() as temp:
+            base = test_config(Path(temp) / "queue-v118-second-level.sqlite3")
+            config = replace(base, maker_paper=MakerPaperConfig(
+                enabled=True, fill_modes=("queue",),
+            ))
+            store = SQLiteStore(config)
+            try:
+                engine = MakerPaperEngine(
+                    config, store, queue_policy=QUEUE_POLICY_V118_CANDIDATE,
+                )
+                moment = datetime(2026, 8, 21, 10, 0, tzinfo=SHANGHAI)
+                engine._start_date(moment.date().isoformat())
+                account = engine.accounts["maker_v01_queue"]
+                tick = replace(
+                    self._replay_tick(
+                        moment, last=135.500, bid=135.500, ask=136.000,
+                        bid_bonds=3_000.0, ask_bonds=3_000.0,
+                    ),
+                    bids=((135.500, 3_000.0), (135.400, 5_000.0)),
+                    asks=((136.000, 3_000.0), (136.200, 5_000.0)),
+                )
+
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, tick, side="buy", desired_price=135.500,
+                    ),
+                    (135.401, "second_level_front"),
+                )
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, tick, side="sell", desired_price=136.000,
+                    ),
+                    (136.199, "second_level_front"),
+                )
+                self.assertEqual(
+                    engine._queue_ahead_at_quote(
+                        tick, side="buy", price=135.401,
+                        queue_position_kind="second_level_front",
+                    ),
+                    3_000.0,
+                )
+                self.assertEqual(
+                    engine._queue_ahead_at_quote(
+                        tick, side="sell", price=136.199,
+                        queue_position_kind="second_level_front",
+                    ),
+                    3_000.0,
+                )
+                parent_account = replace(
+                    account, policy=QUEUE_POLICY_V117_CANDIDATE,
+                )
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        parent_account, tick, side="buy", desired_price=135.500,
+                    ),
+                    (135.500, None),
+                )
+                # A deeper economic cap was never a level-one join order and
+                # must not be raised merely to obtain the second-level slot.
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, tick, side="buy", desired_price=135.450,
+                    ),
+                    (135.450, None),
+                )
+
+                engine._replace_buy(
+                    account, tick, (135.500, 1_000.0, None),
+                    "low_bid_reversion", price_boundary=135.500,
+                    persist=True,
+                )
+                order = account.buy_order
+                self.assertIsNotNone(order)
+                self.assertEqual(order.limit_price, 135.401)
+                # The inserted price has no same-price queue, but the 3,000
+                # bonds at the better bid retain cross-price priority.
+                self.assertEqual(order.queue_ahead, 3_000.0)
+                self.assertEqual(order.price_boundary, 135.500)
+                metadata = json.loads(store.connection.execute(
+                    "SELECT metadata_json FROM maker_paper_orders WHERE id=?",
+                    (order.db_id,),
+                ).fetchone()[0])
+                self.assertEqual(
+                    metadata["queue_position_kind"], "second_level_front",
+                )
+
+                # A 3,400-bond sweep first consumes the better 3,000-bond
+                # level and fills only its 400-bond residual at our price.
+                swept = replace(
+                    tick,
+                    tick_id=tick.tick_id + 1,
+                    market_ts_ms=tick.market_ts_ms + 3_000,
+                    market_time=(moment + timedelta(seconds=3)).time().isoformat(
+                        timespec="milliseconds"
+                    ),
+                    last_price=135.401,
+                    trade_bonds=3_400.0,
+                    transaction_delta=1,
+                    inferred_side="sell",
+                    side_confidence="high",
+                )
+                engine._process_resting_orders(
+                    account, swept, persist=True,
+                    received_ts_ns=swept.market_ts_ms * 1_000_000,
+                )
+                self.assertEqual(account.inventory, 1_400.0)
+                self.assertEqual(account.buy_order.remaining, 600.0)
+                fill = store.connection.execute(
+                    "SELECT price,quantity FROM maker_paper_fills"
+                ).fetchone()
+                self.assertEqual(float(fill["price"]), 135.401)
+                self.assertEqual(float(fill["quantity"]), 400.0)
+
+                tight = replace(
+                    tick,
+                    bids=((135.500, 3_000.0), (135.499, 5_000.0)),
+                    asks=((136.000, 3_000.0), (136.001, 5_000.0)),
+                )
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, tight, side="buy", desired_price=135.500,
+                    ),
+                    (135.500, None),
+                )
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, tight, side="sell", desired_price=136.000,
+                    ),
+                    (136.000, None),
+                )
+            finally:
+                store.close()
+
+    def test_queue_v119_causally_chooses_between_two_queue_positions(
+        self,
+    ) -> None:
+        self.assertEqual(
+            QUEUE_POLICY_V119_CANDIDATE.parent_model_id,
+            QUEUE_POLICY_V118_CANDIDATE.model_id,
+        )
+        self.assertFalse(
+            QUEUE_POLICY_V118_CANDIDATE
+                .dynamically_choose_second_level_front,
+        )
+        self.assertTrue(
+            QUEUE_POLICY_V119_CANDIDATE
+                .dynamically_choose_second_level_front,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            base = test_config(Path(temp) / "queue-v119-dynamic.sqlite3")
+            config = replace(base, maker_paper=MakerPaperConfig(
+                enabled=True, fill_modes=("queue",),
+            ))
+            store = SQLiteStore(config)
+            try:
+                engine = MakerPaperEngine(
+                    config, store, queue_policy=QUEUE_POLICY_V119_CANDIDATE,
+                )
+                moment = datetime(2026, 8, 21, 10, 0, tzinfo=SHANGHAI)
+                engine._start_date(moment.date().isoformat())
+                account = engine.accounts["maker_v01_queue"]
+                worthwhile = replace(
+                    self._replay_tick(
+                        moment, last=135.500, bid=135.500, ask=136.000,
+                        bid_bonds=3_000.0, ask_bonds=3_000.0,
+                    ),
+                    bids=((135.500, 3_000.0), (135.400, 5_000.0)),
+                    asks=((136.000, 3_000.0), (136.200, 5_000.0)),
+                )
+
+                # A large best queue, a wide maker corridor, and a material
+                # level gap make the second-level front worth its lower fill
+                # probability on both sides.
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, worthwhile, side="buy",
+                        desired_price=135.500,
+                    ),
+                    (135.401, "second_level_front"),
+                )
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, worthwhile, side="sell",
+                        desired_price=136.000,
+                    ),
+                    (136.199, "second_level_front"),
+                )
+
+                # Any missing condition keeps the parent's economically
+                # valid quote at the ordinary best-level tail.
+                small_queue = replace(
+                    worthwhile,
+                    bids=((135.500, 1_000.0), (135.400, 5_000.0)),
+                )
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, small_queue, side="buy",
+                        desired_price=135.500,
+                    ),
+                    (135.500, "best_level_tail"),
+                )
+                narrow_inside = replace(
+                    worthwhile,
+                    asks=((135.600, 3_000.0), (136.200, 5_000.0)),
+                )
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, narrow_inside, side="buy",
+                        desired_price=135.500,
+                    ),
+                    (135.500, "best_level_tail"),
+                )
+                trivial_improvement = replace(
+                    worthwhile,
+                    bids=((135.500, 3_000.0), (135.490, 5_000.0)),
+                )
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, trivial_improvement, side="buy",
+                        desired_price=135.500,
+                    ),
+                    (135.500, "best_level_tail"),
+                )
+                no_second_level = replace(
+                    worthwhile,
+                    bids=((135.500, 3_000.0),),
+                )
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, no_second_level, side="buy",
+                        desired_price=135.500,
+                    ),
+                    (135.500, "best_level_tail"),
+                )
+
+                # A deeper economic cap was never a best-level queue order;
+                # dynamic placement cannot lift it toward the market.
+                self.assertEqual(
+                    engine._queue_quote_position(
+                        account, worthwhile, side="buy",
+                        desired_price=135.450,
+                    ),
+                    (135.450, None),
+                )
+
+                engine._replace_buy(
+                    account, worthwhile, (135.500, 1_000.0, None),
+                    "low_bid_reversion", price_boundary=135.500,
+                    persist=True,
+                )
+                second_order = account.buy_order
+                self.assertIsNotNone(second_order)
+                assert second_order is not None
+                second_metadata = json.loads(store.connection.execute(
+                    "SELECT metadata_json FROM maker_paper_orders WHERE id=?",
+                    (second_order.db_id,),
+                ).fetchone()[0])
+                self.assertEqual(
+                    second_metadata["queue_position_kind"],
+                    "second_level_front",
+                )
+                self.assertEqual(second_order.price_boundary, 135.500)
+
+                engine._replace_buy(
+                    account, small_queue, (135.500, 1_000.0, None),
+                    "low_bid_reversion", price_boundary=135.500,
+                    persist=True,
+                )
+                best_order = account.buy_order
+                self.assertIsNotNone(best_order)
+                assert best_order is not None
+                best_metadata = json.loads(store.connection.execute(
+                    "SELECT metadata_json FROM maker_paper_orders WHERE id=?",
+                    (best_order.db_id,),
+                ).fetchone()[0])
+                self.assertEqual(
+                    best_metadata["queue_position_kind"],
+                    "best_level_tail",
+                )
+                self.assertEqual(best_order.price_boundary, 135.500)
+            finally:
+                store.close()
 
     def test_close_trading_window_is_versioned_per_execution_branch(self) -> None:
         self.assertEqual(
@@ -9989,6 +10579,242 @@ class MakerPaperTests(unittest.TestCase):
 
         self.assertEqual(inventory_after(PRIORITY_POLICY_V142_CANDIDATE), 0.0)
         self.assertEqual(inventory_after(PRIORITY_POLICY_V143_CANDIDATE), 1_000.0)
+
+    def test_priority_v144_buys_first_in_a_persistent_wide_corridor(
+        self,
+    ) -> None:
+        self.assertEqual(
+            PRIORITY_POLICY_V144_CANDIDATE.parent_model_id,
+            PRIORITY_POLICY_V143_CANDIDATE.model_id,
+        )
+        self.assertFalse(
+            PRIORITY_POLICY_V143_CANDIDATE
+                .enable_persistent_wide_spread_buy_first_entry,
+        )
+        self.assertTrue(
+            PRIORITY_POLICY_V144_CANDIDATE
+                .enable_persistent_wide_spread_buy_first_entry,
+        )
+        moment = datetime(2026, 8, 21, 11, 7, 39, tzinfo=SHANGHAI)
+        assessment = MarketAssessment(
+            reference_price=135.700,
+            reference_low=135.501,
+            reference_high=135.899,
+            reference_source="persistent_inside_market",
+            reference_confidence=0.55,
+            state="stable",
+            state_score=0,
+            state_confidence=0.75,
+            recent_buy_bonds=0.0,
+            recent_sell_bonds=0.0,
+            midpoint_change=0.0,
+            short_ask_change=0.0,
+            largest_ask_gap=0.0,
+            downside_book_vacuum=False,
+            fragile_top_bid=False,
+            iron_floor_price=None,
+            iron_floor_bonds=0.0,
+            evidence=(),
+        )
+        context = MakerDecisionContext(
+            reference_price=135.700,
+            reference_source="persistent_inside_market",
+            reliable_anchor=False,
+            spread=0.398,
+            bid_support_bonds=2_000.0,
+            ask_supply_bonds=4_000.0,
+            wall_threshold_bonds=5_000.0,
+        )
+
+        def quote_for(policy, *, age_seconds: int = 60,
+                      high_buy_bonds: float = 1_000.0,
+                      state: str = "stable", bid_bonds: float = 1_000.0,
+                      ask: float = 135.899):
+            with tempfile.TemporaryDirectory() as temp:
+                config = test_config(Path(temp) / "v144-buy-first.sqlite3")
+                store = SQLiteStore(config)
+                try:
+                    engine = MakerPaperEngine(
+                        config, store, priority_policy=policy,
+                    )
+                    engine._start_date(moment.date().isoformat())
+                    account = engine.accounts["maker_v01_priority"]
+                    start_ms = int(
+                        (moment - timedelta(seconds=age_seconds)).timestamp()
+                        * 1_000
+                    )
+                    now_ms = int(moment.timestamp() * 1_000)
+                    engine.analyzer.book_quotes.extend((
+                        BookQuote(start_ms, 135.501, ask),
+                        BookQuote(now_ms, 135.501, ask),
+                    ))
+                    if high_buy_bonds > 0:
+                        engine.analyzer.trade_evidence.append(TradeEvidence(
+                            now_ms - 480_000,
+                            ask,
+                            high_buy_bonds,
+                            1,
+                            "buy",
+                        ))
+                    tick = replace(
+                        self._replay_tick(
+                            moment, last=ask, bid=135.501, ask=ask,
+                            bid_bonds=bid_bonds, ask_bonds=4_000.0,
+                        ),
+                        bids=((135.501, bid_bonds), (135.500, 1_000.0)),
+                    )
+                    with patch.object(
+                        engine, "_decision_context", return_value=context,
+                    ):
+                        engine._refresh_orders(
+                            account, tick, replace(assessment, state=state),
+                            persist=True,
+                        )
+                    return account.buy_order
+                finally:
+                    store.close()
+
+        self.assertIsNone(quote_for(PRIORITY_POLICY_V143_CANDIDATE))
+        order = quote_for(PRIORITY_POLICY_V144_CANDIDATE)
+        self.assertIsNotNone(order)
+        assert order is not None
+        self.assertEqual(order.kind, "persistent_wide_spread_buy_first_entry")
+        self.assertEqual(order.limit_price, 135.502)
+        self.assertEqual(order.quantity, 1_000.0)
+        self.assertEqual(order.price_boundary, 135.502)
+        self.assertIsNone(
+            quote_for(PRIORITY_POLICY_V144_CANDIDATE, age_seconds=59),
+        )
+        self.assertIsNone(
+            quote_for(
+                PRIORITY_POLICY_V144_CANDIDATE, high_buy_bonds=999.0,
+            ),
+        )
+        self.assertIsNone(
+            quote_for(PRIORITY_POLICY_V144_CANDIDATE, state="rising"),
+        )
+        self.assertIsNone(
+            quote_for(PRIORITY_POLICY_V144_CANDIDATE, bid_bonds=999.0),
+        )
+        self.assertIsNone(
+            quote_for(PRIORITY_POLICY_V144_CANDIDATE, ask=135.791),
+        )
+
+        # Once causally established, the exact low quote survives expiry of
+        # the initial high-side trade while the same full corridor persists.
+        with tempfile.TemporaryDirectory() as temp:
+            config = test_config(Path(temp) / "v144-retain.sqlite3")
+            store = SQLiteStore(config)
+            try:
+                engine = MakerPaperEngine(
+                    config, store,
+                    priority_policy=PRIORITY_POLICY_V144_CANDIDATE,
+                )
+                engine._start_date(moment.date().isoformat())
+                account = engine.accounts["maker_v01_priority"]
+                now_ms = int(moment.timestamp() * 1_000)
+                engine.analyzer.book_quotes.extend((
+                    BookQuote(now_ms - 60_000, 135.501, 135.899),
+                    BookQuote(now_ms, 135.501, 135.899),
+                ))
+                tick = self._replay_tick(
+                    moment, last=135.899, bid=135.501, ask=135.899,
+                    bid_bonds=1_000.0, ask_bonds=4_000.0,
+                )
+                account.buy_order = engine._new_order(
+                    account, tick, side="buy",
+                    kind="persistent_wide_spread_buy_first_entry",
+                    lot_id=None, price=135.502, quantity=1_000.0,
+                    price_boundary=135.502, queue_ahead=0.0,
+                    target_price=None, persist=True,
+                )
+                with patch.object(
+                    engine, "_decision_context", return_value=context,
+                ):
+                    engine._refresh_orders(
+                        account, tick, assessment, persist=True,
+                    )
+                self.assertIsNotNone(account.buy_order)
+                assert account.buy_order is not None
+                self.assertEqual(account.buy_order.limit_price, 135.502)
+            finally:
+                store.close()
+
+    def test_priority_v144_exits_only_the_low_side_quantity_actually_bought(
+        self,
+    ) -> None:
+        moment = datetime(2026, 8, 21, 11, 7, 39, tzinfo=SHANGHAI)
+        with tempfile.TemporaryDirectory() as temp:
+            config = test_config(Path(temp) / "v144-partial-turn.sqlite3")
+            store = SQLiteStore(config)
+            try:
+                engine = MakerPaperEngine(
+                    config, store,
+                    priority_policy=PRIORITY_POLICY_V144_CANDIDATE,
+                )
+                engine._start_date(moment.date().isoformat())
+                account = engine.accounts["maker_v01_priority"]
+                quote = self._replay_tick(
+                    moment, last=135.899, bid=135.501, ask=135.899,
+                    bid_bonds=1_000.0, ask_bonds=4_000.0,
+                )
+                buy_order = engine._new_order(
+                    account, quote, side="buy",
+                    kind="persistent_wide_spread_buy_first_entry",
+                    lot_id=None, price=135.502, quantity=1_000.0,
+                    price_boundary=135.502,
+                    queue_ahead=0.0, target_price=None, persist=True,
+                )
+                account.buy_order = buy_order
+                low_print = replace(
+                    quote,
+                    market_ts_ms=quote.market_ts_ms + 144_000,
+                    market_time="11:10:03.000",
+                    last_price=135.501,
+                    trade_bonds=360.0,
+                    transaction_delta=1,
+                    inferred_side="sell",
+                    bids=((135.501, 640.0), (135.500, 1_000.0)),
+                )
+                engine._process_resting_orders(
+                    account, low_print, persist=True,
+                    received_ts_ns=low_print.market_ts_ms * 1_000_000,
+                )
+                self.assertEqual(account.inventory, 1_360.0)
+                self.assertEqual(buy_order.filled_quantity, 360.0)
+
+                extra_lot = next(
+                    lot for lot in account.lots.values()
+                    if lot.kind != "base" and lot.remaining_quantity > 0
+                )
+                sell_order = engine._new_order(
+                    account, low_print, side="sell", kind="inventory_exit",
+                    lot_id=extra_lot.db_id, price=135.898, quantity=360.0,
+                    price_boundary=135.898,
+                    queue_ahead=0.0, target_price=135.898, persist=True,
+                )
+                account.sell_orders[extra_lot.db_id] = sell_order
+                high_print = replace(
+                    low_print,
+                    market_ts_ms=low_print.market_ts_ms + 15_000,
+                    market_time="11:10:18.000",
+                    last_price=135.899,
+                    trade_bonds=1_000.0,
+                    transaction_delta=1,
+                    inferred_side="buy",
+                    asks=((135.899, 3_000.0),),
+                )
+                engine._process_resting_orders(
+                    account, high_print, persist=True,
+                    received_ts_ns=high_print.market_ts_ms * 1_000_000,
+                )
+                engine._mark_account(account, high_print, persist=True)
+                self.assertEqual(account.inventory, 1_000.0)
+                self.assertEqual(sell_order.filled_quantity, 360.0)
+                self.assertAlmostEqual(account.trading_pnl, 142.56, places=2)
+                self.assertEqual(account.customer_base_short_bonds, 0.0)
+            finally:
+                store.close()
 
     def test_priority_v140_prepositions_only_a_recent_safe_high_ask_cluster(
         self,

@@ -38,20 +38,41 @@ class ConfigTests(unittest.TestCase):
                 1_000,
             )
             self.assertEqual(
+                config.maker_paper.fill_modes,
+                (),
+            )
+            self.assertEqual(
                 config.maker_paper.realtime_comparison_model_ids,
                 (
                     "maker_priority_v1_37_candidate",
                     "maker_priority_v1_43_candidate",
                     "maker_queue_v1_17_candidate",
+                    "maker_queue_v1_18_candidate",
                 ),
             )
             self.assertEqual(
                 config.maker_paper.latest_entry,
                 "15:29:59.999",
             )
+            self.assertEqual(
+                config.maker_paper.earliest_entry,
+                "09:20:00.000",
+            )
+            self.assertEqual(
+                config.maker_paper.opening_caution_effective_date,
+                "2026-08-21",
+            )
+            self.assertEqual(
+                config.maker_paper.opening_caution_end,
+                "09:30:00.000",
+            )
+            self.assertEqual(
+                config.maker_paper.opening_caution_minimum_edge,
+                1.00,
+            )
             self.assertEqual(config.m0.conversion_price_for(date(2026, 8, 10)), 21.20)
             self.assertEqual(config.paper.price_tick, 0.001)
-            self.assertFalse(config.maker_paper.super_windfall_enabled)
+            self.assertTrue(config.maker_paper.super_windfall_enabled)
             self.assertEqual(config.maker_paper.super_windfall_quantity_bonds, 10)
             self.assertEqual(config.storage.database, Path(temp).resolve() / "data" / "zhaiquant.sqlite3")
 

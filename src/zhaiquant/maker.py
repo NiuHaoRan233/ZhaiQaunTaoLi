@@ -78,8 +78,49 @@ class MakerParameters:
     maximum_low_sell_to_sweep_ratio: float = 0.25
     maximum_stock_drop_5m: float = 0.003
     outcome_horizon_seconds: int = 600
-    earliest_entry_time: str = "09:30:00.000"
+    earliest_entry_time: str = "09:20:00.000"
     latest_entry_time: str = "15:29:59.999"
+    opening_caution_effective_date: str = "2026-08-21"
+    opening_caution_end_time: str = "09:30:00.000"
+    opening_caution_minimum_edge: float = 1.00
+
+    def opening_caution_is_effective(self, market_date: str | None) -> bool:
+        return bool(
+            market_date
+            and market_date >= self.opening_caution_effective_date
+        )
+
+    def effective_earliest_entry_time(self, market_date: str | None) -> str:
+        if self.opening_caution_is_effective(market_date):
+            return self.earliest_entry_time
+        return max(self.earliest_entry_time, self.opening_caution_end_time)
+
+    def maker_session_has_started(
+        self, market_date: str | None, market_time: str,
+    ) -> bool:
+        # Before the public rule's effective date, preserve the historical
+        # sell-side behavior instead of retroactively imposing a session gate.
+        return (
+            not self.opening_caution_is_effective(market_date)
+            or market_time >= self.earliest_entry_time
+        )
+
+    def opening_caution_is_active(
+        self, market_date: str | None, market_time: str,
+    ) -> bool:
+        return (
+            self.opening_caution_is_effective(market_date)
+            and self.earliest_entry_time <= market_time
+            < self.opening_caution_end_time
+        )
+
+    def opening_edge_is_safe(
+        self, market_date: str | None, market_time: str, edge: float,
+    ) -> bool:
+        return (
+            not self.opening_caution_is_active(market_date, market_time)
+            or edge + 1e-9 >= self.opening_caution_minimum_edge
+        )
 
 
 @dataclass(frozen=True)
@@ -574,7 +615,9 @@ class MakerAnalyzer:
                     for member in cluster_members
                 ) else 0.0
             )
-            if not self._entry_window(tick.market_time) or not (
+            if not self._entry_window(
+                tick.market_time, tick.market_date,
+            ) or not (
                 (
                     source_cluster_bonds >= minimum_source_wall
                     and consumed_ratio >= parameters.minimum_sweep_consumed_ratio
@@ -615,6 +658,12 @@ class MakerAnalyzer:
             ):
                 continue
             priority_exit = max(price + parameters.price_tick, next_ask - parameters.price_tick)
+            if not parameters.opening_edge_is_safe(
+                tick.market_date,
+                tick.market_time,
+                priority_exit - price,
+            ):
+                continue
             quantity = planned_quantity
             event_source_bonds = (
                 immediate_source_cluster_bonds
@@ -1212,7 +1261,7 @@ class MakerAnalyzer:
         self, tick: ReplayTick, anchor: AnchorState,
     ) -> Opportunity | None:
         parameters = self.parameters
-        if not self._entry_window(tick.market_time):
+        if not self._entry_window(tick.market_time, tick.market_date):
             return None
         if tick.bid1 <= 0 or tick.ask1 <= tick.bid1:
             return None
@@ -1220,7 +1269,13 @@ class MakerAnalyzer:
             return None
         edge = anchor.reference_price - tick.bid1
         exit_edge = anchor.exit_price - tick.bid1
-        if edge + 1e-9 < parameters.minimum_entry_edge or exit_edge <= 0:
+        if (
+            edge + 1e-9 < parameters.minimum_entry_edge
+            or not parameters.opening_edge_is_safe(
+                tick.market_date, tick.market_time, edge,
+            )
+            or exit_edge <= 0
+        ):
             return None
 
         price_bucket_width = 0.05
@@ -1262,10 +1317,12 @@ class MakerAnalyzer:
             ),
         )
 
-    def _entry_window(self, market_time: str) -> bool:
+    def _entry_window(
+        self, market_time: str, market_date: str | None = None,
+    ) -> bool:
         parameters = self.parameters
         if not (
-            parameters.earliest_entry_time
+            parameters.effective_earliest_entry_time(market_date)
             <= market_time
             <= parameters.latest_entry_time
         ):

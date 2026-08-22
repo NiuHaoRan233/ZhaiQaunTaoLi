@@ -22,6 +22,9 @@
       <div class="topbar-actions">
         <div class="source-pill"><span class="pulse-dot"></span><span id="sourceLabel">正在连接两债纸面账本</span></div>
         <div class="safety-pill">纸面模拟 · 不发送真实委托</div>
+        <button class="sound-button" id="soundToggle" type="button" aria-pressed="false" title="只提醒当前观察模型的实时纸面委托与成交">
+          <span class="sound-icon" aria-hidden="true">♪</span><span id="soundLabel">声音提醒 · 开启</span>
+        </button>
         <button class="icon-button" id="refreshButton" type="button" aria-label="刷新">↻</button>
       </div>
     </header>
@@ -75,14 +78,23 @@
           <span id="actionCount">0 条</span>
           <div class="segment-control" id="actionFilter">
             <button class="active" data-action-filter="all" type="button">全部</button>
-            <button data-action-filter="submit" type="button">挂单</button>
-            <button data-action-filter="cancel" type="button">撤单</button>
+            <button data-action-filter="order" type="button">委托（挂/撤）</button>
             <button data-action-filter="fill" type="button">成交</button>
           </div>
         </div>
       </div>
-      <div class="action-columns"><span>时间</span><span>债券</span><span>动作</span><span>方向 / 价格 / 数量</span><span>原因与订单</span></div>
-      <div class="action-stream" id="actionStream"></div>
+      <div class="bond-action-grid">
+        <section class="bond-action-pane" data-action-bond="132026.SH">
+          <div class="bond-action-head"><h3>G三峡EB2 <small>132026.SH</small></h3><span id="actionCount-132026-SH">0 条</span></div>
+          <div class="action-columns"><span>时间</span><span>动作</span><span>方向 / 价格 / 数量</span><span>原因与订单</span></div>
+          <div class="action-stream" id="actionStream-132026-SH"></div>
+        </section>
+        <section class="bond-action-pane" data-action-bond="132024.SH">
+          <div class="bond-action-head"><h3>26江铜EB <small>132024.SH</small></h3><span id="actionCount-132024-SH">0 条</span></div>
+          <div class="action-columns"><span>时间</span><span>动作</span><span>方向 / 价格 / 数量</span><span>原因与订单</span></div>
+          <div class="action-stream" id="actionStream-132024-SH"></div>
+        </section>
+      </div>
     </section>
 
     <footer>

@@ -13,19 +13,29 @@
 
 M0 仍只评估主配对 `132026.SH` / `600900.SH`。做市纸面盘同时覆盖两只债券，各债券和各模型使用彼此隔离的账户。
 
-当前生产基线是：
+已登记的生产基线是：
 
 - 第一顺位 `maker_priority_v1_1`
 - 排队成交 `maker_queue_v1_0`
 - 超级捡漏 `maker_windfall_v1_0`
 
-当前持久化实时比较矩阵按以下顺序运行：
+其中第一顺位1.1和排队1.0保留版本身份与历史账本，但已从后续实时纸面盘停用；超级捡漏1.0继续独立运行。当前持久化实时比较矩阵按以下顺序运行：
 
 1. `maker_priority_v1_37_candidate`
 2. `maker_priority_v1_43_candidate`
 3. `maker_queue_v1_17_candidate`
+4. `maker_queue_v1_18_candidate`
 
 候选进入实时纸面账户只表示正在收集未讲解日证据，不表示已经晋级生产模型。正式状态和版本血缘以 [做市模型版本记录](docs/做市模型版本记录.md) 为准。
+
+当前另有只读离线研究候选，不在实时矩阵：第二顺位动态选位`maker_queue_v1_19_candidate`在买一/卖一尾部与买二/卖二队首之间选择；第三顺位巨鲸保留原始5,000张直挂的`maker_whale_v0_1_candidate`，并新增1,000张探针、分层扩量和受攻击先逃的`maker_whale_v0_2_candidate`。这些候选都未达到进入实时比较的证据要求。
+
+巨鲸候选可用只读历史库复核并同时运行墙倍数/持续时间敏感性：
+
+```powershell
+.\.venv\Scripts\python.exe -m zhaiquant.whale_maker_research --dates 2026-08-11 2026-08-12 2026-08-13 2026-08-14 2026-08-17 2026-08-18 2026-08-21 --sensitivity
+.\.venv\Scripts\python.exe -m zhaiquant.whale_maker_research --model-version v0.2 --dates 2026-08-11 2026-08-12 2026-08-13 2026-08-14 2026-08-17 2026-08-18 2026-08-21 --attribution-sensitivity
+```
 
 ## Windows 快速开始
 

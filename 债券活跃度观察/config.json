@@ -7,7 +7,12 @@
     "132024.SH",
     "132026.SH"
   ],
-  "very_active_ratio": 0.1,
+  "score_weights": {
+    "amount": 0.3,
+    "transaction_count": 0.3,
+    "price_range": 0.3,
+    "active_intervals": 0.1
+  },
   "search_categories": [
     "信用债"
   ]

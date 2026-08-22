@@ -25,6 +25,76 @@ class RefreshWindowTests(unittest.TestCase):
         self.assertFalse(server.refresh_window_active(datetime(2026, 8, 22, 10, 0, 0)))
 
 
+class OrderBoundaryViewTests(unittest.TestCase):
+    def test_frozen_buy_ceiling_and_sell_floor_are_exposed(self) -> None:
+        self.assertEqual(
+            server.order_price_boundary_view({
+                "price_boundary": 137.735,
+                "price_boundary_kind": "buy_ceiling",
+            }, "buy"),
+            (137.735, "buy_ceiling", "最高买价"),
+        )
+        self.assertEqual(
+            server.order_price_boundary_view({
+                "price_boundary": 138.205,
+                "price_boundary_kind": "sell_floor",
+            }, "sell"),
+            (138.205, "sell_floor", "最低卖价"),
+        )
+
+    def test_legacy_order_boundary_is_not_recomputed(self) -> None:
+        self.assertEqual(
+            server.order_price_boundary_view({}, "buy"),
+            (None, None, "极限价"),
+        )
+
+
+class ClosingPnlViewTests(unittest.TestCase):
+    def test_customer_base_buyback_gets_sell_then_buy_profit(self) -> None:
+        accounts = [{
+            "strategy_id": "paper-priority",
+            "fill_mode": "priority",
+            "initial_inventory": 1_000,
+        }]
+        fills = [
+            {
+                "id": 1, "strategy_id": "paper-priority", "side": "sell",
+                "price": 137.382, "quantity": 1_000, "market_ts_ms": 1_000,
+                "lot_id": 10, "lot_kind": "base",
+            },
+            {
+                "id": 2, "strategy_id": "paper-priority", "side": "buy",
+                "price": 136.999, "quantity": 1_000, "market_ts_ms": 2_000,
+                "lot_id": 11, "lot_kind": "base",
+            },
+        ]
+        result = server.closing_pnl_by_fill(fills, accounts)
+        self.assertNotIn(1, result)
+        self.assertAlmostEqual(result[2], 383.0)
+
+    def test_close_fill_gets_fifo_realized_profit(self) -> None:
+        accounts = [{
+            "strategy_id": "paper-priority",
+            "fill_mode": "priority",
+            "initial_inventory": 1_000,
+        }]
+        fills = [
+            {
+                "id": 1, "strategy_id": "paper-priority", "side": "buy",
+                "price": 136.200, "quantity": 300, "market_ts_ms": 1_000,
+                "lot_id": 10, "lot_kind": "low_bid_reversion",
+            },
+            {
+                "id": 2, "strategy_id": "paper-priority", "side": "sell",
+                "price": 136.650, "quantity": 200, "market_ts_ms": 2_000,
+                "lot_id": 10, "lot_kind": "low_bid_reversion",
+            },
+        ]
+        result = server.closing_pnl_by_fill(fills, accounts)
+        self.assertNotIn(1, result)
+        self.assertAlmostEqual(result[2], 90.0)
+
+
 class ReadOnlySnapshotTests(unittest.TestCase):
     @unittest.skipUnless(server.DEFAULT_DATABASE.exists(), "local paper database is absent")
     def test_current_matrix_and_units(self) -> None:

@@ -90,10 +90,12 @@ During each strategy discussion:
 ## Current Maker Paper Matrix
 
 - Production baselines remain `maker_priority_v1_1`, `maker_queue_v1_0`, and
-  `maker_windfall_v1_0`.
+  `maker_windfall_v1_0`, but the ordinary priority 1.1 and queue 1.0 baselines are
+  inactive in the forward real-time paper matrix. Preserve their registrations and
+  historical ledgers; continue the independent windfall account.
 - The current persisted real-time comparison order is
   `maker_priority_v1_37_candidate`, `maker_priority_v1_43_candidate`, then
-  `maker_queue_v1_17_candidate`.
+  `maker_queue_v1_17_candidate`, then `maker_queue_v1_18_candidate`.
 - A candidate entering the real-time paper matrix is not a production promotion. Do not
   describe it as deployed or current production, and do not merge its account, fills,
   inventory, or PnL with another model.

@@ -574,6 +574,15 @@ def main(argv: list[str] | None = None) -> int:
                     price_tick=config.maker_paper.price_tick,
                     earliest_entry_time=config.maker_paper.earliest_entry,
                     latest_entry_time=config.maker_paper.latest_entry,
+                    opening_caution_effective_date=(
+                        config.maker_paper.opening_caution_effective_date
+                    ),
+                    opening_caution_end_time=(
+                        config.maker_paper.opening_caution_end
+                    ),
+                    opening_caution_minimum_edge=(
+                        config.maker_paper.opening_caution_minimum_edge
+                    ),
                 ),
                 bond_name=config.qmt.instrument_names.get(bond_code),
                 interval_seconds=args.interval,

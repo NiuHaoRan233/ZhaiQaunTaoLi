@@ -4,7 +4,7 @@ import json
 import math
 from collections import deque
 from dataclasses import dataclass, field, replace
-from decimal import Decimal, ROUND_FLOOR
+from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 from datetime import date, datetime, timezone
 from typing import Any
 
@@ -135,6 +135,16 @@ class MakerPolicyProfile:
     two_sided_wall_corridor_maximum_reference_low_edge: float = 0.18
     two_sided_wall_corridor_maximum_midpoint_change: float = 0.05
     two_sided_wall_corridor_maximum_ask_drop: float = 0.05
+    enable_persistent_wide_spread_buy_first_entry: bool = False
+    wide_spread_buy_first_minimum_edge: float = 0.30
+    wide_spread_buy_first_maximum_edge: float = 0.50
+    wide_spread_buy_first_minimum_book_seconds: int = 60
+    wide_spread_buy_first_maximum_book_drift: float = 0.015
+    wide_spread_buy_first_high_buy_lookback_seconds: int = 600
+    wide_spread_buy_first_minimum_high_buy_bonds: float = 1_000.0
+    wide_spread_buy_first_maximum_high_trade_ask_gap: float = 0.015
+    wide_spread_buy_first_maximum_midpoint_change: float = 0.05
+    wide_spread_buy_first_maximum_ask_drop: float = 0.05
     retain_persistent_wall_supported_falling_extra_entry: bool = False
     persistent_wall_supported_entry_maximum_lifetime_seconds: int = 300
     retain_persistent_wall_supported_entry_across_state_relabels: bool = False
@@ -155,6 +165,11 @@ class MakerPolicyProfile:
     retain_queue_queued_inventory_turn_in_stable: bool = False
     retain_queue_cleared_inventory_turn_buy_on_lower_reprice: bool = False
     retain_clean_cleared_inventory_turn_buy_while_falling: bool = False
+    quote_at_second_level_front: bool = False
+    dynamically_choose_second_level_front: bool = False
+    second_level_front_minimum_top_quantity_multiple: float = 2.0
+    second_level_front_minimum_price_improvement: float = 0.02
+    second_level_front_minimum_inside_spread: float = 0.18
 
 
 PRIORITY_POLICY_V11 = MakerPolicyProfile(
@@ -888,6 +903,17 @@ PRIORITY_POLICY_V143_CANDIDATE = replace(
     # causally local consumption ratio.
     enable_immediate_visible_cluster_tail_recovery=True,
 )
+PRIORITY_POLICY_V144_CANDIDATE = replace(
+    PRIORITY_POLICY_V143_CANDIDATE,
+    model_id="maker_priority_v1_44_candidate",
+    model_version="1.44-candidate",
+    parent_model_id="maker_priority_v1_43_candidate",
+    # A persistent 0.30--0.50-yuan inside corridor plus a recent real
+    # high-side buy can authorize one passive extra-inventory bid without a
+    # 5,000-bond lower wall.  The customer base is never sold first: only the
+    # quantity actually bought at the low side becomes eligible for exit.
+    enable_persistent_wide_spread_buy_first_entry=True,
+)
 QUEUE_POLICY_V10 = MakerPolicyProfile(
     model_id="maker_queue_v1_0",
     model_version="1.0",
@@ -1187,6 +1213,27 @@ QUEUE_POLICY_V117_CANDIDATE = replace(
     parent_model_id="maker_queue_v1_13_candidate",
     latest_entry_time="15:29:59.999",
 )
+QUEUE_POLICY_V118_CANDIDATE = replace(
+    QUEUE_POLICY_V117_CANDIDATE,
+    model_id="maker_queue_v1_18_candidate",
+    model_version="1.18-candidate",
+    parent_model_id="maker_queue_v1_17_candidate",
+    # When the parent would join the displayed best quote, improve the old
+    # second level by one tick instead.  This creates a new second level with
+    # no displayed queue ahead and waits for a later sweep through level one.
+    quote_at_second_level_front=True,
+)
+QUEUE_POLICY_V119_CANDIDATE = replace(
+    QUEUE_POLICY_V118_CANDIDATE,
+    model_id="maker_queue_v1_19_candidate",
+    model_version="1.19-candidate",
+    parent_model_id="maker_queue_v1_18_candidate",
+    # Keep an ordinary best-level tail when that queue still has realistic
+    # turnover value.  Move to the empty slot before level two only when the
+    # visible best queue is already large, the inside spread remains a real
+    # maker corridor, and level two pays a material price improvement.
+    dynamically_choose_second_level_front=True,
+)
 WINDFALL_POLICY_V10 = MakerPolicyProfile(
     model_id="maker_windfall_v1_0",
     model_version="1.0",
@@ -1218,8 +1265,10 @@ REALTIME_COMPARISON_POLICIES = {
     PRIORITY_POLICY_V137_CANDIDATE.model_id: PRIORITY_POLICY_V137_CANDIDATE,
     PRIORITY_POLICY_V142_CANDIDATE.model_id: PRIORITY_POLICY_V142_CANDIDATE,
     PRIORITY_POLICY_V143_CANDIDATE.model_id: PRIORITY_POLICY_V143_CANDIDATE,
+    PRIORITY_POLICY_V144_CANDIDATE.model_id: PRIORITY_POLICY_V144_CANDIDATE,
     QUEUE_POLICY_V113_CANDIDATE.model_id: QUEUE_POLICY_V113_CANDIDATE,
     QUEUE_POLICY_V117_CANDIDATE.model_id: QUEUE_POLICY_V117_CANDIDATE,
+    QUEUE_POLICY_V118_CANDIDATE.model_id: QUEUE_POLICY_V118_CANDIDATE,
 }
 
 
@@ -1280,6 +1329,15 @@ def _floor_to_tick(value: float, price_tick: float) -> float:
     return float(units * step)
 
 
+def _ceil_to_tick(value: float, price_tick: float) -> float:
+    """Quantize a sell-side economic floor up to a legal price tick."""
+    step = Decimal(str(price_tick))
+    units = (Decimal(str(value)) / step).to_integral_value(
+        rounding=ROUND_CEILING
+    )
+    return float(units * step)
+
+
 @dataclass
 class MakerLot:
     db_id: int
@@ -1300,6 +1358,8 @@ class MakerOrder:
     created_ms: int
     limit_price: float
     quantity: float
+    price_boundary: float
+    price_boundary_kind: str
     filled_quantity: float = 0.0
     queue_ahead: float = 0.0
     queue_cleared_ms: int = 0
@@ -1317,6 +1377,7 @@ class MakerOrder:
     visible_wall_entry_price: float = 0.0
     inventory_neutral_downtrend_turn: bool = False
     medium_wall_supported_base_short: bool = False
+    queue_position_kind: str | None = None
     target_price: float | None = None
 
     @property
@@ -1458,7 +1519,9 @@ class MakerPaperEngine:
         self.queue_policy = queue_policy or QUEUE_POLICY_V10
         self.windfall_policy = windfall_policy or WINDFALL_POLICY_V10
         paper = config.maker_paper
-        self.fill_modes = tuple(fill_modes or paper.fill_modes)
+        self.fill_modes = tuple(
+            paper.fill_modes if fill_modes is None else fill_modes
+        )
         self.include_windfall = (
             paper.super_windfall_enabled
             if include_windfall is None else include_windfall
@@ -1469,6 +1532,13 @@ class MakerPaperEngine:
             order_quantity_bonds=paper.order_quantity_bonds,
             earliest_entry_time=paper.earliest_entry,
             latest_entry_time=paper.latest_entry,
+            opening_caution_effective_date=(
+                paper.opening_caution_effective_date
+            ),
+            opening_caution_end_time=paper.opening_caution_end,
+            opening_caution_minimum_edge=(
+                paper.opening_caution_minimum_edge
+            ),
         )
         self.analyzer = MakerAnalyzer(
             self.bond_code, self.stock_code, self.parameters
@@ -1577,6 +1647,20 @@ class MakerPaperEngine:
             return
         if self.market_date != tick.market_date:
             self._start_date(tick.market_date)
+
+        if not self.parameters.maker_session_has_started(
+            tick.market_date, tick.market_time,
+        ):
+            if tick.code == self.bond_code:
+                if tick.previous_close > 0:
+                    self.previous_close_reference = tick.previous_close
+                for account in self.accounts.values():
+                    self._cancel_all_orders(
+                        account, tick, "maker_session_not_started",
+                        persist=persist,
+                    )
+                    self._mark_account(account, tick, persist=persist)
+            return
 
         if tick.code == self.bond_code:
             if tick.previous_close > 0:
@@ -1751,6 +1835,7 @@ class MakerPaperEngine:
 
     def _entry_window_for_policy(
         self, market_time: str, policy: MakerPolicyProfile,
+        market_date: str | None = None,
     ) -> bool:
         """Apply the registered model's immutable trading window."""
 
@@ -1759,7 +1844,9 @@ class MakerPaperEngine:
             self.parameters.latest_entry_time,
         )
         if not (
-            self.parameters.earliest_entry_time
+            self.parameters.effective_earliest_entry_time(
+                market_date or self.market_date,
+            )
             <= market_time
             <= latest_entry
         ):
@@ -1767,12 +1854,25 @@ class MakerPaperEngine:
         return not ("11:30:00.001" <= market_time < "13:00:00.000")
 
     def _clear_date(self, market_date: str) -> None:
+        strategy_ids = [
+            self.strategy_ids_by_mode.get(
+                mode, f"{self.strategy_prefix}_{mode}"
+            )
+            for mode in self.fill_modes
+        ]
+        if self.include_windfall:
+            strategy_ids.append(f"{self.strategy_prefix}_super_windfall")
+        if not strategy_ids:
+            return
+        placeholders = ",".join("?" for _ in strategy_ids)
         for table in (
             "maker_paper_fills", "maker_paper_orders", "maker_paper_lots",
             "maker_paper_accounts", "maker_paper_model_assignments",
         ):
             self.store.connection.execute(
-                f"DELETE FROM {table} WHERE market_date=?", (market_date,)
+                f"DELETE FROM {table} WHERE market_date=? "
+                f"AND strategy_id IN ({placeholders})",
+                (market_date, *strategy_ids),
             )
         self.store.connection.commit()
 
@@ -2452,7 +2552,9 @@ class MakerPaperEngine:
             next_ask = higher_asks[0] if higher_asks else 0.0
             jump = next_ask - price if next_ask > 0 else 0.0
             if not (
-                self.analyzer._entry_window(tick.market_time)
+                self.analyzer._entry_window(
+                    tick.market_time, tick.market_date,
+                )
                 and planned_quantity > 0
                 and wall.peak_bonds + 1e-9 >= minimum_source
                 and consumed_ratio + 1e-9
@@ -2537,7 +2639,13 @@ class MakerPaperEngine:
         opportunity: Opportunity, *, persist: bool,
     ) -> None:
         if not self._entry_window_for_policy(
-            tick.market_time, account.policy,
+            tick.market_time, account.policy, tick.market_date,
+        ):
+            return
+        if not self.parameters.opening_edge_is_safe(
+            tick.market_date,
+            tick.market_time,
+            opportunity.theoretical_edge,
         ):
             return
         if (
@@ -2571,7 +2679,8 @@ class MakerPaperEngine:
         order = self._new_order(
             account, tick, side="buy", kind="sweep_tail", lot_id=None,
             price=opportunity.entry_price, quantity=quantity, queue_ahead=0.0,
-            target_price=opportunity.priority_exit_price, persist=persist,
+            target_price=opportunity.priority_exit_price,
+            price_boundary=opportunity.entry_price, persist=persist,
         )
         self._fill_buy(
             account, tick, order, quantity, tick.market_ts_ms * 1_000_000,
@@ -2660,7 +2769,11 @@ class MakerPaperEngine:
         active_order = self._new_order(
             account, tick, side="buy", kind="inventory_replenish",
             lot_id=None, price=tick.ask1, quantity=quantity,
-            queue_ahead=0.0, target_price=None, persist=persist,
+            queue_ahead=0.0, target_price=None,
+            price_boundary=(
+                average_sale_price - self.parameters.minimum_entry_edge
+            ),
+            persist=persist,
         )
         self._fill_buy(
             account, tick, active_order, quantity, received_ts_ns,
@@ -2763,7 +2876,11 @@ class MakerPaperEngine:
         active_order = self._new_order(
             account, tick, side="buy", kind="inventory_replenish",
             lot_id=None, price=tick.ask1, quantity=quantity,
-            queue_ahead=0.0, target_price=None, persist=persist,
+            queue_ahead=0.0, target_price=None,
+            price_boundary=(
+                average_sale_price + self.parameters.maximum_near_flat_exit_loss
+            ),
+            persist=persist,
         )
         self._fill_buy(
             account, tick, active_order, quantity, received_ts_ns,
@@ -2887,13 +3004,16 @@ class MakerPaperEngine:
         if not (
             self.observed_market_trade
             and self._entry_window_for_policy(
-                tick.market_time, account.policy,
+                tick.market_time, account.policy, tick.market_date,
             )
             and context.reference_price > 0
             and active_reference_source != "persistent_inside_market"
             and tick.ask1 > tick.bid1 > 0
             and tick.ask1_bonds > 0
             and active_entry_safe
+            and self.parameters.opening_edge_is_safe(
+                tick.market_date, tick.market_time, edge,
+            )
         ):
             return
         if (
@@ -2940,13 +3060,32 @@ class MakerPaperEngine:
             if supported_collapse_reference is not None
             else "deep_discount_sweep"
         )
+        active_buy_boundary = (
+            tick.ask1
+            if supported_collapse_reference is not None
+            else active_reference - (
+                self.parameters.minimum_base_high_sell_edge
+                - self.parameters.fair_price_tolerance
+                if context.breakout_support_strong
+                else self.parameters.minimum_active_entry_edge
+            )
+        )
+        if self.parameters.opening_caution_is_active(
+            tick.market_date, tick.market_time,
+        ):
+            active_buy_boundary = min(
+                active_buy_boundary,
+                active_reference
+                    - self.parameters.opening_caution_minimum_edge,
+            )
         order = self._new_order(
             # This remains an actively executed deep-discount order for queue
             # auditing purposes.  The resulting inventory lot carries the
             # more specific replenishment kind below.
             account, tick, side="buy", kind=order_kind, lot_id=None,
             price=tick.ask1, quantity=quantity, queue_ahead=0.0,
-            target_price=None, persist=persist,
+            target_price=None, price_boundary=active_buy_boundary,
+            persist=persist,
         )
         self._fill_buy(
             account, tick, order, quantity, tick.market_ts_ms * 1_000_000,
@@ -3309,6 +3448,123 @@ class MakerPaperEngine:
             return None
         return candidate_price, wall_price, wall_bonds
 
+    def _persistent_wide_spread_buy_first_entry(
+        self,
+        account: MakerAccount,
+        tick: ReplayTick,
+        assessment: MarketAssessment,
+        context: MakerDecisionContext,
+    ) -> float | None:
+        """Quote the low side first when a real, persistent corridor exists.
+
+        The recent high-side trade validates an executable exit area, while a
+        full minute of stable inside quotes prevents a momentary wide spread
+        from manufacturing permission.  This opens only extra inventory; the
+        customer's base remains untouched until low-side inventory exists.
+        """
+
+        policy = account.policy
+        if not (
+            policy.enable_persistent_wide_spread_buy_first_entry
+            and account.fill_mode == "priority"
+            and account.customer_base_short_bonds <= 1e-9
+            and account.inventory + 1e-9 >= account.initial_inventory
+            and account.inventory + 1e-9 < account.maximum_inventory
+            and assessment.state in {"stable", "possible_fall"}
+            and context.reference_source != "previous_close"
+            and tick.ask1 > tick.bid1 > 0
+            and tick.bid1_bonds + 1e-9
+                >= self.parameters.order_quantity_bonds
+            and tick.ask1_bonds + 1e-9
+                >= self.parameters.order_quantity_bonds
+            and abs(assessment.midpoint_change)
+                <= policy.wide_spread_buy_first_maximum_midpoint_change + 1e-9
+            and assessment.short_ask_change
+                >= -policy.wide_spread_buy_first_maximum_ask_drop - 1e-9
+        ):
+            return None
+
+        candidate_price = _floor_to_tick(
+            tick.bid1 + self.parameters.price_tick,
+            self.parameters.price_tick,
+        )
+        current_edge = tick.ask1 - candidate_price
+        if not (
+            candidate_price < tick.ask1
+            and policy.wide_spread_buy_first_minimum_edge - 1e-9
+                <= current_edge
+                <= policy.wide_spread_buy_first_maximum_edge + 1e-9
+        ):
+            return None
+
+        cutoff_ms = (
+            tick.market_ts_ms
+            - policy.wide_spread_buy_first_minimum_book_seconds * 1_000
+        )
+        corridor_quotes = [
+            quote for quote in self.analyzer.book_quotes
+            if cutoff_ms <= quote.market_ts_ms <= tick.market_ts_ms
+        ]
+        if not corridor_quotes or corridor_quotes[0].market_ts_ms > cutoff_ms:
+            return None
+        maximum_drift = policy.wide_spread_buy_first_maximum_book_drift
+        bid_prices = [quote.bid for quote in corridor_quotes]
+        ask_prices = [quote.ask for quote in corridor_quotes]
+        if (
+            max(bid_prices) - min(bid_prices) > maximum_drift + 1e-9
+            or max(ask_prices) - min(ask_prices) > maximum_drift + 1e-9
+        ):
+            return None
+        for quote in corridor_quotes:
+            quote_candidate = _floor_to_tick(
+                quote.bid + self.parameters.price_tick,
+                self.parameters.price_tick,
+            )
+            quote_edge = quote.ask - quote_candidate
+            if not (
+                policy.wide_spread_buy_first_minimum_edge - 1e-9
+                    <= quote_edge
+                    <= policy.wide_spread_buy_first_maximum_edge + 1e-9
+            ):
+                return None
+
+        high_buy_cutoff_ms = (
+            tick.market_ts_ms
+            - policy.wide_spread_buy_first_high_buy_lookback_seconds * 1_000
+        )
+        high_buy_bonds = sum(
+            event.bonds
+            for event in self.analyzer.trade_evidence
+            if high_buy_cutoff_ms <= event.market_ts_ms <= tick.market_ts_ms
+            and event.side == "buy"
+            and abs(event.price - tick.ask1)
+                <= (
+                    policy.wide_spread_buy_first_maximum_high_trade_ask_gap
+                    + 1e-9
+                )
+        )
+        existing_corridor_order = (
+            account.buy_order is not None
+            and account.buy_order.kind
+                == "persistent_wide_spread_buy_first_entry"
+            and abs(account.buy_order.limit_price - candidate_price) <= 1e-9
+        )
+        if (
+            high_buy_bonds + 1e-9
+            < policy.wide_spread_buy_first_minimum_high_buy_bonds
+            and not existing_corridor_order
+        ):
+            return None
+        if (
+            account.last_falling_profitable_exit_price > 0
+            and 0 <= (
+                tick.market_ts_ms
+                - account.last_falling_profitable_exit_ts_ms
+            ) <= policy.falling_profitable_reentry_cooldown_seconds * 1_000
+        ):
+            return None
+        return candidate_price
+
     def _active_inventory_risk_exit(
         self, account: MakerAccount, tick: ReplayTick,
         assessment: MarketAssessment, *, persist: bool,
@@ -3402,7 +3658,8 @@ class MakerPaperEngine:
             order = self._new_order(
                 account, tick, side="sell", kind="inventory_risk_exit",
                 lot_id=lot.db_id, price=tick.bid1, quantity=quantity,
-                queue_ahead=0.0, target_price=tick.bid1, persist=persist,
+                queue_ahead=0.0, target_price=tick.bid1,
+                price_boundary=tick.bid1, persist=persist,
             )
             account.sell_orders[lot.db_id] = order
             self._fill_sell(
@@ -3496,7 +3753,12 @@ class MakerPaperEngine:
                 account, tick, side="sell",
                 kind="falling_profitable_bid_exit",
                 lot_id=lot.db_id, price=tick.bid1, quantity=quantity,
-                queue_ahead=0.0, target_price=tick.bid1, persist=persist,
+                queue_ahead=0.0, target_price=tick.bid1,
+                price_boundary=(
+                    lot.entry_price
+                    + policy.minimum_falling_profitable_exit_edge
+                ),
+                persist=persist,
             )
             account.sell_orders[lot.db_id] = order
             self._fill_sell(
@@ -3561,7 +3823,12 @@ class MakerPaperEngine:
             order = self._new_order(
                 account, tick, side="sell", kind="inventory_turnover_exit",
                 lot_id=lot.db_id, price=tick.bid1, quantity=quantity,
-                queue_ahead=0.0, target_price=tick.bid1, persist=persist,
+                queue_ahead=0.0, target_price=tick.bid1,
+                price_boundary=(
+                    lot.entry_price
+                    + self.parameters.minimum_passive_turnover_edge
+                ),
+                persist=persist,
             )
             account.sell_orders[lot.db_id] = order
             self._fill_sell(
@@ -3575,6 +3842,15 @@ class MakerPaperEngine:
         assessment: MarketAssessment, *, persist: bool,
     ) -> None:
         """Keep one sticky order at a deeply anomalous bid-book level."""
+        if not self.parameters.maker_session_has_started(
+            tick.market_date, tick.market_time,
+        ):
+            if account.buy_order is not None:
+                self._cancel_order(
+                    account, account.buy_order, tick,
+                    "maker_session_not_started", persist,
+                )
+            return
         if account.inventory >= account.maximum_inventory - 1e-9:
             if account.buy_order is not None:
                 self._cancel_order(
@@ -3655,7 +3931,11 @@ class MakerPaperEngine:
         account.buy_order = self._new_order(
             account, tick, side="buy", kind="super_windfall",
             lot_id=None, price=price, quantity=quantity,
-            queue_ahead=queue, target_price=None, persist=persist,
+            queue_ahead=queue, target_price=None,
+            price_boundary=(
+                reference - self.parameters.minimum_windfall_discount
+            ),
+            persist=persist,
         )
 
     def _fair_reference(self) -> float:
@@ -4397,6 +4677,7 @@ class MakerPaperEngine:
             self._confirmed_rise_is_recent(tick, account.policy) if v11 else False
         )
         desired_buy: tuple[float, float, float | None] | None = None
+        desired_buy_boundary: float | None = None
         desired_buy_kind = "low_bid_reversion"
         visible_downtrend_wall_price = None
         visible_downtrend_wall_bonds = 0.0
@@ -4409,7 +4690,7 @@ class MakerPaperEngine:
             max(0.0, account.maximum_inventory - account.inventory),
         )
         in_entry_window = self._entry_window_for_policy(
-            tick.market_time, account.policy,
+            tick.market_time, account.policy, tick.market_date,
         )
         if (
             context.reference_price > 0
@@ -4683,13 +4964,14 @@ class MakerPaperEngine:
                     entry_edge,
                     average_sale_price - price,
                 )
-            entry_safe = self._entry_is_safe(
+            ordinary_entry_safe = self._entry_is_safe(
                 entry_edge,
                 max(
                     context.bid_support_bonds,
                     visible_downtrend_wall_bonds,
                 ),
             )
+            entry_safe = ordinary_entry_safe
             if planned_base_replenishment:
                 # The high-side base sale was justified by this already-seen
                 # lower-side turnover.  Replenishing at that side closes the
@@ -4873,6 +5155,33 @@ class MakerPaperEngine:
                     )
                     visible_downtrend_wall_price = candidate_wall_price
                     visible_downtrend_wall_bonds = candidate_wall_bonds
+            wide_spread_buy_first_entry = (
+                self._persistent_wide_spread_buy_first_entry(
+                    account, tick, assessment, context,
+                )
+            )
+            if (
+                wide_spread_buy_first_entry is not None
+                and (
+                    not entry_safe
+                    or wide_spread_buy_first_entry
+                        > price + self.parameters.price_tick + 1e-9
+                )
+            ):
+                price = wide_spread_buy_first_entry
+                entry_safe = True
+                desired_buy_kind = "persistent_wide_spread_buy_first_entry"
+            opening_entry_edge = extra_entry_reference - price
+            if average_sale_price is not None:
+                opening_entry_edge = max(
+                    opening_entry_edge,
+                    average_sale_price - price,
+                )
+            opening_edge_safe = self.parameters.opening_edge_is_safe(
+                tick.market_date,
+                tick.market_time,
+                opening_entry_edge,
+            )
             capacity = max(0.0, account.maximum_inventory - account.inventory)
             affordable = self._affordable_buy_bonds(account, price)
             if inventory_deficit > 1e-9:
@@ -4906,8 +5215,81 @@ class MakerPaperEngine:
                 quantity > 1e-9
                 and round_trip_safe
                 and entry_safe
+                and opening_edge_safe
             ):
                 desired_buy = (price, quantity, None)
+                if (
+                    planned_base_replenishment
+                    and maximum_replenishment_price is not None
+                ):
+                    desired_buy_boundary = maximum_replenishment_price
+                    if planned_repeated_turn_replenishment:
+                        desired_buy_boundary = min(
+                            desired_buy_boundary,
+                            account.pending_repeated_turn_replenishment_price,
+                        )
+                elif (
+                    desired_buy_kind == "low_bid_reversion"
+                    and ordinary_entry_safe
+                ):
+                    wall_threshold = (
+                        self.parameters.large_wall_multiple
+                        * self.parameters.order_quantity_bonds
+                    )
+                    required_edge = self.parameters.minimum_active_entry_edge
+                    if max(
+                        context.bid_support_bonds,
+                        visible_downtrend_wall_bonds,
+                    ) + 1e-9 >= wall_threshold:
+                        required_edge = min(
+                            required_edge,
+                            self.parameters.minimum_entry_edge
+                                - self.parameters.fair_price_tolerance,
+                        )
+                    desired_buy_boundary = (
+                        extra_entry_reference - required_edge
+                    )
+                    if visible_downtrend_wall_price is not None:
+                        desired_buy_boundary = min(
+                            desired_buy_boundary,
+                            visible_downtrend_wall_price
+                                + self.parameters
+                                    .maximum_downtrend_wall_entry_premium,
+                        )
+                    if (
+                        assessment.iron_floor_price is not None
+                        and assessment.state != "rising"
+                        and not confirmed_rise_recent
+                    ):
+                        desired_buy_boundary = min(
+                            desired_buy_boundary,
+                            assessment.iron_floor_price
+                                + self.parameters
+                                    .maximum_iron_floor_entry_premium,
+                        )
+                else:
+                    # Pattern-specific permissions (for example a persistent
+                    # wall corridor) authorize the exact reviewed level.  Do
+                    # not manufacture a wider continuous ceiling that the
+                    # decision code never evaluated.
+                    desired_buy_boundary = price
+                if falling_profitable_reentry_cap is not None:
+                    desired_buy_boundary = min(
+                        desired_buy_boundary,
+                        falling_profitable_reentry_cap,
+                    )
+                if self.parameters.opening_caution_is_active(
+                    tick.market_date, tick.market_time,
+                ):
+                    opening_reference = max(
+                        extra_entry_reference,
+                        average_sale_price or 0.0,
+                    )
+                    desired_buy_boundary = min(
+                        desired_buy_boundary,
+                        opening_reference
+                            - self.parameters.opening_caution_minimum_edge,
+                    )
         existing_buy = account.buy_order
         if existing_buy is not None:
             retained_persistent_wall = (
@@ -4929,6 +5311,7 @@ class MakerPaperEngine:
                     existing_buy.remaining,
                     existing_buy.target_price,
                 )
+                desired_buy_boundary = existing_buy.price_boundary
         if (
             desired_buy is None
             and existing_buy is not None
@@ -4967,8 +5350,10 @@ class MakerPaperEngine:
                     existing_buy.remaining,
                     existing_buy.target_price,
                 )
+                desired_buy_boundary = existing_buy.price_boundary
         self._replace_buy(
             account, tick, desired_buy, desired_buy_kind,
+            price_boundary=desired_buy_boundary,
             market_state=assessment.state, persist=persist,
         )
         if account.buy_order is not None and desired_buy is not None:
@@ -5201,6 +5586,75 @@ class MakerPaperEngine:
                 elif not self._sell_is_reasonable(price, context):
                     continue
                 price = _floor_to_tick(price, self.parameters.price_tick)
+                opening_sell_edge = price - context.reference_price
+                if lot.entry_price is not None:
+                    opening_sell_edge = max(
+                        opening_sell_edge,
+                        price - lot.entry_price,
+                    )
+                if not self.parameters.opening_edge_is_safe(
+                    tick.market_date,
+                    tick.market_time,
+                    opening_sell_edge,
+                ):
+                    continue
+                sell_price_boundary = price
+                if (
+                    lot.entry_price is None
+                    and repeated_turn_replenishment_price is not None
+                    and price - repeated_turn_replenishment_price + 1e-9
+                        >= self._downtrend_turn_edge(account.policy)
+                ):
+                    sell_price_boundary = (
+                        repeated_turn_replenishment_price
+                        + self._downtrend_turn_edge(account.policy)
+                    )
+                elif (
+                    lot.entry_price is not None
+                    and not inventory_neutral_downtrend_turn
+                    and lot.kind not in {
+                        "inventory_turn_replenish", "sweep_tail",
+                    }
+                ):
+                    # A normal extra lot may leave by either its own turnover
+                    # edge or the fair-value exit edge.  The lower of those two
+                    # route floors is the economic minimum, then the shared
+                    # reasonableness guard can tighten it.
+                    route_floor = min(
+                        lot.entry_price + minimum_turnover_edge,
+                        context.reference_price
+                            + self.parameters.minimum_fair_value_exit_edge,
+                    )
+                    reasonable_floor = (
+                        context.reference_price
+                        - (
+                            self.parameters.book_safety_distance
+                            if context.has_ask_supply
+                            else self.parameters.fair_price_tolerance
+                        )
+                    )
+                    sell_price_boundary = max(
+                        route_floor, reasonable_floor,
+                    )
+                if self.parameters.opening_caution_is_active(
+                    tick.market_date, tick.market_time,
+                ):
+                    opening_floors = [
+                        context.reference_price
+                            + self.parameters.opening_caution_minimum_edge,
+                    ]
+                    if lot.entry_price is not None:
+                        opening_floors.append(
+                            lot.entry_price
+                                + self.parameters.opening_caution_minimum_edge
+                        )
+                    sell_price_boundary = max(
+                        sell_price_boundary,
+                        min(opening_floors),
+                    )
+                price, queue_position_kind = self._queue_quote_position(
+                    account, tick, side="sell", desired_price=price,
+                )
                 desired_lots.add(lot.db_id)
                 existing = account.sell_orders.get(lot.db_id)
                 if existing:
@@ -5293,14 +5747,18 @@ class MakerPaperEngine:
                     continue
                 if existing:
                     self._cancel_order(account, existing, tick, "maker_reprice", persist)
-                queue = self._book_quantity(tick, "sell", price)
+                queue = self._queue_ahead_at_quote(
+                    tick, side="sell", price=price,
+                    queue_position_kind=queue_position_kind,
+                )
                 if account.fill_mode == "priority" and price < tick.ask1:
                     queue = 0.0
                 new_order = self._new_order(
                     account, tick, side="sell", kind=desired_sell_kind,
                     lot_id=lot.db_id, price=price,
                     quantity=lot.remaining_quantity, queue_ahead=queue,
-                    target_price=price, persist=persist,
+                    target_price=price,
+                    price_boundary=sell_price_boundary, persist=persist,
                     repeated_turn_replenishment_price=(
                         repeated_turn_replenishment_price or 0.0
                     ),
@@ -5316,6 +5774,7 @@ class MakerPaperEngine:
                         )
                         else 0.0
                     ),
+                    queue_position_kind=queue_position_kind,
                 )
                 new_order.stable_context_grace_eligible = (
                     base_turn_grace_eligible
@@ -5966,10 +6425,139 @@ class MakerPaperEngine:
             and high_price - event.price + 1e-9 >= required_gap
         )
 
+    def _queue_quote_position(
+        self, account: MakerAccount, tick: ReplayTick, *, side: str,
+        desired_price: float,
+    ) -> tuple[float, str | None]:
+        """Move a best-quote queue order to the empty slot before level two.
+
+        The observed book excludes the paper order.  Improving the old second
+        level by one tick therefore creates a new second level with zero
+        displayed external quantity ahead.  Only a parent quote that would
+        have joined level one is transformed; deeper economic caps and
+        historical targets keep their original price.
+        """
+
+        if not (
+            account.fill_mode == "queue"
+            and account.policy.quote_at_second_level_front
+        ):
+            return desired_price, None
+        price_tick = self.parameters.price_tick
+        if side == "buy":
+            if (
+                abs(desired_price - tick.bid1) > 1e-9
+            ):
+                return desired_price, None
+            if len(tick.bids) < 2:
+                return desired_price, (
+                    "best_level_tail"
+                    if account.policy.dynamically_choose_second_level_front
+                    else None
+                )
+            second_price = tick.bids[1][0]
+            candidate = _floor_to_tick(
+                second_price + price_tick, price_tick,
+            )
+            if not (
+                second_price > 0
+                and candidate > second_price + 1e-9
+                and candidate < tick.bid1 - 1e-9
+            ):
+                return desired_price, (
+                    "best_level_tail"
+                    if account.policy.dynamically_choose_second_level_front
+                    else None
+                )
+            if not self._dynamic_second_level_front_is_worthwhile(
+                account, tick, side=side, candidate=candidate,
+            ):
+                return desired_price, "best_level_tail"
+            return candidate, "second_level_front"
+        if side == "sell":
+            if (
+                abs(desired_price - tick.ask1) > 1e-9
+            ):
+                return desired_price, None
+            if len(tick.asks) < 2:
+                return desired_price, (
+                    "best_level_tail"
+                    if account.policy.dynamically_choose_second_level_front
+                    else None
+                )
+            second_price = tick.asks[1][0]
+            candidate = _ceil_to_tick(
+                second_price - price_tick, price_tick,
+            )
+            if not (
+                second_price > 0
+                and candidate < second_price - 1e-9
+                and candidate > tick.ask1 + 1e-9
+            ):
+                return desired_price, (
+                    "best_level_tail"
+                    if account.policy.dynamically_choose_second_level_front
+                    else None
+                )
+            if not self._dynamic_second_level_front_is_worthwhile(
+                account, tick, side=side, candidate=candidate,
+            ):
+                return desired_price, "best_level_tail"
+            return candidate, "second_level_front"
+        raise ValueError(f"unsupported maker order side: {side}")
+
+    def _dynamic_second_level_front_is_worthwhile(
+        self, account: MakerAccount, tick: ReplayTick, *, side: str,
+        candidate: float,
+    ) -> bool:
+        """Choose deeper price only when waiting already resembles a sweep.
+
+        A large displayed best queue means a full best-tail fill already needs
+        an unusually large aggressive order.  In that state it is reasonable
+        to demand a material price concession and wait for a sweep into the
+        empty slot before level two.  A small queue, narrow inside spread, or
+        trivial level gap keeps the ordinary best-level tail instead.
+        """
+
+        policy = account.policy
+        if not policy.dynamically_choose_second_level_front:
+            return True
+        if tick.ask1 <= tick.bid1:
+            return False
+        top_quantity = tick.bid1_bonds if side == "buy" else tick.ask1_bonds
+        top_price = tick.bid1 if side == "buy" else tick.ask1
+        price_improvement = (
+            top_price - candidate if side == "buy" else candidate - top_price
+        )
+        return (
+            top_quantity + 1e-9
+                >= (
+                    policy.second_level_front_minimum_top_quantity_multiple
+                    * self.parameters.order_quantity_bonds
+                )
+            and tick.ask1 - tick.bid1 + 1e-9
+                >= policy.second_level_front_minimum_inside_spread
+            and price_improvement + 1e-9
+                >= policy.second_level_front_minimum_price_improvement
+        )
+
+    def _queue_ahead_at_quote(
+        self, tick: ReplayTick, *, side: str, price: float,
+        queue_position_kind: str | None,
+    ) -> float:
+        if queue_position_kind == "second_level_front":
+            if side == "buy":
+                return tick.bid1_bonds
+            if side == "sell":
+                return tick.ask1_bonds
+            raise ValueError(f"unsupported maker order side: {side}")
+        return self._book_quantity(tick, side, price)
+
     def _replace_buy(
         self, account: MakerAccount, tick: ReplayTick,
         desired: tuple[float, float, float | None] | None,
-        kind: str, *, market_state: str | None = None, persist: bool,
+        kind: str, *, price_boundary: float | None = None,
+        market_state: str | None = None, persist: bool,
     ) -> None:
         current = account.buy_order
         if desired is None:
@@ -5981,6 +6569,14 @@ class MakerPaperEngine:
                 self._cancel_order(account, current, tick, "entry_context_changed", persist)
             return
         price, quantity, target = desired
+        price, queue_position_kind = self._queue_quote_position(
+            account, tick, side="buy", desired_price=price,
+        )
+        if price_boundary is None:
+            # Direct test/research construction predating the observability
+            # field has no wider reviewed range.  Production refresh paths
+            # always pass their explicit causal boundary.
+            price_boundary = price
         if current and self._retain_clean_cleared_inventory_turn_buy_while_falling(
             account, current, tick=tick, desired_price=price,
             desired_kind=kind, desired_quantity=quantity,
@@ -6007,7 +6603,10 @@ class MakerPaperEngine:
             return
         if current:
             self._cancel_order(account, current, tick, "maker_reprice", persist)
-        queue = self._book_quantity(tick, "buy", price)
+        queue = self._queue_ahead_at_quote(
+            tick, side="buy", price=price,
+            queue_position_kind=queue_position_kind,
+        )
         exact_fill_uncertainty_buffer = 0.0
         if (
             account.fill_mode == "queue"
@@ -6034,8 +6633,10 @@ class MakerPaperEngine:
         account.buy_order = self._new_order(
             account, tick, side="buy", kind=kind, lot_id=None,
             price=price, quantity=quantity, queue_ahead=queue,
-            target_price=target, persist=persist,
+            target_price=target, price_boundary=price_boundary,
+            persist=persist,
             exact_fill_uncertainty_buffer=exact_fill_uncertainty_buffer,
+            queue_position_kind=queue_position_kind,
         )
 
     def _retain_clean_cleared_inventory_turn_buy_while_falling(
@@ -6218,12 +6819,33 @@ class MakerPaperEngine:
     def _new_order(
         self, account: MakerAccount, tick: ReplayTick, *, side: str,
         kind: str, lot_id: int | None, price: float, quantity: float,
-        queue_ahead: float, target_price: float | None, persist: bool,
+        queue_ahead: float, target_price: float | None,
+        price_boundary: float | None = None, persist: bool,
         exact_fill_uncertainty_buffer: float = 0.0,
         repeated_turn_replenishment_price: float = 0.0,
         medium_wall_supported_base_short: bool = False,
+        queue_position_kind: str | None = None,
     ) -> MakerOrder:
         price = _floor_to_tick(price, self.parameters.price_tick)
+        if price_boundary is None:
+            # Compatibility for direct test/research order construction: no
+            # unreviewed chase range is implied, so the boundary is the order
+            # price itself.  Every production decision path supplies a value.
+            price_boundary = price
+        if side == "buy":
+            price_boundary_kind = "buy_ceiling"
+            price_boundary = max(
+                price,
+                _floor_to_tick(price_boundary, self.parameters.price_tick),
+            )
+        elif side == "sell":
+            price_boundary_kind = "sell_floor"
+            price_boundary = min(
+                price,
+                _ceil_to_tick(price_boundary, self.parameters.price_tick),
+            )
+        else:
+            raise ValueError(f"unsupported maker order side: {side}")
         if target_price is not None:
             target_price = _floor_to_tick(
                 target_price, self.parameters.price_tick
@@ -6250,7 +6872,10 @@ class MakerPaperEngine:
                 "model_id": account.policy.model_id,
                 "model_version": account.policy.model_version,
                 "quantity_unit": "bond",
+                "price_boundary": price_boundary,
+                "price_boundary_kind": price_boundary_kind,
                 "initial_queue_ahead_bonds": queue_ahead,
+                "queue_position_kind": queue_position_kind,
                 "exact_fill_uncertainty_buffer_bonds": (
                     exact_fill_uncertainty_buffer
                 ),
@@ -6265,6 +6890,7 @@ class MakerPaperEngine:
         order_id = self.store.insert_maker_order(values)
         return MakerOrder(
             order_id, side, kind, lot_id, tick.market_ts_ms, price, quantity,
+            price_boundary, price_boundary_kind,
             queue_ahead=queue_ahead,
             exact_fill_uncertainty_buffer=exact_fill_uncertainty_buffer,
             repeated_turn_replenishment_price=(
@@ -6273,6 +6899,7 @@ class MakerPaperEngine:
             medium_wall_supported_base_short=(
                 medium_wall_supported_base_short
             ),
+            queue_position_kind=queue_position_kind,
             target_price=target_price,
         )
 
@@ -6824,10 +7451,8 @@ class MakerPaperPortfolio:
     def rebuild_date(self, market_date: date | str) -> None:
         if not self.enabled or not self.engines:
             return
-        first = True
         for engine in self._all_engines():
-            engine.rebuild_date(market_date, clear=first)
-            first = False
+            engine.rebuild_date(market_date, clear=True)
 
     def on_recorded_tick(self, recorded: RecordedTick) -> None:
         code = recorded.tick.code

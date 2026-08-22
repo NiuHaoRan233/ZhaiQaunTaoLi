@@ -119,6 +119,32 @@ def _json_loads(value: str | None) -> dict[str, Any]:
         return {}
 
 
+def order_price_boundary_view(
+    metadata: dict[str, Any], side: str,
+) -> tuple[float | None, str | None, str]:
+    """Expose only a boundary frozen by the order's causal decision frame."""
+    boundary_kind = metadata.get("price_boundary_kind")
+    boundary_value = metadata.get("price_boundary")
+    try:
+        price_boundary = (
+            float(boundary_value)
+            if boundary_value is not None and float(boundary_value) > 0
+            else None
+        )
+    except (TypeError, ValueError):
+        price_boundary = None
+    if price_boundary is not None and boundary_kind not in {
+        "buy_ceiling", "sell_floor",
+    }:
+        boundary_kind = "buy_ceiling" if side == "buy" else "sell_floor"
+    boundary_label = (
+        "最高买价" if boundary_kind == "buy_ceiling"
+        else "最低卖价" if boundary_kind == "sell_floor"
+        else "极限价"
+    )
+    return price_boundary, boundary_kind, boundary_label
+
+
 def _clock(ts_ms: int | float | None) -> str:
     if not ts_ms:
         return "--:--:--"
@@ -269,6 +295,35 @@ def _account_view(row: sqlite3.Row, market: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def closing_pnl_by_fill(
+    fill_rows: list[sqlite3.Row] | list[dict[str, Any]],
+    account_rows: list[sqlite3.Row] | list[dict[str, Any]],
+) -> dict[int, float]:
+    """Return gross realized PnL allocated to each causally available close fill."""
+    if not fill_rows or not account_rows:
+        return {}
+    if str(SOURCE_DIR) not in sys.path:
+        sys.path.insert(0, str(SOURCE_DIR))
+    from zhaiquant.maker_dashboard import build_daily_trades
+
+    fills = [dict(row) for row in fill_rows]
+    accounts = [dict(row) for row in account_rows]
+    completed, unfinished = build_daily_trades(fills, accounts)
+    result: dict[int, float] = {}
+    for leg in (*completed, *unfinished):
+        direction = 1.0 if leg["open_side"] == "buy" else -1.0
+        open_price = float(leg["open_price"])
+        for detail in leg["close_details"]:
+            fill_id = int(detail["fill_id"])
+            pnl = (
+                float(detail["quantity"])
+                * (float(detail["price"]) - open_price)
+                * direction
+            )
+            result[fill_id] = result.get(fill_id, 0.0) + pnl
+    return result
+
+
 def load_replay_metadata(database: Path, bond_code: str) -> dict[str, Any]:
     if bond_code not in BONDS:
         raise ValueError(f"unsupported bond: {bond_code}")
@@ -390,10 +445,12 @@ def load_snapshot(
         if strategy_ids:
             placeholders = ",".join("?" for _ in strategy_ids)
             fill_rows_ascending = connection.execute(
-                f"""SELECT * FROM maker_paper_fills
-                    WHERE market_date=? AND strategy_id IN ({placeholders})
-                      AND market_ts_ms<=?
-                    ORDER BY market_ts_ms,id""",
+                f"""SELECT f.*,l.kind AS lot_kind
+                    FROM maker_paper_fills AS f
+                    LEFT JOIN maker_paper_lots AS l ON l.id=f.lot_id
+                    WHERE f.market_date=? AND f.strategy_id IN ({placeholders})
+                      AND f.market_ts_ms<=?
+                    ORDER BY f.market_ts_ms,f.id""",
                 (market_date, *strategy_ids, effective_ts_ms),
             ).fetchall()
             order_rows = connection.execute(
@@ -453,11 +510,24 @@ def load_snapshot(
         )
 
         model_by_strategy = {item["strategy_id"]: item["model_id"] for item in accounts}
+        pnl_strategy_ids = {
+            strategy_id for strategy_id, model_id in model_by_strategy.items()
+            if action_model_id is None or model_id == action_model_id
+        }
+        closing_pnl = closing_pnl_by_fill(
+            [row for row in fill_rows_ascending if row["strategy_id"] in pnl_strategy_ids],
+            [row for row in accounts_rows if row["strategy_id"] in pnl_strategy_ids],
+        )
         all_orders: list[dict[str, Any]] = []
         for row in order_rows:
             data = dict(row)
             metadata = _json_loads(data.pop("metadata_json", None))
             model_id = model_by_strategy.get(data["strategy_id"], metadata.get("model_id"))
+            (
+                price_boundary, boundary_kind, boundary_label,
+            ) = order_price_boundary_view(
+                metadata, str(data["side"]),
+            )
             order_id = int(data["id"])
             filled_at_target = min(
                 float(data["quantity"]), filled_by_order.get(order_id, 0.0)
@@ -483,6 +553,9 @@ def load_snapshot(
                 model_short=MODEL_META.get(model_id, {}).get("short", model_id),
                 model_color=MODEL_META.get(model_id, {}).get("color", "blue"),
                 kind_label=KIND_LABELS.get(data["kind"], data["kind"]),
+                price_boundary=price_boundary,
+                price_boundary_kind=boundary_kind,
+                price_boundary_label=boundary_label,
                 time=_clock(visible_update_ts_ms),
                 remaining=max(0.0, float(data["quantity"]) - filled_at_target),
                 paper_only=True,
@@ -676,8 +749,16 @@ def load_snapshot(
                 "quantity": 0.0,
                 "detail": KIND_LABELS.get(row["fill_reason"], row["fill_reason"]),
                 "paper_only": True,
+                "is_closing": False,
+                "realized_pnl": 0.0,
             }
         fill_groups[key]["quantity"] += float(row["quantity"])
+        fill_id = int(row["id"])
+        if fill_id in closing_pnl:
+            fill_groups[key]["is_closing"] = True
+            fill_groups[key]["realized_pnl"] += closing_pnl[fill_id]
+    for action in fill_groups.values():
+        action["realized_pnl"] = round(float(action["realized_pnl"]), 2)
     actions.extend(fill_groups.values())
     actions.sort(key=lambda item: (int(item["ts"]), item["event_type"]), reverse=True)
 

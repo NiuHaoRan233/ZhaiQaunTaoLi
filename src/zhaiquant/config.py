@@ -105,8 +105,11 @@ class MakerPaperConfig:
     price_tick: float = 0.001
     fill_modes: tuple[str, ...] = ("priority", "queue")
     realtime_comparison_model_ids: tuple[str, ...] = ()
-    earliest_entry: str = "09:30:00.000"
+    earliest_entry: str = "09:20:00.000"
     latest_entry: str = "15:29:59.999"
+    opening_caution_effective_date: str = "2026-08-21"
+    opening_caution_end: str = "09:30:00.000"
+    opening_caution_minimum_edge: float = 1.00
     super_windfall_enabled: bool = False
     super_windfall_quantity_bonds: float = 10.0
     super_windfall_credit_cny: float = 2_000.0
@@ -284,10 +287,19 @@ def load_config(path: str | Path = "config.toml") -> AppConfig:
             )
         ),
         earliest_entry=str(maker_paper_data.get(
-            "earliest_entry", "09:30:00.000"
+            "earliest_entry", "09:20:00.000"
         )),
         latest_entry=str(maker_paper_data.get(
             "latest_entry", "15:29:59.999"
+        )),
+        opening_caution_effective_date=str(maker_paper_data.get(
+            "opening_caution_effective_date", "2026-08-21"
+        )),
+        opening_caution_end=str(maker_paper_data.get(
+            "opening_caution_end", "09:30:00.000"
+        )),
+        opening_caution_minimum_edge=float(maker_paper_data.get(
+            "opening_caution_minimum_edge", 1.00
         )),
         super_windfall_enabled=bool(maker_paper_data.get(
             "super_windfall_enabled", False
@@ -359,14 +371,16 @@ def _validate(
         maker_paper.order_quantity_bonds,
     )):
         raise ConfigError("maker_paper bond quantities must be multiples of 10")
-    if not maker_paper.fill_modes or not set(maker_paper.fill_modes).issubset({"priority", "queue"}):
+    if not set(maker_paper.fill_modes).issubset({"priority", "queue"}):
         raise ConfigError("maker_paper.fill_modes may only contain priority/queue")
     supported_realtime_comparison_models = {
         "maker_priority_v1_37_candidate",
         "maker_priority_v1_42_candidate",
         "maker_priority_v1_43_candidate",
+        "maker_priority_v1_44_candidate",
         "maker_queue_v1_13_candidate",
         "maker_queue_v1_17_candidate",
+        "maker_queue_v1_18_candidate",
     }
     comparison_models = maker_paper.realtime_comparison_model_ids
     if len(set(comparison_models)) != len(comparison_models):
@@ -432,6 +446,18 @@ def _validate(
         )
     if maker_paper.earliest_entry >= maker_paper.latest_entry:
         raise ConfigError("maker_paper entry window is invalid")
+    try:
+        date.fromisoformat(maker_paper.opening_caution_effective_date)
+    except ValueError as exc:
+        raise ConfigError(
+            "maker_paper opening caution effective date is invalid"
+        ) from exc
+    if not (
+        maker_paper.earliest_entry < maker_paper.opening_caution_end
+        <= maker_paper.latest_entry
+        and maker_paper.opening_caution_minimum_edge > 0
+    ):
+        raise ConfigError("maker_paper opening caution policy is invalid")
     if (
         maker_paper.super_windfall_quantity_bonds <= 0
         or maker_paper.super_windfall_quantity_bonds % 10 != 0

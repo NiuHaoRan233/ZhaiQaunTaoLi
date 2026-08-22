@@ -69,17 +69,26 @@ maximum_inventory_bonds = 2000.0
 initial_cash_cny = 136800.0
 order_quantity_bonds = 1000.0
 price_tick = 0.001
-fill_modes = ["priority", "queue"]
-# Optional candidate models that run beside the baselines in real time. Each
+# Leave the registered priority1.1/queue1.0 baselines inactive in the forward
+# live paper matrix. Existing historical accounts are never deleted.
+fill_modes = []
+# Paper-only comparison models that run in real time. Each
 # uses an independent account and persists all paper orders/fills to SQLite.
 realtime_comparison_model_ids = [
   "maker_priority_v1_37_candidate",
   "maker_priority_v1_43_candidate",
   "maker_queue_v1_17_candidate",
+  "maker_queue_v1_18_candidate",
 ]
-earliest_entry = "09:30:00.000"
+earliest_entry = "09:20:00.000"
 latest_entry = "15:29:59.999"
+# Shared maker-session policy: before 09:30 only opportunities with at least
+# 1.00 yuan of causal safety edge per bond may quote. Earlier replays retain
+# their original paths.
+opening_caution_effective_date = "2026-08-21"
+opening_caution_end = "09:30:00.000"
+opening_caution_minimum_edge = 1.00
 # Optional independent one-hand paper account for extreme deep-book bargains.
-super_windfall_enabled = false
+super_windfall_enabled = true
 super_windfall_quantity_bonds = 10.0
 super_windfall_credit_cny = 2000.0
