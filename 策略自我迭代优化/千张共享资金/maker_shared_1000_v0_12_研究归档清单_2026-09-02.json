@@ -1,0 +1,223 @@
+{
+  "archive_date": "2026-09-02",
+  "model_id": "maker_shared_1000_v0_12_candidate",
+  "public_name": "千张第一顺位0.12候选",
+  "model_version": "0.12-candidate",
+  "parent_model_id": "maker_shared_1000_v0_11_candidate_r2",
+  "merged_logic_source_model_id": "maker_shared_1000_v0_3_candidate",
+  "behaviorally_equivalent_model_id": "maker_shared_1000_v0_31_candidate",
+  "withdrawn_logic_excluded_model_id": "maker_shared_1000_v0_11_candidate",
+  "status": "implemented_target_and_development_replay_only_not_frozen_not_realtime_not_production",
+  "diagnosis": {
+    "v011_has_the_session_resilience_omission": true,
+    "target_market_date": "2026-09-02",
+    "target_market_time": "10:44:03.000",
+    "target_bond_code": "132024.SH",
+    "target_entry_price": 136.502,
+    "v011_session_resilient_entry_enabled": false,
+    "v011_target_order": null,
+    "v012_target_order_kind": "session_resilient_value_entry",
+    "v012_target_order_quantity_bonds": 1000,
+    "opening_shared_cash_cny": 138300.0,
+    "inventory_before_target_bonds": 0,
+    "first_fill_time": "11:29:15.000",
+    "allocation_events_between_1040_and_1046": 0,
+    "fills_between_1040_and_1046": 0,
+    "cash_or_other_bond_occupancy_was_not_the_cause": true
+  },
+  "account_contract": {
+    "initial_inventory_bonds": 0,
+    "shared_buying_capacity_bonds": 1000,
+    "quantity_hands": 100,
+    "maximum_aggregate_inventory_bonds": 1000,
+    "maximum_simultaneous_buy_orders": 1,
+    "cash_is_explicit_third_candidate": true,
+    "losses_are_not_refunded": true
+  },
+  "decision_change": {
+    "v011_r2_guarded_exit_is_unchanged": true,
+    "session_resilient_ordinary_entry_enabled": true,
+    "allocation_parameters": "AllocationParametersV03",
+    "allocator_class": "SharedThousandV03Allocator",
+    "session_resilience_admits_consideration_not_automatic_selection": true,
+    "v02_downside_and_capital_time_score_preserved": true,
+    "guarded_lot_kinds": [
+      "low_bid_reversion"
+    ],
+    "session_resilient_value_entry_keeps_native_exit": true,
+    "withdrawn_v011_all_lot_rewrite_is_excluded": true
+  },
+  "development_dates": [
+    "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07",
+    "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13",
+    "2026-08-14", "2026-08-17", "2026-08-18", "2026-08-19",
+    "2026-08-20", "2026-08-21", "2026-08-24", "2026-08-25",
+    "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-31",
+    "2026-09-01"
+  ],
+  "target_date": {
+    "market_date": "2026-09-02",
+    "v011_r2_gross_pnl_cny": 4523.60,
+    "v012_gross_pnl_cny": 4727.60,
+    "gross_pnl_difference_cny": 204.00,
+    "v011_r2_fill_events": 34,
+    "v012_fill_events": 30,
+    "v011_r2_equivalent_full_slot_exposure_seconds": 7377.48,
+    "v012_equivalent_full_slot_exposure_seconds": 7212.48,
+    "v012_losing_closed_matches": 2,
+    "v012_worst_closed_match_cny": -192.00,
+    "normalized_fills_equal_v031": true,
+    "allocation_metrics_equal_v031": true,
+    "sample_out_evidence": false
+  },
+  "matrix_results": {
+    "v01_shared_causal_pnl_cny": 79982.16,
+    "v011_r2_shared_causal_pnl_cny": 81760.54,
+    "v02_shared_causal_pnl_cny": 73413.29,
+    "v03_shared_causal_pnl_cny": 80540.83,
+    "v031_shared_causal_pnl_cny": 77048.32,
+    "v012_shared_causal_pnl_cny": 77048.32,
+    "v012_minus_v011_r2_pnl_cny": -4712.22,
+    "v012_minus_v01_pnl_cny": -2933.84,
+    "v012_minus_v02_pnl_cny": 3635.03,
+    "v012_minus_v03_pnl_cny": -3492.51,
+    "v012_minus_v031_pnl_cny": 0.00,
+    "improved_days_vs_v011_r2": 7,
+    "degraded_days_vs_v011_r2": 14,
+    "unchanged_days_vs_v011_r2": 0,
+    "v012_fill_events": 807,
+    "v012_direct_allocation_switches": 281,
+    "v012_effective_cross_bond_reselections": 613,
+    "v012_cross_bond_reselections_via_cash": 332,
+    "v012_session_resilient_scores": 1733,
+    "v012_positive_session_resilient_scores": 1273,
+    "v012_session_resilient_selections": 124,
+    "v012_equivalent_full_slot_exposure_seconds": 98310.01,
+    "v012_pnl_per_equivalent_full_slot_hour_cny": 2821.42,
+    "v012_positive_days": 21,
+    "v012_negative_days": 0,
+    "v012_closed_fifo_matches": 411,
+    "v012_profitable_closed_matches": 324,
+    "v012_losing_closed_matches": 84,
+    "v012_flat_closed_matches": 3,
+    "v012_closed_gross_pnl_cny": 78284.52,
+    "v012_worst_closed_match_cny": -203.00,
+    "v012_terminal_inventory_days": 8,
+    "v012_terminal_unrealized_pnl_cny": -1236.20,
+    "v012_worst_terminal_position_cny": -441.00,
+    "maximum_aggregate_inventory_bonds": 1000,
+    "maximum_simultaneous_buy_orders": 1,
+    "all_inventory_invariants_hold": true,
+    "all_order_invariants_hold": true,
+    "all_normalized_fills_equal_v031": true,
+    "all_daily_account_metrics_equal_v031": true
+  },
+  "fee_stress": {
+    "two_sided_traded_notional_cny": 74783384.21,
+    "net_after_fixed_0_10_cny_per_fill": 76967.62,
+    "net_after_fixed_0_50_cny_per_fill": 76644.82,
+    "net_after_fixed_1_00_cny_per_fill": 76241.32,
+    "net_after_0_5_bp_each_fill_notional": 73309.150790,
+    "net_after_1_0_bp_each_fill_notional": 69569.981579
+  },
+  "reproduction": {
+    "source_sqlite_opened_readonly": true,
+    "temporary_paper_ledgers": true,
+    "broker_orders_enabled": false,
+    "target_command": ".\\.venv\\Scripts\\python.exe -m zhaiquant.shared_thousand_maker_v012_research --config config.toml --dates 2026-09-02 --codes 132026.SH 132024.SH --output output\\research\\shared_1000_v012_target_20260902.json",
+    "matrix_command": ".\\.venv\\Scripts\\python.exe -m zhaiquant.shared_thousand_maker_v012_research --config config.toml --dates 2026-08-04 2026-08-05 2026-08-06 2026-08-07 2026-08-10 2026-08-11 2026-08-12 2026-08-13 2026-08-14 2026-08-17 2026-08-18 2026-08-19 2026-08-20 2026-08-21 2026-08-24 2026-08-25 2026-08-26 2026-08-27 2026-08-28 2026-08-31 2026-09-01 --codes 132026.SH 132024.SH --output output\\research\\shared_1000_v012_matrix_20260804_20260901.json"
+  },
+  "files": [
+    {
+      "path": "src/zhaiquant/maker_paper.py",
+      "bytes": 591504,
+      "sha256": "47ccb74cab709800f45475f4e97dce7c2b0fc94650b878b4566bae314edb60de"
+    },
+    {
+      "path": "src/zhaiquant/shared_thousand_maker_v03_research.py",
+      "bytes": 21344,
+      "sha256": "43598ab3bdeff800332251a354228fed6eadd0d7d1179d90d8c2bc6da2fa4615"
+    },
+    {
+      "path": "src/zhaiquant/shared_thousand_maker_v012_research.py",
+      "bytes": 5315,
+      "sha256": "92fcc02774ccfdb02c8071b6f179f926d48cb5fa09fcb4b19dd7dcb7c9ab1d8c"
+    },
+    {
+      "path": "tests/test_shared_thousand_maker_v012_research.py",
+      "bytes": 12435,
+      "sha256": "2bc886d00bbd55e9d3585b9018dbe2fe8b55cd6a509dee4308fd3cd7c56533b2"
+    },
+    {
+      "path": "docs/主观做市策略手册.md",
+      "bytes": 421181,
+      "sha256": "c9c04a6fb7aef10291aa1e9ce174d62b6d8571b48f5b137e6bb456a656b0ff18"
+    },
+    {
+      "path": "docs/做市策略V0.1.md",
+      "bytes": 302197,
+      "sha256": "2726e0913d6bd3c00244a0d2e2933e5f8c40ecf33f234ec0b75637d64ee55f3d"
+    },
+    {
+      "path": "docs/做市模型版本记录.md",
+      "bytes": 310030,
+      "sha256": "ba673bf31802b98ed874af8094c96d3c3ff0cedcc680b67ed287dd0f3ada7cb1"
+    },
+    {
+      "path": "策略自我迭代优化/千张共享资金/千张共享资金0.12_0.11补入日内韧性综合选择_2026-09-02.md",
+      "bytes": 6502,
+      "sha256": "0f1b864561e967194da1540820ba70b1cdb4c13b52be94efd70e4f797e156eb3"
+    },
+    {
+      "path": "output/research/shared_1000_v011_r2_target_20260902.json",
+      "bytes": 390271,
+      "sha256": "422292a24bbb1af965909f6a32d39880862e11769a7f2cc2896cd6f96ce79d54",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v011_r2_fallback_matrix_20260804_20260901.json",
+      "bytes": 6027033,
+      "sha256": "c370eed1cc369c25241573e43cc9d6bba346ae105cb888465a3bc507c2385664",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v012_target_20260902.json",
+      "bytes": 13979446,
+      "sha256": "a625d7650f85dbc6dfc6a7c7ba0df9929e65c97a7b9ad7be1721647bc23d8abc",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v012_matrix_20260804_20260901.json",
+      "bytes": 133867476,
+      "sha256": "76d4b05a574b1e2b5a17cc8b60bdf6927503d30be63836df52bee2f5b8f6936d",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v031_target_20260902.json",
+      "bytes": 13979343,
+      "sha256": "faf94fd1f86b26960f35917d319494693a4f5846b71a8e0c6c2e254388bad6f4",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v031_matrix_20260804_20260901.json",
+      "bytes": 133866813,
+      "sha256": "2807d01341c0ccb4335a407143c5e85b6a6c143492739d3ac701d8770b6632ef",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v011_v012_daily_comparison_20260804_20260901.csv",
+      "bytes": 1253,
+      "sha256": "d7fdabc92f687cfb6cf812e1da6d103f4f1fca064257555dd8c4beeeb6577249",
+      "local_ignored_output": true
+    }
+  ],
+  "verification": {
+    "v012_focused_tests": "5 passed",
+    "combined_shared_0x_tests": "38 passed",
+    "main_unittest_count": 354,
+    "all_passed": true,
+    "normalized_v012_v031_fill_comparison_passed": true,
+    "daily_v012_v031_metric_comparison_passed": true
+  },
+  "forward_boundary": "The target date and all dates through 2026-09-01 were used during development. Only later complete dates with unchanged parameters and implementation can become forward evidence."
+}

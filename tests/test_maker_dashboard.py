@@ -8,6 +8,7 @@ from pathlib import Path
 from zhaiquant.database import SQLiteStore
 from zhaiquant.maker_dashboard import (
     MakerDashboardReader,
+    _model_display_name,
     build_daily_trades,
     dashboard_refresh_active,
     next_dashboard_refresh_start,
@@ -19,6 +20,115 @@ from .helpers import make_tick, test_config
 
 
 class MakerDashboardTests(unittest.TestCase):
+    def test_registered_model_ids_are_presented_with_short_chinese_names(
+        self,
+    ) -> None:
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v1_47",
+            "model_version": "1.47",
+            "fill_mode": "priority",
+        }), "第一顺位1.47")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_queue_v1_18_candidate",
+            "model_version": "1.18-candidate",
+            "fill_mode": "queue",
+        }), "排队1.18")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v1_49_candidate_r2",
+            "model_version": "1.49-candidate-r2",
+            "fill_mode": "priority",
+        }), "第一顺位1.49")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v1_50_candidate",
+            "model_version": "1.50-candidate",
+            "fill_mode": "priority",
+        }), "第一顺位1.50")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_2_candidate",
+            "model_version": "2.2-candidate",
+            "fill_mode": "priority",
+        }), "第一顺位2.2")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_3_candidate",
+            "model_version": "2.3-candidate",
+            "fill_mode": "priority",
+        }), "第一顺位2.3")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_4_candidate",
+            "model_version": "2.4-candidate",
+            "fill_mode": "priority",
+        }), "第一顺位2.4")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_5_candidate",
+            "model_version": "2.5-candidate",
+            "fill_mode": "priority",
+        }), "第一顺位2.5")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_51_candidate_r2",
+            "model_version": "2.51-candidate-r2",
+            "fill_mode": "priority",
+        }), "第一顺位2.51")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_52_candidate",
+            "model_version": "2.52-candidate",
+            "fill_mode": "priority",
+        }), "第一顺位2.52")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_5_candidate_r2",
+            "model_version": "2.5-candidate-r2",
+            "fill_mode": "priority",
+        }), "第一顺位2.5")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_51_candidate_r3",
+            "model_version": "2.51-candidate-r3",
+            "fill_mode": "priority",
+        }), "第一顺位2.51")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_52_candidate_r2",
+            "model_version": "2.52-candidate-r2",
+            "fill_mode": "priority",
+        }), "第一顺位2.52")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_6_candidate",
+            "model_version": "2.6-candidate",
+            "fill_mode": "priority",
+        }), "第一顺位2.6")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_6_candidate_r2",
+            "model_version": "2.6-candidate-r2",
+            "fill_mode": "priority",
+        }), "第一顺位2.6")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_6_candidate_r3",
+            "model_version": "2.6-candidate-r3",
+            "fill_mode": "priority",
+        }), "第一顺位2.6")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_63_candidate",
+            "model_version": "2.63-candidate",
+            "fill_mode": "priority",
+        }), "第一顺位2.63")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_shared_1000_v0_1_candidate",
+            "model_version": "0.1-candidate",
+            "fill_mode": "priority",
+        }), "千张第一顺位0.1")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_shared_1000_v0_13_candidate",
+            "model_version": "0.13-candidate",
+            "fill_mode": "priority",
+        }), "千张第一顺位0.13")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_windfall_v1_0",
+            "model_version": "1.0",
+            "fill_mode": "windfall",
+        }), "超级捡漏1.0")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_windfall_v2_0_candidate",
+            "model_version": "2.0-candidate",
+            "fill_mode": "windfall",
+        }), "超级捡漏2.0")
+
     def test_continuous_refresh_window_is_0925_to_1530_weekdays(self) -> None:
         def moment(hour: int, minute: int, second: int = 0) -> datetime:
             return datetime(

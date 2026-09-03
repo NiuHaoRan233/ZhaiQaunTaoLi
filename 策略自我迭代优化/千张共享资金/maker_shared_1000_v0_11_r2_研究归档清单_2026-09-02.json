@@ -1,0 +1,91 @@
+{
+  "model_id": "maker_shared_1000_v0_11_candidate_r2",
+  "public_name": "千张第一顺位0.11候选",
+  "parent_model_id": "maker_shared_1000_v0_11_candidate",
+  "semantic_baseline_model_id": "maker_shared_1000_v0_1_candidate",
+  "withdrawn_build_model_id": "maker_shared_1000_v0_11_candidate",
+  "status": "research_archived_locked_offline_candidate_not_in_realtime_matrix_not_production",
+  "research_date": "2026-09-02",
+  "files": [
+    {
+      "path": "src/zhaiquant/maker_paper.py",
+      "bytes": 584593,
+      "sha256": "6b017b3157351b895bc4f2e228ecd0bb3c26d56694383a8a79af0ee73574a922"
+    },
+    {
+      "path": "src/zhaiquant/shared_thousand_maker_v011_research.py",
+      "bytes": 3639,
+      "sha256": "76cb8943021ab60f9dbec30f95647e0262351204382fd9837ac20b1d1d036fe9"
+    },
+    {
+      "path": "tests/test_shared_thousand_maker_v011_research.py",
+      "bytes": 25021,
+      "sha256": "f40f6fc644e908fff72847c39290f3810e88f3c6feb87b3b204c5c720b70782f"
+    },
+    {
+      "path": "output/research/shared_1000_v01_matrix_20260804_20260901.json",
+      "bytes": 5472310,
+      "sha256": "380fe7931b06504c41c9dce2f2233ecaf01e5eac54a21632c186c571f06a6d6c"
+    },
+    {
+      "path": "output/research/shared_1000_v011_r2_fallback_matrix_20260804_20260901.json",
+      "bytes": 6027033,
+      "sha256": "c370eed1cc369c25241573e43cc9d6bba346ae105cb888465a3bc507c2385664"
+    },
+    {
+      "path": "output/research/shared_1000_v011_r2_target_20260902.json",
+      "bytes": 390271,
+      "sha256": "422292a24bbb1af965909f6a32d39880862e11769a7f2cc2896cd6f96ce79d54"
+    }
+  ],
+  "matrix_dates": [
+    "2026-08-04",
+    "2026-08-05",
+    "2026-08-06",
+    "2026-08-07",
+    "2026-08-10",
+    "2026-08-11",
+    "2026-08-12",
+    "2026-08-13",
+    "2026-08-14",
+    "2026-08-17",
+    "2026-08-18",
+    "2026-08-19",
+    "2026-08-20",
+    "2026-08-21",
+    "2026-08-24",
+    "2026-08-25",
+    "2026-08-26",
+    "2026-08-27",
+    "2026-08-28",
+    "2026-08-31",
+    "2026-09-01"
+  ],
+  "matrix_totals": {
+    "baseline_gross_pnl_cny": 79982.16,
+    "candidate_gross_pnl_cny": 81760.54,
+    "gross_pnl_difference_cny": 1778.38,
+    "candidate_fill_count": 896,
+    "candidate_allocation_switches": 105,
+    "candidate_equivalent_full_slot_exposure_seconds": 120898.10,
+    "candidate_terminal_inventory_days": 9,
+    "candidate_closed_fifo_matches": 454,
+    "candidate_profitable_closed_matches": 353,
+    "candidate_losing_closed_matches": 98,
+    "candidate_flat_closed_matches": 3,
+    "candidate_worst_closed_match_cny": -334.0,
+    "inventory_invariants_hold": true,
+    "order_invariants_hold": true
+  },
+  "verification": {
+    "focused_tests": "12 passed",
+    "main_tests": "344 passed",
+    "dashboard_tests": "57 passed"
+  },
+  "notes": [
+    "The withdrawn first build remains immutable audit evidence and is not the current public 0.11.",
+    "The rebuilt 0.11 rules, profile, focused tests, and listed report evidence are research-archive locked; future decision changes require a new model ID.",
+    "All replay dates and 2026-09-02 were used during development and are not sample-out evidence.",
+    "Output reports are local-only and must not be force-added outside repository ignore rules."
+  ]
+}

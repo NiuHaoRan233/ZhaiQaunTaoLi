@@ -72,13 +72,15 @@ price_tick = 0.001
 # Leave the registered priority1.1/queue1.0 baselines inactive in the forward
 # live paper matrix. Existing historical accounts are never deleted.
 fill_modes = []
-# Paper-only comparison models that run in real time. Each
-# uses an independent account and persists all paper orders/fills to SQLite.
+# Paper-only comparison models that run in real time. Historical registrations
+# and ledgers for removed matrix members remain immutable.
 realtime_comparison_model_ids = [
   "maker_priority_v1_37_candidate",
-  "maker_priority_v1_43_candidate",
-  "maker_queue_v1_17_candidate",
-  "maker_queue_v1_18_candidate",
+  "maker_priority_v1_50_candidate",
+  "maker_priority_v2_52_candidate_r2",
+  "maker_priority_v2_63_candidate",
+  "maker_shared_1000_v0_1_candidate",
+  "maker_shared_1000_v0_13_candidate",
 ]
 earliest_entry = "09:20:00.000"
 latest_entry = "15:29:59.999"
@@ -88,7 +90,10 @@ latest_entry = "15:29:59.999"
 opening_caution_effective_date = "2026-08-21"
 opening_caution_end = "09:30:00.000"
 opening_caution_minimum_edge = 1.00
-# Optional independent one-hand paper account for extreme deep-book bargains.
-super_windfall_enabled = true
+# Optional independent paper account for extreme deep-book bargains. The model
+# registry owns each version's immutable quantity, funding and price thresholds;
+# the legacy quantity/credit values below remain for v1.0/v1.1 replay only.
+super_windfall_enabled = false
+super_windfall_model_id = "maker_windfall_v2_0_candidate"
 super_windfall_quantity_bonds = 10.0
 super_windfall_credit_cny = 2000.0

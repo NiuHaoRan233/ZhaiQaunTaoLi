@@ -38,6 +38,11 @@ class ScreenshotLayout:
 
 
 def _trade_screenshot_layout(width: int, height: int) -> ScreenshotLayout | None:
+    if 1_590 <= width <= 1_605 and 970 <= height <= 990:
+        # The 2026-08-26 full-screen trade-detail capture uses five equal
+        # panels on a 1598x979 client area.  Normalize the slightly narrower
+        # columns to the verified five-panel trade parser geometry.
+        return ScreenshotLayout(5, 55, height - 15, 340.0)
     if 2_550 <= width <= 2_570 and 1_380 <= height <= 1_405:
         # The ultrawide full-screen trade-detail view uses eight 320-pixel
         # panels.  Normalize those columns to the verified 340-pixel parser
@@ -58,6 +63,11 @@ def _trade_screenshot_layout(width: int, height: int) -> ScreenshotLayout | None
 
 
 def _order_screenshot_layout(width: int, height: int) -> ScreenshotLayout | None:
+    if 1_590 <= width <= 1_605 and 970 <= height <= 990:
+        # The 2026-08-26 full-screen order-detail capture uses six equal
+        # panels on a 1598x979 client area.  Normalize to the verified
+        # 241-pixel order-panel parser geometry.
+        return ScreenshotLayout(6, 55, height - 15, 241.0)
     if 1_680 <= width <= 1_700 and 1_060 <= height <= 1_090:
         return ScreenshotLayout(7, 55, min(height - 15, 1_060))
     if 2_550 <= width <= 2_570 and 1_380 <= height <= 1_405:

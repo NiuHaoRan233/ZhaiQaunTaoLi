@@ -1,0 +1,185 @@
+{
+  "archive_date": "2026-09-02",
+  "model_id": "maker_shared_1000_v0_3_candidate",
+  "public_name": "千张第一顺位0.3候选",
+  "model_version": "0.3-candidate",
+  "parent_model_id": "maker_shared_1000_v0_2_candidate",
+  "status": "implemented_target_and_development_replay_only_not_frozen_not_realtime_not_production",
+  "account_contract": {
+    "initial_inventory_bonds": 0,
+    "shared_buying_capacity_bonds": 1000,
+    "quantity_hands": 100,
+    "maximum_aggregate_inventory_bonds": 1000,
+    "maximum_simultaneous_buy_orders": 1,
+    "cash_is_explicit_third_candidate": true,
+    "losses_are_not_refunded": true
+  },
+  "decision_change": {
+    "order_kind": "session_resilient_value_entry",
+    "persistent_high_side_trade_evidence_is_composite": true,
+    "low_side_sell_reachability_is_required_for_exit_bonus": true,
+    "current_support_remains_a_continuous_risk_input": true,
+    "session_resilience_cannot_reduce_downside_penalty": true,
+    "wide_spread_alone_is_insufficient": true,
+    "parameters_are_exploratory_not_user_confirmed_permanent_rules": true
+  },
+  "development_dates": [
+    "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07",
+    "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13",
+    "2026-08-14", "2026-08-17", "2026-08-18", "2026-08-19",
+    "2026-08-20", "2026-08-21", "2026-08-24", "2026-08-25",
+    "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-31",
+    "2026-09-01"
+  ],
+  "target_period": {
+    "market_date": "2026-09-02",
+    "market_time": "10:44:03.000",
+    "bond_code": "132024.SH",
+    "candidate_price": 136.502,
+    "target_price": 137.000,
+    "near_support_bonds": 3000,
+    "session_high_trade_bonds": 26710,
+    "session_high_trade_events": 26,
+    "session_high_buy_bonds": 23710,
+    "session_high_buy_events": 23,
+    "session_high_trade_span_seconds": 3699,
+    "session_high_trade_bucket_count": 7,
+    "session_high_trade_share": 0.769519,
+    "session_resilience_quality": 0.94,
+    "entry_reach_sell_bonds": 1000,
+    "entry_reach_quality": 0.20,
+    "capital_time_score_cny": 7.757051,
+    "cash_score_cny": 0,
+    "actual_open_buy_order": true,
+    "same_tick_backfilled_fill": false
+  },
+  "reproduction": {
+    "source_sqlite_opened_readonly": true,
+    "temporary_paper_ledgers": true,
+    "broker_orders_enabled": false,
+    "target_command": ".\\.venv\\Scripts\\python.exe -m zhaiquant.shared_thousand_maker_v03_research --config config.toml --dates 2026-09-02 --codes 132026.SH 132024.SH --output output\\research\\shared_1000_v03_target_period_20260902.json",
+    "matrix_command": ".\\.venv\\Scripts\\python.exe -m zhaiquant.shared_thousand_maker_v03_research --config config.toml --dates 2026-08-04 2026-08-05 2026-08-06 2026-08-07 2026-08-10 2026-08-11 2026-08-12 2026-08-13 2026-08-14 2026-08-17 2026-08-18 2026-08-19 2026-08-20 2026-08-21 2026-08-24 2026-08-25 2026-08-26 2026-08-27 2026-08-28 2026-08-31 2026-09-01 --codes 132026.SH 132024.SH --output output\\research\\shared_1000_v03_matrix_20260804_20260901.json"
+  },
+  "results": {
+    "shared_causal_pnl_cny": 80540.83,
+    "v02_shared_causal_pnl_cny": 73413.29,
+    "v03_minus_v02_pnl_cny": 7127.54,
+    "improved_days": 15,
+    "degraded_days": 2,
+    "unchanged_days": 4,
+    "static_sanxia_pnl_cny": 67451.00,
+    "static_jiangtong_pnl_cny": 44178.27,
+    "independent_two_slot_upper_bound_cny": 111629.27,
+    "hindsight_daily_best_static_upper_bound_cny": 79429.46,
+    "fill_events": 749,
+    "direct_allocation_switches": 269,
+    "effective_cross_bond_reselections": 564,
+    "cross_bond_reselections_via_cash": 295,
+    "two_bond_challenge_decisions": 19393,
+    "cash_dominates_nonpositive_decisions": 5989,
+    "shadow_score_frame_uses": 25646,
+    "unique_session_resilient_scores": 1631,
+    "positive_session_resilient_scores": 1198,
+    "session_resilient_selections": 111,
+    "equivalent_full_slot_exposure_seconds": 123599.16,
+    "pnl_per_equivalent_full_slot_hour_cny": 2345.87,
+    "positive_days": 21,
+    "negative_days": 0,
+    "closed_fifo_matches": 383,
+    "profitable_closed_matches": 326,
+    "losing_closed_matches": 55,
+    "flat_closed_matches": 2,
+    "closed_gross_pnl_cny": 81599.43,
+    "worst_closed_match_cny": -122.00,
+    "terminal_inventory_days": 9,
+    "terminal_unrealized_pnl_cny": -1058.60,
+    "worst_terminal_position_cny": -441.00,
+    "new_terminal_position_vs_v02": {
+      "market_date": "2026-08-13",
+      "bond_code": "132024.SH",
+      "entry_time": "15:27:21.000",
+      "entry_price": 136.003,
+      "quantity_bonds": 1000,
+      "terminal_unrealized_pnl_cny": -2.00
+    },
+    "maximum_aggregate_inventory_bonds": 1000,
+    "maximum_simultaneous_buy_orders": 1,
+    "all_inventory_invariants_hold": true,
+    "all_order_invariants_hold": true
+  },
+  "fee_stress": {
+    "two_sided_traded_notional_cny": 70735585.36,
+    "net_after_fixed_0_10_cny_per_fill": 80465.93,
+    "net_after_fixed_0_50_cny_per_fill": 80166.33,
+    "net_after_fixed_1_00_cny_per_fill": 79791.83,
+    "net_after_0_5_bp_each_fill_notional": 77004.050732,
+    "net_after_1_0_bp_each_fill_notional": 73467.271464
+  },
+  "files": [
+    {
+      "path": "src/zhaiquant/maker.py",
+      "bytes": 73587,
+      "sha256": "61259a05fdca0046da2e47f55d29f6a3a0010020c7092f46e11adfe6607522fb"
+    },
+    {
+      "path": "src/zhaiquant/maker_paper.py",
+      "bytes": 542120,
+      "sha256": "aae53982fdef88f0763a03fe42fa737a61eeba6487556d6b0c011e8083b5ec11"
+    },
+    {
+      "path": "src/zhaiquant/one_hand_maker_research.py",
+      "bytes": 44030,
+      "sha256": "382fcd6eb4776e1401e4eeb3b268eac5d54e395de7714968878eb0ce60b22f66"
+    },
+    {
+      "path": "src/zhaiquant/shared_thousand_maker_v03_research.py",
+      "bytes": 21344,
+      "sha256": "43598ab3bdeff800332251a354228fed6eadd0d7d1179d90d8c2bc6da2fa4615"
+    },
+    {
+      "path": "tests/test_shared_thousand_maker_v03_research.py",
+      "bytes": 11667,
+      "sha256": "d532582880d8e7c1017fed8b3287f7e4c818afa2729ba0a925ac8eae4ee73f42"
+    },
+    {
+      "path": "docs/主观做市策略手册.md",
+      "bytes": 389984,
+      "sha256": "738464671cf8965dd4b7a90f03364264ca812d2ed0c030e94a6f9a2e81b86d23"
+    },
+    {
+      "path": "docs/做市策略V0.1.md",
+      "bytes": 272045,
+      "sha256": "6cd00d8ff80b38e5ff54faab698d315a7774f8541cc919e8a5362f5da2fae508"
+    },
+    {
+      "path": "docs/做市模型版本记录.md",
+      "bytes": 281442,
+      "sha256": "9028d997cad1cff7af76e7b99adc469797f9c0362daf16d91f10123c38f82796"
+    },
+    {
+      "path": "output/research/shared_1000_v03_target_period_20260902.json",
+      "bytes": 11854055,
+      "sha256": "e98fed23d45ec71a785cee86d517b056994216ceabe1c008e0d68269901e5b88",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v03_matrix_20260804_20260901.json",
+      "bytes": 125414085,
+      "sha256": "39e6ba52c5bff718c0c4a329b7e6b690664f9c9ee821c3232e3b61c99562280b",
+      "local_ignored_output": true
+    },
+    {
+      "path": "策略自我迭代优化/千张共享资金/千张共享资金0.3_日内韧性综合选择研究_2026-09-02.md",
+      "bytes": 7230,
+      "sha256": "5023367f08c438bef39b64f477331a658b53b7ad543e5aad068a9487ddfe73d1"
+    }
+  ],
+  "verification": {
+    "main_unittest_count": 328,
+    "bond_activity_unittest_count": 16,
+    "decision_dashboard_unittest_count": 57,
+    "screen_reader_unittest_count": 7,
+    "all_passed": true
+  },
+  "forward_boundary": "The 2026-09-02 target period was used during design and was not a complete trading day. All dates through 2026-09-01 were development data. Only later complete dates with unchanged parameters can become forward evidence."
+}

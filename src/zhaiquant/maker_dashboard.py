@@ -9,7 +9,12 @@ from datetime import datetime, time as clock_time, timedelta
 from pathlib import Path
 from typing import Any
 
-from .maker import MakerAnalyzer, MakerParameters, _load_ticks
+from .maker import (
+    MakerAnalyzer,
+    MakerParameters,
+    _load_ticks,
+    trend_price_discovery_assessment,
+)
 from .types import SHANGHAI
 
 
@@ -57,7 +62,15 @@ KIND_LABELS = {
     "deep_discount_sweep": "深度折价主动买",
     "inventory_exit": "库存卖出",
     "inventory_risk_exit": "下行风险退出",
+    "failed_breakout_sweep_release": "失败突破扫尾释放",
+    "full_inventory_capacity_release_exit": "满仓容量释放",
+    "stalled_extra_inventory_near_flat_exit": "高侧失效近保本回中性",
+    "adjacent_bid_cushion_entry": "相邻厚买簇低接",
+    "adjacent_bid_cushion_risk_exit": "保护买簇受损退出",
+    "isolated_top_bid_guarded_base_replenish": "孤岛买一保护回补",
+    "isolated_top_bid_wall_attack_base_replenish": "卖墙受攻击主动回补",
     "super_windfall": "超级捡漏",
+    "super_windfall_active": "超级捡漏主动吃单",
 }
 REASON_LABELS = {
     "passive_buy": "被动承接",
@@ -65,7 +78,19 @@ REASON_LABELS = {
     "active_tail_sweep": "主动扫尾",
     "active_deep_discount": "深度折价主动买",
     "active_downside_risk_exit": "下行风险主动退出",
+    "active_full_inventory_capacity_release": "满仓容量主动释放",
+    "active_adjacent_bid_cushion_risk_exit": "保护买簇受损主动退出",
+    "active_isolated_top_bid_sell_wall_attack_replenishment": (
+        "卖墙受攻击主动回补"
+    ),
+    "active_stock_accelerated_trend_base_replenishment": (
+        "正股极强且债券吃墙，主动恢复底仓"
+    ),
+    "active_bond_confirmed_trend_base_replenishment": (
+        "债券上涨确认，主动恢复底仓"
+    ),
     "super_windfall_buy": "超级捡漏买入",
+    "active_super_windfall_buy": "超级捡漏主动买入",
 }
 STATE_LABELS = {
     "stable": "平稳",
@@ -80,6 +105,12 @@ REFERENCE_LABELS = {
     "persistent_inside_market": "持续盘口区间",
     "intraday_trade_anchor": "当日成交锚",
     "large_buy_breakout_support": "大买单突破支撑",
+    "retained_intraday_working_reference": "盘中成交中枢（静默期低置信保留）",
+    "trend_price_discovery": "强趋势当前价格发现",
+    "midday_carried_intraday_reference": "午休前盘中参考（下午低置信继承）",
+    "midday_current_midpoint_reset": "午后当前买卖中点（跳空后低置信重启）",
+    "carried_intraday_reference": "当日最近盘中参考（低置信沿用）",
+    "intraday_current_midpoint_reset": "当前买卖中点（盘中迁移后低置信重启）",
 }
 
 
@@ -130,12 +161,15 @@ def _opening_strategy(side: str, lot_kind: str | None) -> str:
         "inventory_replenish": "库存回补",
         "sweep_tail": "扫尾跟随",
         "deep_discount_sweep": "深度折价主动买",
+        "adjacent_bid_cushion_entry": "相邻厚买簇低接",
     }.get(lot_kind or "", KIND_LABELS.get(lot_kind or "", "买入后高卖"))
 
 
 def _flow_strategy(fill: dict[str, Any]) -> str:
     if fill.get("fill_reason") == "active_downside_risk_exit":
         return "下行风险主动退出"
+    if fill.get("fill_reason") == "active_adjacent_bid_cushion_risk_exit":
+        return "保护买簇受损主动退出"
     kind = fill.get("lot_kind")
     if fill["side"] == "buy":
         return _opening_strategy("buy", kind)
@@ -145,6 +179,7 @@ def _flow_strategy(fill: dict[str, Any]) -> str:
         "inventory_replenish": "回补仓卖出",
         "sweep_tail": "扫尾策略退出",
         "deep_discount_sweep": "深度折价退出",
+        "adjacent_bid_cushion_entry": "相邻厚买簇退出",
     }.get(kind or "", "库存卖出")
 
 
@@ -154,15 +189,80 @@ def _mode_title(fill_mode: str) -> str:
     if fill_mode == "queue":
         return "排队成交（较保守成交假设：先消耗前方队列）"
     if fill_mode == "windfall":
-        return "超级捡漏（独立一手虚拟额度）"
+        return "超级捡漏（独立风险额度）"
     return MODE_LABELS.get(fill_mode, fill_mode)
 
 
 def _strategy_label(strategy_id: str, fill_mode: str | None = None) -> str:
     if strategy_id.endswith("_super_windfall"):
         return "超级捡漏"
+    if "_windfall_" in strategy_id:
+        return "超级捡漏"
     mode = fill_mode or strategy_id.rsplit("_", 1)[-1]
     return MODE_LABELS.get(mode, strategy_id)
+
+
+def _model_display_name(account: dict[str, Any]) -> str:
+    """Keep storage IDs auditable without presenting them as model names."""
+
+    model_id = str(account.get("model_id") or "")
+    if model_id == "maker_shared_1000_v0_1_candidate":
+        return "千张第一顺位0.1"
+    if model_id == "maker_shared_1000_v0_13_candidate":
+        return "千张第一顺位0.13"
+    if model_id == "maker_priority_v1_49_candidate_r2":
+        return "第一顺位1.49"
+    if model_id == "maker_priority_v1_50_candidate":
+        return "第一顺位1.50"
+    if model_id == "maker_priority_v2_1_candidate":
+        return "第一顺位2.1"
+    if model_id == "maker_priority_v2_2_candidate":
+        return "第一顺位2.2"
+    if model_id == "maker_priority_v2_3_candidate":
+        return "第一顺位2.3"
+    if model_id == "maker_priority_v2_4_candidate":
+        return "第一顺位2.4"
+    if model_id in {
+        "maker_priority_v2_5_candidate",
+        "maker_priority_v2_5_candidate_r2",
+    }:
+        return "第一顺位2.5"
+    if model_id in {
+        "maker_priority_v2_51_candidate_r2",
+        "maker_priority_v2_51_candidate_r3",
+    }:
+        return "第一顺位2.51"
+    if model_id in {
+        "maker_priority_v2_52_candidate",
+        "maker_priority_v2_52_candidate_r2",
+    }:
+        return "第一顺位2.52"
+    if model_id in {
+        "maker_priority_v2_6_candidate",
+        "maker_priority_v2_6_candidate_r2",
+        "maker_priority_v2_6_candidate_r3",
+    }:
+        return "第一顺位2.6"
+    if model_id == "maker_priority_v2_63_candidate":
+        return "第一顺位2.63"
+    fill_mode = str(account.get("fill_mode") or "")
+    if model_id.startswith("maker_priority_") or fill_mode == "priority":
+        family = "第一顺位"
+    elif model_id.startswith("maker_queue_") or fill_mode == "queue":
+        family = "排队"
+    elif (
+        model_id.startswith("maker_windfall_")
+        or fill_mode == "windfall"
+    ):
+        family = "超级捡漏"
+    elif model_id:
+        return model_id
+    else:
+        return "历史未登记"
+    version = str(account.get("model_version") or "").removesuffix(
+        "-candidate"
+    )
+    return f"{family}{version}" if version else family
 
 
 def build_daily_trades(
@@ -375,8 +475,14 @@ class MakerDashboardReader:
                     if replay_tick.code == bond_code:
                         latest_bond_tick = replay_tick
                 if latest_bond_tick is not None:
-                    assessment = analyzer.assess_market(
+                    base_assessment = analyzer.assess_market(
                         latest_bond_tick, latest_bond_tick.previous_close,
+                    )
+                    assessment = trend_price_discovery_assessment(
+                        base_assessment, latest_bond_tick, self.parameters,
+                        stock_extremely_strong=(
+                            analyzer.stock_is_extremely_strong()
+                        ),
                     ).public()
             account_filter = strategy_filter.replace(
                 "strategy_id", "a.strategy_id"
@@ -565,7 +671,7 @@ def _trader_thinking_lines(
     lines = [
         "[本模型：交易员思考与应对预案]  "
         "因果纸面判断，供复盘纠正，不发送真实委托",
-        f"  模型 {account.get('model_id') or '历史未登记'}  "
+        f"  模型 {_model_display_name(account)}  "
         f"执行口径 {_strategy_label(account['strategy_id'], account['fill_mode'])}",
     ]
     if not assessment or not market:
@@ -639,7 +745,7 @@ def _trader_thinking_lines(
         )
     else:
         lines.append(
-            "  本模型执行特点：仅使用独立一手额度预埋异常深档，不参与普通做T"
+            "  本模型执行特点：使用独立风险额度主动承接大漏单，或预埋在有利断层；不参与普通做T"
         )
 
     if account["fill_mode"] == "windfall" and account_orders:
@@ -800,9 +906,7 @@ def render_dashboard(snapshot: dict[str, Any], *, now: datetime | None = None) -
             )
         lines.append(
             "  "
-            + _pad(_strategy_label(
-                account["strategy_id"], account["fill_mode"]
-            ), 10)
+            + _pad(_model_display_name(account), 10)
             + _pad(_quantity(account["inventory"]), 12, right=True)
             + "  "
             + _pad(_inventory_direction(account), 16)
@@ -851,7 +955,7 @@ def render_dashboard(snapshot: dict[str, Any], *, now: datetime | None = None) -
             "#" * DASHBOARD_WIDTH,
             f">>> 模型区块 {account_index}/{account_count} 开始  |  "
             f"{_mode_title(account['fill_mode'])}  |  "
-            f"模型 {account.get('model_id') or '历史未登记'}",
+            f"模型 {_model_display_name(account)}",
             "#" * DASHBOARD_WIDTH,
             f"今日账户结果：盯市毛收益 {account['trading_pnl']:+,.2f}元；"
             f"完整交易 {len(account_trades)}笔（盈利{wins} / 亏损{losses} / 持平{flats}）；"
@@ -927,7 +1031,7 @@ def render_dashboard(snapshot: dict[str, Any], *, now: datetime | None = None) -
             "",
             "-" * DASHBOARD_WIDTH,
             f"<<< 模型区块 {account_index}/{account_count} 结束  |  "
-            f"模型 {account.get('model_id') or '历史未登记'}",
+            f"模型 {_model_display_name(account)}",
             "-" * DASHBOARD_WIDTH,
         ])
 

@@ -9,6 +9,272 @@ from zhaiquant.config import load_config
 
 
 class ConfigTests(unittest.TestCase):
+    def test_requested_first_position_models_are_enabled_in_default_matrix(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertEqual(
+                config.maker_paper.realtime_comparison_model_ids,
+                (
+                    "maker_priority_v1_37_candidate",
+                    "maker_priority_v1_50_candidate",
+                    "maker_priority_v2_52_candidate_r2",
+                    "maker_priority_v2_63_candidate",
+                    "maker_shared_1000_v0_1_candidate",
+                    "maker_shared_1000_v0_13_candidate",
+                ),
+            )
+
+    def test_retired_first_position_v143_remains_a_supported_model(self) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            source = source.replace(
+                '"maker_priority_v1_50_candidate",',
+                '"maker_priority_v1_43_candidate",',
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v1_43_candidate",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_first_position_v149_is_supported_but_not_enabled_by_default(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn('"maker_priority_v1_49_candidate",', source)
+            source = source.replace(
+                '"maker_priority_v1_50_candidate",',
+                '"maker_priority_v1_50_candidate",\n'
+                '  "maker_priority_v1_49_candidate",',
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v1_49_candidate",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_first_position_v149_r2_is_supported_but_not_enabled_by_default(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn('"maker_priority_v1_49_candidate_r2",', source)
+            source = source.replace(
+                '"maker_priority_v1_50_candidate",',
+                '"maker_priority_v1_50_candidate",\n'
+                '  "maker_priority_v1_49_candidate_r2",',
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v1_49_candidate_r2",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_retired_first_position_v21_remains_supported(self) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn('"maker_priority_v2_1_candidate",', source)
+            source = source.replace(
+                '"maker_priority_v2_52_candidate_r2",',
+                '"maker_priority_v2_1_candidate",',
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v2_1_candidate",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_first_position_v150_is_enabled_by_default(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn(
+                '"maker_priority_v1_50_candidate",',
+                source,
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v1_50_candidate",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_retired_first_position_v22_remains_supported(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn('"maker_priority_v2_2_candidate",', source)
+            source = source.replace(
+                '"maker_priority_v2_52_candidate_r2",',
+                '"maker_priority_v2_52_candidate_r2",\n'
+                '  "maker_priority_v2_2_candidate",',
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v2_2_candidate",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_retired_first_position_v23_remains_supported(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn('"maker_priority_v2_3_candidate",', source)
+            source = source.replace(
+                '"maker_priority_v2_52_candidate_r2",',
+                '"maker_priority_v2_52_candidate_r2",\n'
+                '  "maker_priority_v2_3_candidate",',
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v2_3_candidate",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_first_position_v25_r2_is_supported_but_not_enabled_by_default(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn('"maker_priority_v2_5_candidate_r2",', source)
+            source = source.replace(
+                '"maker_priority_v2_52_candidate_r2",',
+                '"maker_priority_v2_52_candidate_r2",\n'
+                '  "maker_priority_v2_5_candidate_r2",',
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v2_5_candidate_r2",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_first_position_v251_r3_is_supported_but_not_enabled_by_default(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn('"maker_priority_v2_51_candidate_r3",', source)
+            source = source.replace(
+                '"maker_priority_v2_52_candidate_r2",',
+                '"maker_priority_v2_52_candidate_r2",\n'
+                '  "maker_priority_v2_51_candidate_r3",',
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v2_51_candidate_r3",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_first_position_v252_r2_is_enabled_by_default(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn('"maker_priority_v2_52_candidate_r2",', source)
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v2_52_candidate_r2",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_first_position_v26_r3_is_supported_but_not_enabled_by_default(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn('"maker_priority_v2_6_candidate_r3",', source)
+            source = source.replace(
+                '"maker_priority_v2_63_candidate",',
+                '"maker_priority_v2_63_candidate",\n'
+                '  "maker_priority_v2_6_candidate_r3",',
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v2_6_candidate_r3",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_first_position_v263_is_enabled_by_default(self) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn('"maker_priority_v2_63_candidate",', source)
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v2_63_candidate",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
     def test_example_config_loads_and_resolves_database(self) -> None:
         repository = Path(__file__).resolve().parents[1]
         with tempfile.TemporaryDirectory() as temp:
@@ -45,9 +311,11 @@ class ConfigTests(unittest.TestCase):
                 config.maker_paper.realtime_comparison_model_ids,
                 (
                     "maker_priority_v1_37_candidate",
-                    "maker_priority_v1_43_candidate",
-                    "maker_queue_v1_17_candidate",
-                    "maker_queue_v1_18_candidate",
+                    "maker_priority_v1_50_candidate",
+                    "maker_priority_v2_52_candidate_r2",
+                    "maker_priority_v2_63_candidate",
+                    "maker_shared_1000_v0_1_candidate",
+                    "maker_shared_1000_v0_13_candidate",
                 ),
             )
             self.assertEqual(
@@ -72,7 +340,11 @@ class ConfigTests(unittest.TestCase):
             )
             self.assertEqual(config.m0.conversion_price_for(date(2026, 8, 10)), 21.20)
             self.assertEqual(config.paper.price_tick, 0.001)
-            self.assertTrue(config.maker_paper.super_windfall_enabled)
+            self.assertFalse(config.maker_paper.super_windfall_enabled)
+            self.assertEqual(
+                config.maker_paper.super_windfall_model_id,
+                "maker_windfall_v2_0_candidate",
+            )
             self.assertEqual(config.maker_paper.super_windfall_quantity_bonds, 10)
             self.assertEqual(config.storage.database, Path(temp).resolve() / "data" / "zhaiquant.sqlite3")
 

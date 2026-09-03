@@ -19,14 +19,26 @@ strategy. Repository documents, not chat history, are the durable cross-session 
 The user should not need to repeat this workflow or restate previously recorded strategy
 knowledge in every new session.
 
-At the start of every new Agent session in this repository, read these files completely
-before discussing, analyzing, or changing the strategy:
+At the start of a new strategy-discussion session, use the repository skill
+`.agents/skills/maker-strategy-session/SKILL.md`. Validate and read
+`docs/策略会话启动摘要.md` completely before discussing, analyzing, or changing the
+strategy. When its source fingerprints are current, do not reread all three long
+strategy documents merely as a startup ritual; search and read the relevant original
+sections as the user's case develops. If the summary is stale, follow the skill's
+fallback and reconcile it with every changed source before continuing.
+
+The compact summary is only a startup index. These three files remain authoritative:
 
 1. `docs/主观做市策略手册.md` — the long-term record of the user's reasoning,
    examples, corrections, and unified decision principles.
 2. `docs/做市策略V0.1.md` — the current formal and implementable strategy specification.
 3. `docs/做市模型版本记录.md` — the immutable model registry, current execution-branch
    assignments, ancestry, replay results, and promotion criteria.
+
+Whenever confirmed strategy knowledge or the paper matrix changes, update the startup
+summary last and refresh its source fingerprints only after the authoritative documents,
+implementation, configuration, and tests are consistent. Workflow-only changes do not
+need a trading-model version.
 
 During each strategy discussion:
 
@@ -76,6 +88,10 @@ During each strategy discussion:
   matrix, directory map, and local-data boundary aligned with the repository.
 - `docs/README.md` is the documentation index. Update it when a durable document or a
   major subtool is added, renamed, or retired.
+- `docs/每日债券做市交易PDF制作规范.md` owns the daily maker-paper PDF data formulas,
+  approved typography and layout, filename rules, generation procedure, and mandatory
+  render/font/data QA. Read it before creating or revising a PDF under `output/pdf/`;
+  do not improvise a new font system from visual memory.
 - `docs/实时采集与模拟盘运行手册.md` owns daily startup, monitoring, shutdown, and
   backup operations. `docs/Windows换机迁移教程.md` owns migration instructions.
 - `策略自我迭代优化/` contains curated candidate evidence, frozen manifests, and
@@ -92,10 +108,22 @@ During each strategy discussion:
 - Production baselines remain `maker_priority_v1_1`, `maker_queue_v1_0`, and
   `maker_windfall_v1_0`, but the ordinary priority 1.1 and queue 1.0 baselines are
   inactive in the forward real-time paper matrix. Preserve their registrations and
-  historical ledgers; continue the independent windfall account.
+  historical ledgers. Windfall is also inactive in the current forward matrix.
 - The current persisted real-time comparison order is
-  `maker_priority_v1_37_candidate`, `maker_priority_v1_43_candidate`, then
-  `maker_queue_v1_17_candidate`, then `maker_queue_v1_18_candidate`.
+  `maker_priority_v1_37_candidate`, `maker_priority_v1_50_candidate`,
+  `maker_priority_v2_52_candidate_r2`, `maker_priority_v2_63_candidate`,
+  `maker_shared_1000_v0_1_candidate`, then
+  `maker_shared_1000_v0_13_candidate`.
+- Publicly present the active ordinary first-position models as 1.37, 1.50,
+  2.52, and 2.63. The 2.63 candidate is a direct child of immutable 2.6 r3 and
+  keeps its trading behavior while receiving its own model identity and ledger.
+  Also present the two active shared-capital models as thousand-bond
+  first-position 0.1 and 0.13. Each has its own runtime and 1,000-bond capital
+  slot; only the two bonds inside the same model share that slot. Former 2.5,
+  2.51, 2.6, the other shared-capital 0.x versions, queue, and Windfall forward
+  accounts are inactive in the current matrix, but all registrations and
+  historical ledgers remain immutable together with 2.52 ancestors and every
+  earlier version.
 - A candidate entering the real-time paper matrix is not a production promotion. Do not
   describe it as deployed or current production, and do not merge its account, fills,
   inventory, or PnL with another model.

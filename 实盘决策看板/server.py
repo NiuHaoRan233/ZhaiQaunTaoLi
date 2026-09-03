@@ -3,12 +3,13 @@ from __future__ import annotations
 import argparse
 import bisect
 import json
+import math
 import mimetypes
 import sqlite3
 import sys
 import threading
 import time
-from datetime import datetime, time as clock_time
+from datetime import datetime, time as clock_time, timezone
 from functools import lru_cache
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -21,7 +22,21 @@ APP_DIR = Path(__file__).resolve().parent
 REPO_DIR = APP_DIR.parent
 DEFAULT_DATABASE = REPO_DIR / "data" / "zhaiquant.sqlite3"
 SOURCE_DIR = REPO_DIR / "src"
+MANUAL_PROJECT_DIR = REPO_DIR / "半自动手动交易"
+DEFAULT_MANUAL_AUDIT_LOG = (
+    MANUAL_PROJECT_DIR / "runtime" / "manual_takeover_audit.jsonl"
+)
 SHANGHAI_TZ = datetime.now().astimezone().tzinfo
+
+if str(MANUAL_PROJECT_DIR) not in sys.path:
+    sys.path.insert(0, str(MANUAL_PROJECT_DIR))
+
+from manual_takeover import (  # noqa: E402
+    CommandValidationError,
+    JsonlAuditSink,
+    ManualTakeoverService,
+    SqliteQuoteProvider,
+)
 
 BONDS = {
     "132026.SH": {"name": "G三峡EB2", "stock": "600900.SH"},
@@ -30,57 +45,91 @@ BONDS = {
 
 MODEL_META = {
     "maker_priority_v1_1": {
-        "short": "第一顺位 1.1",
-        "status": "生产",
         "branch": "priority",
         "color": "gold",
         "note": "改善一厘的高频做T生产基线",
     },
     "maker_queue_v1_0": {
-        "short": "排队 1.0",
-        "status": "生产",
         "branch": "queue",
         "color": "blue",
         "note": "消耗真实显示前队的排队基线",
     },
     "maker_windfall_v1_0": {
-        "short": "捡漏 1.0",
-        "status": "试验",
         "branch": "windfall",
         "color": "lime",
         "note": "独立10张异常深价额度，退出规则待校准",
     },
+    "maker_windfall_v2_0_candidate": {
+        "branch": "windfall",
+        "color": "lime",
+        "note": "独立1,000张风险块，主动吃大漏并在有利断层预埋",
+    },
     "maker_priority_v1_37_candidate": {
-        "short": "第一顺位 1.37",
-        "status": "候选·未晋级",
         "branch": "priority",
         "color": "violet",
         "note": "近墙低卖一主动低接候选",
     },
     "maker_priority_v1_43_candidate": {
-        "short": "第一顺位 1.43",
-        "status": "候选·未晋级",
         "branch": "priority",
         "color": "coral",
         "note": "即时可见卖墙扫尾恢复底仓候选",
     },
+    "maker_priority_v1_44": {
+        "branch": "priority",
+        "color": "coral",
+        "note": "相邻厚买簇先买后卖与动态止错",
+    },
+    "maker_priority_v1_45": {
+        "branch": "priority",
+        "color": "coral",
+        "note": "孤岛买一保护与卖墙攻击回补",
+    },
+    "maker_priority_v1_46": {
+        "branch": "priority",
+        "color": "coral",
+        "note": "高侧成交、双边深度与止损联合走廊",
+    },
+    "maker_priority_v1_47": {
+        "branch": "priority",
+        "color": "coral",
+        "note": "静默宽盘口保留盘中中枢并继续双边估值",
+    },
+    "maker_priority_v1_48_candidate": {
+        "branch": "priority",
+        "color": "coral",
+        "note": "突破回挂失效、孤立深折价与满仓容量释放",
+    },
+    "maker_priority_v1_49_candidate": {
+        "branch": "priority",
+        "color": "coral",
+        "note": "高侧失效近保本回中性与未污染错价簇",
+    },
+    "maker_priority_v1_49_candidate_r2": {
+        "branch": "priority",
+        "color": "coral",
+        "note": "第一顺位1.49：孤立低卖簇不冒充急买盘",
+    },
+    "maker_priority_v1_50_candidate": {
+        "branch": "priority",
+        "color": "coral",
+        "note": "第一顺位1.50：有效底仓回补持续暴露在实时第一顺位",
+    },
+    "maker_priority_v2_1_candidate": {
+        "branch": "priority",
+        "color": "coral",
+        "note": "第一顺位2.1：强趋势价格发现与经济空头快速回补",
+    },
     "maker_queue_v1_17_candidate": {
-        "short": "排队 1.17",
-        "status": "候选·未晋级",
         "branch": "queue",
         "color": "teal",
         "note": "正常交易至15:30的排队候选",
     },
+    "maker_queue_v1_18_candidate": {
+        "branch": "queue",
+        "color": "blue",
+        "note": "第二档队首执行候选",
+    },
 }
-
-MODEL_ORDER = [
-    "maker_priority_v1_1",
-    "maker_queue_v1_0",
-    "maker_windfall_v1_0",
-    "maker_priority_v1_37_candidate",
-    "maker_priority_v1_43_candidate",
-    "maker_queue_v1_17_candidate",
-]
 
 KIND_LABELS = {
     "base": "期初底仓",
@@ -90,7 +139,30 @@ KIND_LABELS = {
     "deep_discount_sweep": "深度折价主动买",
     "inventory_exit": "库存卖出",
     "inventory_risk_exit": "下行风险退出",
+    "failed_breakout_sweep_release": "失败突破扫尾释放",
+    "full_inventory_capacity_release_exit": "满仓容量释放",
+    "active_full_inventory_capacity_release": "满仓容量主动释放",
+    "stalled_extra_inventory_near_flat_exit": "高侧失效近保本回中性",
+    "adjacent_bid_cushion_entry": "相邻厚买簇低接",
+    "adjacent_bid_cushion_risk_exit": "保护买簇受损退出",
+    "joint_causal_corridor_entry": "联合走廊低侧买入",
+    "joint_causal_corridor_base_sell": "联合走廊底仓高卖",
+    "joint_causal_corridor_risk_exit": "联合走廊承托受损退出",
+    "active_joint_causal_corridor_risk_exit": "联合走廊承托受损退出",
+    "isolated_top_bid_guarded_base_replenish": "孤岛买一保护回补",
+    "isolated_top_bid_wall_attack_base_replenish": "卖墙受攻击主动回补",
+    "active_isolated_top_bid_sell_wall_attack_replenishment": (
+        "卖墙受攻击主动回补"
+    ),
+    "active_stock_accelerated_trend_base_replenishment": (
+        "正股极强且债券吃墙，主动恢复底仓"
+    ),
+    "active_bond_confirmed_trend_base_replenishment": (
+        "债券上涨确认，主动恢复底仓"
+    ),
     "super_windfall": "超级捡漏",
+    "super_windfall_active": "超级捡漏主动吃单",
+    "active_super_windfall_buy": "超级捡漏主动买入",
     "dynamic_customer_base_replenish": "动态底仓回补",
 }
 
@@ -108,7 +180,21 @@ REFERENCE_LABELS = {
     "persistent_inside_market": "持续盘口区间",
     "intraday_trade_anchor": "当日成交锚",
     "large_buy_breakout_support": "大买单突破支撑",
+    "retained_intraday_working_reference": "盘中成交中枢（静默期低置信保留）",
+    "trend_price_discovery": "强趋势当前价格发现",
 }
+
+QUIET_REFERENCE_MODEL_IDS = {
+    "maker_priority_v1_47",
+    "maker_priority_v1_48_candidate",
+    "maker_priority_v1_49_candidate",
+    "maker_priority_v1_49_candidate_r2",
+    "maker_priority_v1_50_candidate",
+}
+QUIET_REFERENCE_HALF_WIDTH = 0.20
+QUIET_REFERENCE_EARLIEST_TIME = "14:45:00.000"
+QUIET_REFERENCE_MINIMUM_SECONDS = 600
+QUIET_REFERENCE_MINIMUM_SPREAD = 0.40
 
 
 def _json_loads(value: str | None) -> dict[str, Any]:
@@ -117,6 +203,71 @@ def _json_loads(value: str | None) -> dict[str, Any]:
         return result if isinstance(result, dict) else {}
     except (TypeError, json.JSONDecodeError):
         return {}
+
+
+BASELINE_MODEL_IDS = {
+    "priority": "maker_priority_v1_1",
+    "queue": "maker_queue_v1_0",
+}
+
+
+def model_ids_from_session_config(config_json: str | None) -> tuple[str, ...] | None:
+    """Read the maker matrix actually loaded by a paper-simulation session."""
+    config = _json_loads(config_json)
+    maker = config.get("maker_paper")
+    if not isinstance(maker, dict):
+        return None
+    if not maker.get("enabled", False):
+        return ()
+
+    model_ids = [
+        BASELINE_MODEL_IDS[mode]
+        for mode in maker.get("fill_modes", [])
+        if mode in BASELINE_MODEL_IDS
+    ]
+    if maker.get("super_windfall_enabled", False):
+        model_ids.append(str(
+            maker.get("super_windfall_model_id") or "maker_windfall_v1_0"
+        ))
+    configured_comparisons = maker.get("realtime_comparison_model_ids", [])
+    if isinstance(configured_comparisons, list):
+        model_ids.extend(
+            str(model_id) for model_id in configured_comparisons if model_id
+        )
+    return tuple(dict.fromkeys(model_ids))
+
+
+def _session_started_ts_ms(value: Any) -> int | None:
+    try:
+        moment = datetime.fromisoformat(str(value))
+    except (TypeError, ValueError):
+        return None
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=timezone.utc)
+    return int(moment.timestamp() * 1000)
+
+
+def simulation_session_model_ids(
+    connection: sqlite3.Connection, *, target_ts_ms: int | None = None,
+) -> tuple[str, ...] | None:
+    """Return the model matrix from the relevant simulator run, in run order."""
+    try:
+        rows = connection.execute(
+            """SELECT started_at_utc,config_json
+               FROM sessions ORDER BY started_at_utc DESC"""
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return None
+    for row in rows:
+        started_ts_ms = _session_started_ts_ms(row["started_at_utc"])
+        if target_ts_ms is not None and (
+            started_ts_ms is None or started_ts_ms > target_ts_ms
+        ):
+            continue
+        model_ids = model_ids_from_session_config(row["config_json"])
+        if model_ids is not None:
+            return model_ids
+    return None
 
 
 def order_price_boundary_view(
@@ -134,12 +285,13 @@ def order_price_boundary_view(
     except (TypeError, ValueError):
         price_boundary = None
     if price_boundary is not None and boundary_kind not in {
-        "buy_ceiling", "sell_floor",
+        "buy_ceiling", "sell_floor", "live_priority_price",
     }:
         boundary_kind = "buy_ceiling" if side == "buy" else "sell_floor"
     boundary_label = (
         "最高买价" if boundary_kind == "buy_ceiling"
         else "最低卖价" if boundary_kind == "sell_floor"
+        else "当前跟随价" if boundary_kind == "live_priority_price"
         else "极限价"
     )
     return price_boundary, boundary_kind, boundary_label
@@ -149,6 +301,19 @@ def _clock(ts_ms: int | float | None) -> str:
     if not ts_ms:
         return "--:--:--"
     return datetime.fromtimestamp(float(ts_ms) / 1000).strftime("%H:%M:%S")
+
+
+def valid_chart_history(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Keep only real, positive transaction prices for the intraday chart."""
+    result: list[dict[str, Any]] = []
+    for item in history:
+        try:
+            price = float(item["last"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if math.isfinite(price) and price > 0:
+            result.append(item)
+    return result
 
 
 def refresh_window_active(now: datetime | None = None) -> bool:
@@ -192,7 +357,12 @@ def _assessment_timeline(
     del database_mtime_ns  # Used only to invalidate the cache when SQLite changes.
     if str(SOURCE_DIR) not in sys.path:
         sys.path.insert(0, str(SOURCE_DIR))
-    from zhaiquant.maker import MakerAnalyzer, MakerParameters, _load_ticks
+    from zhaiquant.maker import (
+        MakerAnalyzer,
+        MakerParameters,
+        _load_ticks,
+        trend_price_discovery_assessment,
+    )
 
     database = Path(database_path)
     parameters = MakerParameters()
@@ -206,25 +376,119 @@ def _assessment_timeline(
     analyzer = MakerAnalyzer(bond_code, BONDS[bond_code]["stock"], parameters)
     timestamps: list[int] = []
     assessments: list[dict[str, Any]] = []
+    last_market_trade_ts_ms = 0
     for tick in ticks:
         analyzer.on_tick(tick)
         if tick.code == bond_code:
+            if tick.trade_bonds > 0:
+                last_market_trade_ts_ms = int(tick.market_ts_ms)
             timestamps.append(int(tick.market_ts_ms))
-            assessments.append(_decorate_assessment(
-                analyzer.assess_market(tick, tick.previous_close).public()
-            ))
+            base_assessment = analyzer.assess_market(
+                tick, tick.previous_close,
+            )
+            assessment = _decorate_assessment(base_assessment.public())
+            assessment["_trend_assessment"] = _decorate_assessment(
+                trend_price_discovery_assessment(
+                    base_assessment, tick, parameters,
+                    stock_extremely_strong=(
+                        analyzer.stock_is_extremely_strong()
+                    ),
+                ).public()
+            )
+            # The strategy's model-specific late-session reference permission
+            # depends on causal trade silence and clock time.  Preserve those
+            # two inputs in the cached timeline, then remove them before the
+            # public assessment is returned.
+            assessment["_market_time"] = tick.market_time
+            assessment["_last_market_trade_ts_ms"] = last_market_trade_ts_ms
+            assessments.append(assessment)
     return tuple(timestamps), tuple(assessments)
 
 
 def _assessment_at(
-    database: Path, market_date: str, bond_code: str, target_ts_ms: int
+    database: Path, market_date: str, bond_code: str, target_ts_ms: int,
+    *, model_id: str | None = None, bid1: float = 0.0, ask1: float = 0.0,
 ) -> dict[str, Any] | None:
     try:
         timestamps, assessments = _assessment_timeline(
             str(database.resolve()), database.stat().st_mtime_ns, market_date, bond_code
         )
         index = bisect.bisect_right(timestamps, target_ts_ms) - 1
-        return dict(assessments[index]) if index >= 0 else None
+        if index < 0:
+            return None
+        current = dict(assessments[index])
+        if (
+            model_id == "maker_priority_v2_1_candidate"
+            and isinstance(current.get("_trend_assessment"), dict)
+        ):
+            market_time = current.get("_market_time")
+            last_trade_ts = current.get("_last_market_trade_ts_ms")
+            current = dict(current["_trend_assessment"])
+            current["_market_time"] = market_time
+            current["_last_market_trade_ts_ms"] = last_trade_ts
+        last_market_trade_ts_ms = int(
+            current.get("_last_market_trade_ts_ms") or 0
+        )
+        if (
+            model_id in QUIET_REFERENCE_MODEL_IDS
+            and current.get("reference_source") == "previous_close"
+            and str(current.get("_market_time") or "")
+                >= QUIET_REFERENCE_EARLIEST_TIME
+            and last_market_trade_ts_ms > 0
+            and timestamps[index] - last_market_trade_ts_ms
+                >= QUIET_REFERENCE_MINIMUM_SECONDS * 1_000
+            and bid1 > 0
+            and ask1 > bid1
+            and ask1 - bid1 + 1e-9 >= QUIET_REFERENCE_MINIMUM_SPREAD
+        ):
+            prior = next(
+                (
+                    dict(item) for item in reversed(assessments[:index])
+                    if item.get("reference_source") != "previous_close"
+                ),
+                None,
+            )
+            if prior is not None:
+                reference = float(prior.get("reference_price") or 0.0)
+                if bid1 - 0.015 <= reference <= ask1 + 0.015:
+                    prior_low = float(prior.get("reference_low") or reference)
+                    prior_high = float(prior.get("reference_high") or reference)
+                    current.update({
+                        "reference_price": round(reference, 3),
+                        "reference_low": round(
+                            max(
+                                min(prior_low, reference),
+                                reference - QUIET_REFERENCE_HALF_WIDTH,
+                            ),
+                            3,
+                        ),
+                        "reference_high": round(
+                            min(
+                                max(prior_high, reference),
+                                reference + QUIET_REFERENCE_HALF_WIDTH,
+                            ),
+                            3,
+                        ),
+                        "reference_source": (
+                            "retained_intraday_working_reference"
+                        ),
+                        "reference_source_label": REFERENCE_LABELS[
+                            "retained_intraday_working_reference"
+                        ],
+                        "reference_confidence": min(
+                            0.35,
+                            float(prior.get("reference_confidence") or 0.0),
+                        ),
+                        "evidence": [
+                            "尾盘成交转稀但当前宽盘口仍包住盘中中枢；"
+                            "保留低置信盘中估值，昨收不重新接管定价。",
+                            *(current.get("evidence") or []),
+                        ],
+                    })
+        current.pop("_market_time", None)
+        current.pop("_last_market_trade_ts_ms", None)
+        current.pop("_trend_assessment", None)
+        return current
     except Exception:
         return None
 
@@ -257,18 +521,80 @@ def _fallback_assessment(market: dict[str, Any], history: list[dict[str, Any]]) 
     }
 
 
+def _default_model_meta(
+    model_id: str, model_version: Any, fill_mode: str,
+) -> dict[str, str]:
+    family = {
+        "priority": "第一顺位",
+        "queue": "排队",
+        "windfall": "超级捡漏",
+    }.get(fill_mode)
+    if model_id == "maker_shared_1000_v0_1_candidate":
+        short = "千张第一顺位0.1"
+    elif model_id == "maker_shared_1000_v0_13_candidate":
+        short = "千张第一顺位0.13"
+    elif model_id == "maker_priority_v1_49_candidate_r2":
+        short = "第一顺位1.49"
+    elif model_id == "maker_priority_v1_50_candidate":
+        short = "第一顺位1.50"
+    elif model_id == "maker_priority_v2_1_candidate":
+        short = "第一顺位2.1"
+    elif model_id in {
+        "maker_priority_v2_5_candidate",
+        "maker_priority_v2_5_candidate_r2",
+    }:
+        short = "第一顺位2.5"
+    elif model_id in {
+        "maker_priority_v2_51_candidate_r2",
+        "maker_priority_v2_51_candidate_r3",
+    }:
+        short = "第一顺位2.51"
+    elif model_id in {
+        "maker_priority_v2_52_candidate",
+        "maker_priority_v2_52_candidate_r2",
+    }:
+        short = "第一顺位2.52"
+    elif model_id in {
+        "maker_priority_v2_6_candidate",
+        "maker_priority_v2_6_candidate_r2",
+        "maker_priority_v2_6_candidate_r3",
+    }:
+        short = "第一顺位2.6"
+    elif model_id == "maker_priority_v2_63_candidate":
+        short = "第一顺位2.63"
+    else:
+        version = str(model_version or "").removesuffix("-candidate")
+        short = (
+            f"{family}{version}"
+            if family and version
+            else (family or model_id)
+        )
+    return {
+        "short": short,
+        "status": "模拟盘",
+        "branch": (
+            "千张第一顺位"
+            if model_id in {
+                "maker_shared_1000_v0_1_candidate",
+                "maker_shared_1000_v0_13_candidate",
+            }
+            else fill_mode
+        ),
+        "color": "blue",
+        "note": "来自模拟盘运行配置",
+    }
+
+
 def _account_view(row: sqlite3.Row, market: dict[str, Any]) -> dict[str, Any]:
     model_id = row["model_id"] or row["strategy_id"]
-    meta = MODEL_META.get(
-        model_id,
-        {
-            "short": model_id,
-            "status": "历史",
-            "branch": row["fill_mode"],
-            "color": "blue",
-            "note": "已登记纸面模型",
-        },
+    default_meta = _default_model_meta(
+        model_id, row["model_version"], row["fill_mode"],
     )
+    meta = {**default_meta, **MODEL_META.get(model_id, {})}
+    # Keep registry IDs internal. Human-facing names match the simulator
+    # console's Chinese branch/version convention for every model generation.
+    meta["short"] = default_meta["short"]
+    meta["status"] = "模拟盘"
     inventory = float(row["inventory"])
     initial = float(row["initial_inventory"])
     mark = float(market["last_price"])
@@ -417,7 +743,7 @@ def load_snapshot(
                ORDER BY market_ts_ms DESC,id DESC""",
             (market_date, bond_code, history_cutoff_ts_ms, effective_ts_ms),
         ).fetchall()
-        history = [
+        causal_history = [
             {
                 "ts": int(row["market_ts_ms"]),
                 "time": _clock(row["market_ts_ms"]),
@@ -427,6 +753,7 @@ def load_snapshot(
             }
             for row in reversed(history_rows)
         ]
+        history = valid_chart_history(causal_history)
 
         accounts_rows = connection.execute(
             """SELECT a.*,m.model_id,m.model_version,m.parent_model_id,m.bond_code
@@ -436,10 +763,24 @@ def load_snapshot(
                WHERE a.market_date=? AND m.bond_code=?""",
             (market_date, bond_code),
         ).fetchall()
+        model_order = simulation_session_model_ids(
+            connection,
+            target_ts_ms=effective_ts_ms if replay_mode else None,
+        )
+        if model_order is not None:
+            # Accounts deliberately survive same-day model replacements. The
+            # simulator session says which ledgers belonged to this snapshot.
+            accounts_rows = [
+                row for row in accounts_rows if row["model_id"] in model_order
+            ]
+        else:
+            model_order = tuple(row["model_id"] for row in accounts_rows)
+        model_rank = {
+            model_id: index for index, model_id in enumerate(model_order)
+        }
         accounts = [_account_view(row, market) for row in accounts_rows]
         accounts.sort(
-            key=lambda item: MODEL_ORDER.index(item["model_id"])
-            if item["model_id"] in MODEL_ORDER else 999
+            key=lambda item: model_rank.get(item["model_id"], len(model_rank))
         )
         strategy_ids = [item["strategy_id"] for item in accounts]
         if strategy_ids:
@@ -505,11 +846,14 @@ def load_snapshot(
             reconstructed_rows.append(account)
         accounts = [_account_view(row, market) for row in reconstructed_rows]
         accounts.sort(
-            key=lambda item: MODEL_ORDER.index(item["model_id"])
-            if item["model_id"] in MODEL_ORDER else 999
+            key=lambda item: model_rank.get(item["model_id"], len(model_rank))
         )
 
-        model_by_strategy = {item["strategy_id"]: item["model_id"] for item in accounts}
+        account_by_strategy = {item["strategy_id"]: item for item in accounts}
+        model_by_strategy = {
+            strategy_id: item["model_id"]
+            for strategy_id, item in account_by_strategy.items()
+        }
         pnl_strategy_ids = {
             strategy_id for strategy_id, model_id in model_by_strategy.items()
             if action_model_id is None or model_id == action_model_id
@@ -523,6 +867,7 @@ def load_snapshot(
             data = dict(row)
             metadata = _json_loads(data.pop("metadata_json", None))
             model_id = model_by_strategy.get(data["strategy_id"], metadata.get("model_id"))
+            model_account = account_by_strategy.get(data["strategy_id"], {})
             (
                 price_boundary, boundary_kind, boundary_label,
             ) = order_price_boundary_view(
@@ -550,8 +895,8 @@ def load_snapshot(
             data["filled_quantity"] = filled_at_target
             data.update(
                 model_id=model_id,
-                model_short=MODEL_META.get(model_id, {}).get("short", model_id),
-                model_color=MODEL_META.get(model_id, {}).get("color", "blue"),
+                model_short=model_account.get("short", "模拟盘模型"),
+                model_color=model_account.get("color", "blue"),
                 kind_label=KIND_LABELS.get(data["kind"], data["kind"]),
                 price_boundary=price_boundary,
                 price_boundary_kind=boundary_kind,
@@ -568,10 +913,11 @@ def load_snapshot(
         for row in reversed(fill_rows_ascending[-40:]):
             data = dict(row)
             model_id = model_by_strategy.get(data["strategy_id"])
+            model_account = account_by_strategy.get(data["strategy_id"], {})
             data.update(
                 model_id=model_id,
-                model_short=MODEL_META.get(model_id, {}).get("short", model_id),
-                model_color=MODEL_META.get(model_id, {}).get("color", "blue"),
+                model_short=model_account.get("short", "模拟盘模型"),
+                model_color=model_account.get("color", "blue"),
                 time=_clock(data["market_ts_ms"]),
                 reason_label=KIND_LABELS.get(data["fill_reason"], data["fill_reason"]),
             )
@@ -651,9 +997,16 @@ def load_snapshot(
         ) if float(market["previous_close"]) else 0,
     }
 
-    assessment = _assessment_at(database, market_date, bond_code, effective_ts_ms)
+    assessment = _assessment_at(
+        database, market_date, bond_code, effective_ts_ms,
+        model_id=action_model_id,
+        bid1=float(market["bid_price_1"]),
+        ask1=float(market["ask_price_1"]),
+    )
     if assessment is None:
-        assessment = _fallback_assessment(compact_market, history)
+        # Quote-only snapshots before the first transaction remain useful to the
+        # fallback assessment, but their zero last price must never reach the chart.
+        assessment = _fallback_assessment(compact_market, causal_history)
 
     order_by_strategy: dict[str, list[dict[str, Any]]] = {}
     for order in open_orders:
@@ -732,11 +1085,12 @@ def load_snapshot(
         )
         if key not in fill_groups:
             model_id = row_model_id
+            model_account = account_by_strategy.get(row["strategy_id"], {})
             fill_groups[key] = {
                 "bond_code": bond_code,
                 "model_id": model_id,
-                "model_short": MODEL_META.get(model_id, {}).get("short", model_id),
-                "model_color": MODEL_META.get(model_id, {}).get("color", "blue"),
+                "model_short": model_account.get("short", "模拟盘模型"),
+                "model_color": model_account.get("color", "blue"),
                 "order_id": int(row["order_id"]) if row["order_id"] is not None else None,
                 "side": row["side"],
                 "price": float(row["price"]),
@@ -766,7 +1120,7 @@ def load_snapshot(
     proposed_models: set[str] = set()
     for order in open_orders:
         if (
-            order["model_id"] == "maker_windfall_v1_0"
+            str(order["model_id"]).startswith("maker_windfall_")
             or order["model_id"] in proposed_models
         ):
             continue
@@ -795,6 +1149,10 @@ def load_snapshot(
     latest_change_data = dict(latest_change) if latest_change else {}
     return {
         "source": "sqlite-read-only",
+        "model_source": {
+            "kind": "simulator-session-config",
+            "model_ids": list(model_order),
+        },
         "mode": "replay" if replay_mode else "live",
         "paper_only": True,
         "approval_writes_database": False,
@@ -839,14 +1197,22 @@ class SnapshotCache:
         self._lock = threading.Lock()
         self._items: dict[tuple[str, str | None], tuple[float, dict[str, Any]]] = {}
 
-    def get(self, bond_code: str, action_model_id: str | None = None) -> dict[str, Any]:
+    def get(
+        self,
+        bond_code: str,
+        action_model_id: str | None = None,
+        *,
+        force_refresh: bool = False,
+    ) -> dict[str, Any]:
         now = time.monotonic()
         active = refresh_window_active()
         key = (bond_code, action_model_id)
         with self._lock:
             cached = self._items.get(key)
             # Outside the refresh window, reuse the last screen indefinitely.
-            if cached and (not active or now - cached[0] < 2.5):
+            if cached and not force_refresh and (
+                not active or now - cached[0] < 2.5
+            ):
                 result = dict(cached[1])
                 result["refresh"] = dict(result["refresh"])
                 result["refresh"]["active"] = active
@@ -870,9 +1236,25 @@ class SnapshotCache:
 
 class DashboardHandler(BaseHTTPRequestHandler):
     cache: SnapshotCache
+    manual_service: ManualTakeoverService | None = None
 
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
+        if parsed.path == "/api/manual/status":
+            if self.manual_service is None:
+                self._send_json(
+                    {"error": "手动接管服务尚未启动", "paper_only": True},
+                    status=HTTPStatus.SERVICE_UNAVAILABLE,
+                )
+                return
+            try:
+                self._send_json(self.manual_service.status())
+            except Exception as exc:
+                self._send_json(
+                    {"error": str(exc), "paper_only": True},
+                    status=HTTPStatus.INTERNAL_SERVER_ERROR,
+                )
+            return
         if parsed.path == "/api/replay/meta":
             query = parse_qs(parsed.query)
             bond_code = query.get("bond", ["132026.SH"])[0]
@@ -916,8 +1298,15 @@ class DashboardHandler(BaseHTTPRequestHandler):
             query = parse_qs(parsed.query)
             bond_code = query.get("bond", ["132026.SH"])[0]
             action_model_id = query.get("model", [None])[0]
+            force_refresh = query.get("fresh", ["0"])[0].lower() in {
+                "1", "true", "yes",
+            }
             try:
-                payload = self.cache.get(bond_code, action_model_id)
+                payload = self.cache.get(
+                    bond_code,
+                    action_model_id,
+                    force_refresh=force_refresh,
+                )
                 self._send_json(payload)
             except Exception as exc:
                 self._send_json(
@@ -942,6 +1331,65 @@ class DashboardHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def do_POST(self) -> None:  # noqa: N802
+        parsed = urlparse(self.path)
+        routes = {
+            "/api/manual/start": "start",
+            "/api/manual/cancel": "cancel",
+            "/api/manual/cancel-all": "cancel_all",
+        }
+        operation = routes.get(parsed.path)
+        if operation is None:
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
+        if self.manual_service is None:
+            self._send_json(
+                {"error": "手动接管服务尚未启动", "paper_only": True},
+                status=HTTPStatus.SERVICE_UNAVAILABLE,
+            )
+            return
+        try:
+            payload = self._read_json_body()
+            if operation == "start":
+                result = self.manual_service.start(payload)
+            elif operation == "cancel":
+                result = self.manual_service.cancel(payload)
+            else:
+                result = self.manual_service.cancel_all()
+            self._send_json(result)
+        except (CommandValidationError, ValueError) as exc:
+            self._send_json(
+                {"error": str(exc), "paper_only": True},
+                status=HTTPStatus.BAD_REQUEST,
+            )
+        except Exception as exc:
+            self._send_json(
+                {"error": str(exc), "paper_only": True},
+                status=HTTPStatus.INTERNAL_SERVER_ERROR,
+            )
+
+    def _read_json_body(self) -> dict[str, Any]:
+        content_type = self.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
+        if content_type != "application/json":
+            raise ValueError("手动接管接口只接受application/json")
+        raw_length = self.headers.get("Content-Length", "0")
+        try:
+            length = int(raw_length)
+        except ValueError as exc:
+            raise ValueError("Content-Length无效") from exc
+        if length < 0 or length > 65_536:
+            raise ValueError("请求内容过大")
+        raw = self.rfile.read(length)
+        if not raw:
+            return {}
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ValueError("请求必须是UTF-8 JSON") from exc
+        if not isinstance(payload, dict):
+            raise ValueError("请求JSON必须是对象")
+        return payload
+
     def log_message(self, fmt: str, *args: object) -> None:
         if getattr(self.server, "quiet", False):
             return
@@ -962,22 +1410,34 @@ def main() -> int:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--database", type=Path, default=DEFAULT_DATABASE)
+    parser.add_argument(
+        "--manual-audit-log", type=Path, default=DEFAULT_MANUAL_AUDIT_LOG
+    )
     parser.add_argument("--quiet", action="store_true")
     args = parser.parse_args()
 
     cache = SnapshotCache(args.database)
     cache.warm_once()
+    manual_service = ManualTakeoverService(
+        SqliteQuoteProvider(args.database),
+        audit_sink=JsonlAuditSink(args.manual_audit_log),
+        window_active=refresh_window_active,
+    )
+    manual_service.start_worker()
     DashboardHandler.cache = cache
+    DashboardHandler.manual_service = manual_service
     server = ThreadingHTTPServer((args.host, args.port), DashboardHandler)
     server.quiet = args.quiet  # type: ignore[attr-defined]
     print(f"实盘决策看板：http://{args.host}:{args.port}")
     print(f"行情账本：{args.database.resolve()}（只读）")
-    print("审批操作：仅浏览器内存模拟，不写数据库，不发送委托")
+    print("手动接管：干运行追价状态机，不发送真实委托")
+    print(f"手动接管审计：{args.manual_audit_log.resolve()}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         pass
     finally:
+        manual_service.shutdown()
         server.server_close()
     return 0
 

@@ -46,6 +46,19 @@ class TdxTapeParserTests(unittest.TestCase):
         self.assertEqual((trade.panels, trade.top, trade.bottom), (8, 55, 1377))
         self.assertEqual(trade.canonical_panel_width, 340.0)
 
+    def test_verified_2026_08_26_layouts_are_explicit(self) -> None:
+        trade = _trade_screenshot_layout(1598, 979)
+        order = _order_screenshot_layout(1598, 979)
+
+        self.assertIsNotNone(trade)
+        self.assertEqual((trade.panels, trade.top, trade.bottom), (5, 55, 964))
+        self.assertEqual(trade.canonical_panel_width, 340.0)
+        self.assertIsNotNone(order)
+        self.assertEqual((order.panels, order.top, order.bottom), (6, 55, 964))
+        self.assertEqual(order.canonical_panel_width, 241.0)
+        self.assertIsNone(_trade_screenshot_layout(1598, 900))
+        self.assertIsNone(_order_screenshot_layout(1598, 900))
+
     def test_page_overlap_survivors_are_stably_sorted_by_market_time(self) -> None:
         def event(market_time: str, row: int) -> TdxOrderEvent:
             return TdxOrderEvent(

@@ -1,0 +1,271 @@
+{
+  "archive_date": "2026-09-02",
+  "model_id": "maker_shared_1000_v0_13_candidate",
+  "public_name": "千张第一顺位0.13候选",
+  "model_version": "0.13-candidate",
+  "parent_model_id": "maker_shared_1000_v0_12_candidate",
+  "status": "implemented_target_and_development_replay_only_not_frozen_not_realtime_not_production",
+  "diagnosis": {
+    "v012_large_lead_that_must_be_preserved": {
+      "market_date": "2026-08-21",
+      "v011_r2_gross_pnl_cny": 475.00,
+      "v012_and_v013_gross_pnl_cny": 3215.00,
+      "difference_cny": 2740.00,
+      "cause": "v012 rejected the Three Gorges active tail sweep and kept capital available for Jiangxi Copper turnover",
+      "v011_terminal_trapped_loss_approximately_cny": -1216.00,
+      "v013_changes_sweep_tail_scoring": false
+    },
+    "v012_confirmed_missed_money": {
+      "v012_accepted_active_deep_discount_fills": 0,
+      "v011_comparable_active_deep_discount_fills": 20,
+      "v011_comparable_fifo_closed_gross_pnl_cny": 10071.89,
+      "root_cause": "the best offer fully consumed by the active buy was incorrectly retained as the post-buy exit offer, forcing gross edge to zero",
+      "decisive_market_date": "2026-08-04",
+      "decisive_market_time": "09:52:46.000",
+      "decisive_bond_code": "132024.SH",
+      "consumed_ask_price": 136.499,
+      "consumed_ask_bonds": 1000,
+      "next_visible_ask_price": 138.879,
+      "v013_exit_ceiling_price": 138.878,
+      "actual_replay_exit_time": "09:52:58.000",
+      "actual_replay_exit_price": 138.876,
+      "incremental_closed_gross_pnl_cny": 2377.00
+    },
+    "losses_not_removed_with_future_information": [
+      {
+        "market_date": "2026-08-11",
+        "bond_code": "132024.SH",
+        "gross_pnl_cny": -203.00
+      },
+      {
+        "market_date": "2026-08-05",
+        "bond_code": "132026.SH",
+        "gross_pnl_cny": -102.00
+      }
+    ],
+    "future_information_boundary": "the adverse sell impact first appeared on the fill frame, so it cannot be injected into the preceding cancellation decision"
+  },
+  "account_contract": {
+    "initial_inventory_bonds": 0,
+    "shared_buying_capacity_bonds": 1000,
+    "quantity_hands": 100,
+    "maximum_aggregate_inventory_bonds": 1000,
+    "maximum_simultaneous_buy_orders": 1,
+    "cash_is_explicit_third_candidate": true,
+    "losses_are_not_refunded": true
+  },
+  "decision_change": {
+    "v012_entry_exit_allocation_and_risk_rules_are_preserved": true,
+    "adjusted_order_kind": "deep_discount_sweep",
+    "order_must_be_parent_legal": true,
+    "order_price_must_equal_current_best_offer": true,
+    "active_quantity_must_consume_all_visible_offer_quantity_at_or_below_limit": true,
+    "higher_remaining_offer_must_exist_within_current_five_levels": true,
+    "visible_exit_ceiling": "first remaining ask minus 0.001 CNY",
+    "lower_existing_target_or_independent_anchor_is_conservative_cap": true,
+    "partial_offer_consumption_uses_parent_scoring": true,
+    "missing_next_ask_uses_parent_scoring": true,
+    "sweep_tail_uses_parent_scoring": true,
+    "passive_orders_use_parent_scoring": true,
+    "support_supply_tail_risk_active_adverse_selection_lock_time_other_bond_and_cash_are_still_scored": true
+  },
+  "development_dates": [
+    "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07",
+    "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13",
+    "2026-08-14", "2026-08-17", "2026-08-18", "2026-08-19",
+    "2026-08-20", "2026-08-21", "2026-08-24", "2026-08-25",
+    "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-31",
+    "2026-09-01"
+  ],
+  "target_date": {
+    "market_date": "2026-09-02",
+    "v012_gross_pnl_cny": 4727.60,
+    "v013_gross_pnl_cny": 4727.60,
+    "gross_pnl_difference_cny": 0.00,
+    "v012_fill_events": 30,
+    "v013_fill_events": 30,
+    "v012_equivalent_full_slot_exposure_seconds": 7212.48,
+    "v013_equivalent_full_slot_exposure_seconds": 7212.48,
+    "v013_terminal_inventory_bonds": 0,
+    "post_sweep_scores": 0,
+    "normalized_fills_equal_v012": true,
+    "sample_out_evidence": false
+  },
+  "matrix_results": {
+    "v011_r2_shared_causal_pnl_cny": 81760.54,
+    "v012_shared_causal_pnl_cny": 77048.32,
+    "v013_shared_causal_pnl_cny": 82728.29,
+    "v013_minus_v012_pnl_cny": 5679.97,
+    "v013_minus_v011_r2_pnl_cny": 967.75,
+    "improved_days_vs_v012": 5,
+    "degraded_days_vs_v012": 1,
+    "unchanged_days_vs_v012": 15,
+    "v013_fill_events": 821,
+    "v013_direct_allocation_switches": 281,
+    "v013_effective_cross_bond_reselections": 611,
+    "v013_cross_bond_reselections_via_cash": 330,
+    "v013_equivalent_full_slot_exposure_seconds": 99232.84,
+    "v013_pnl_per_equivalent_full_slot_hour_cny": 3001.24,
+    "v013_positive_days": 21,
+    "v013_negative_days": 0,
+    "v013_closed_fifo_matches": 418,
+    "v013_profitable_closed_matches": 331,
+    "v013_losing_closed_matches": 84,
+    "v013_flat_closed_matches": 3,
+    "v013_closed_gross_pnl_cny": 83964.49,
+    "v013_worst_closed_match_cny": -203.00,
+    "v013_terminal_inventory_days": 8,
+    "v013_terminal_unrealized_pnl_cny": -1236.20,
+    "v013_worst_terminal_position_cny": -441.00,
+    "post_sweep_scores": 14,
+    "post_sweep_positive_scores": 9,
+    "post_sweep_accepted_fills": 8,
+    "post_sweep_accepted_bonds": 5110,
+    "maximum_aggregate_inventory_bonds": 1000,
+    "maximum_simultaneous_buy_orders": 1,
+    "all_inventory_invariants_hold": true,
+    "all_order_invariants_hold": true
+  },
+  "daily_v013_minus_v012_cny": {
+    "2026-08-04": 2377.00,
+    "2026-08-05": 0.00,
+    "2026-08-06": 685.29,
+    "2026-08-07": 0.00,
+    "2026-08-10": 0.00,
+    "2026-08-11": 0.00,
+    "2026-08-12": 0.00,
+    "2026-08-13": 2083.00,
+    "2026-08-14": 286.00,
+    "2026-08-17": 0.00,
+    "2026-08-18": 0.00,
+    "2026-08-19": 0.00,
+    "2026-08-20": 0.00,
+    "2026-08-21": 0.00,
+    "2026-08-24": 0.00,
+    "2026-08-25": 272.68,
+    "2026-08-26": 0.00,
+    "2026-08-27": 0.00,
+    "2026-08-28": 0.00,
+    "2026-08-31": 0.00,
+    "2026-09-01": -24.00
+  },
+  "fee_stress": {
+    "two_sided_traded_notional_cny": 75906376.68,
+    "net_after_fixed_0_10_cny_per_fill": 82646.19,
+    "net_after_fixed_0_50_cny_per_fill": 82317.79,
+    "net_after_fixed_1_00_cny_per_fill": 81907.29,
+    "net_after_0_5_bp_each_fill_notional": 78932.971166,
+    "net_after_1_0_bp_each_fill_notional": 75137.652332
+  },
+  "reproduction": {
+    "source_sqlite_opened_readonly": true,
+    "temporary_paper_ledgers": true,
+    "broker_orders_enabled": false,
+    "target_command": ".\\.venv\\Scripts\\python.exe -m zhaiquant.shared_thousand_maker_v013_research --config config.toml --dates 2026-09-02 --codes 132026.SH 132024.SH --output output\\research\\shared_1000_v013_target_20260902.json",
+    "matrix_command": ".\\.venv\\Scripts\\python.exe -m zhaiquant.shared_thousand_maker_v013_research --config config.toml --dates 2026-08-04 2026-08-05 2026-08-06 2026-08-07 2026-08-10 2026-08-11 2026-08-12 2026-08-13 2026-08-14 2026-08-17 2026-08-18 2026-08-19 2026-08-20 2026-08-21 2026-08-24 2026-08-25 2026-08-26 2026-08-27 2026-08-28 2026-08-31 2026-09-01 --codes 132026.SH 132024.SH --output output\\research\\shared_1000_v013_matrix_20260804_20260901.json"
+  },
+  "files": [
+    {
+      "path": "src/zhaiquant/maker_paper.py",
+      "bytes": 592023,
+      "sha256": "8716848955af94847664418d762a6a0308e544623fc4345be14b3befb16fb388"
+    },
+    {
+      "path": "src/zhaiquant/shared_thousand_maker_v03_research.py",
+      "bytes": 21344,
+      "sha256": "43598ab3bdeff800332251a354228fed6eadd0d7d1179d90d8c2bc6da2fa4615"
+    },
+    {
+      "path": "src/zhaiquant/shared_thousand_maker_v012_research.py",
+      "bytes": 5315,
+      "sha256": "92fcc02774ccfdb02c8071b6f179f926d48cb5fa09fcb4b19dd7dcb7c9ab1d8c"
+    },
+    {
+      "path": "src/zhaiquant/shared_thousand_maker_v013_research.py",
+      "bytes": 14476,
+      "sha256": "22e62844d972223f2a3cd938a1509a5065b4f6dfefd0349e7b52454317ed8d4e"
+    },
+    {
+      "path": "tests/test_shared_thousand_maker_v013_research.py",
+      "bytes": 10581,
+      "sha256": "d15a10c4c6dd54cd0722a530f74752ea7ec10fe491d8a07c22b498989c40d80b"
+    },
+    {
+      "path": "docs/主观做市策略手册.md",
+      "bytes": 425633,
+      "sha256": "9be06c6185581886b5ffe12e2b4bb067f459fee4308445a5fa479e1723c705ff"
+    },
+    {
+      "path": "docs/做市策略V0.1.md",
+      "bytes": 306063,
+      "sha256": "7802a5816001c3987b880cb9e15936669174ca165f2ec980c0dd9f385b9c07da"
+    },
+    {
+      "path": "docs/做市模型版本记录.md",
+      "bytes": 313931,
+      "sha256": "86b3fc4aeee7e5c881b4e267da2e23d4baa7513f1f284c19ce8ef38bd5c7db04"
+    },
+    {
+      "path": "策略自我迭代优化/千张共享资金/千张共享资金0.13_主动深折价剩余卖档估值_2026-09-02.md",
+      "bytes": 8739,
+      "sha256": "036ed4b8cac5d7fd84d7c63ad49dd52e4d5950bf12af97bcafab9b7b4dd8628e"
+    },
+    {
+      "path": "output/research/shared_1000_v011_r2_target_20260902.json",
+      "bytes": 390271,
+      "sha256": "422292a24bbb1af965909f6a32d39880862e11769a7f2cc2896cd6f96ce79d54",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v011_r2_fallback_matrix_20260804_20260901.json",
+      "bytes": 6027033,
+      "sha256": "c370eed1cc369c25241573e43cc9d6bba346ae105cb888465a3bc507c2385664",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v012_target_20260902.json",
+      "bytes": 13979446,
+      "sha256": "a625d7650f85dbc6dfc6a7c7ba0df9929e65c97a7b9ad7be1721647bc23d8abc",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v012_matrix_20260804_20260901.json",
+      "bytes": 133867476,
+      "sha256": "76d4b05a574b1e2b5a17cc8b60bdf6927503d30be63836df52bee2f5b8f6936d",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v013_target_20260902.json",
+      "bytes": 13980147,
+      "sha256": "af7f32d74a79c59826489e60f7889a6a7e12d94b70d6b54445539f43577aedcb",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v013_matrix_20260804_20260901.json",
+      "bytes": 133419140,
+      "sha256": "f18b24c9464cd5f3f3eae9c242e5a05b5ea255e8958f8dda25213659e4dcbceb",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v012_v013_daily_comparison_20260804_20260901.csv",
+      "bytes": 1409,
+      "sha256": "1dbf76cbd6d7b8cbed32d457af3bb3ec503e5907f714d7df6800fb487dd30d25",
+      "local_ignored_output": true
+    },
+    {
+      "path": "output/research/shared_1000_v011_v012_v013_daily_comparison_20260804_20260901.csv",
+      "bytes": 2430,
+      "sha256": "aface1b85e6b1a1d444f00a14602bfd28e665bc8aa3206b2adc80c36ec2474aa",
+      "local_ignored_output": true
+    }
+  ],
+  "verification": {
+    "v013_focused_tests": "6 passed",
+    "combined_shared_0x_tests": "44 passed",
+    "main_unittest_count": 361,
+    "all_passed": true,
+    "target_v012_v013_fill_comparison_passed": true,
+    "all_inventory_and_order_invariants_passed": true
+  },
+  "forward_boundary": "The target date and all dates through 2026-09-01 were used during development. Only later complete dates with unchanged parameters and implementation can become forward evidence."
+}

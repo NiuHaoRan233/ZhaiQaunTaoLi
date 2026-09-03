@@ -4,7 +4,7 @@ import json
 import math
 import sqlite3
 from collections import deque
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
@@ -285,6 +285,120 @@ class MarketAssessment:
         }
 
 
+def trend_price_discovery_assessment(
+    assessment: MarketAssessment,
+    tick: ReplayTick,
+    parameters: MakerParameters,
+    *,
+    stock_extremely_strong: bool = False,
+    require_connected_bid_staircase: bool = False,
+    maximum_overhead_ask_bonds: float | None = None,
+    overhead_ask_band: float = 0.015,
+    minimum_secondary_bid_bonds: float | None = None,
+) -> MarketAssessment:
+    """Lift a stale fair region only when the live bond market proves it moved.
+
+    This is intentionally not part of the shared historical analyzer.  The
+    caller must opt a model into this overlay.  A directional label alone is
+    insufficient: the current bid needs a nearby multi-level cushion or the
+    tape needs substantial aggressive buying, while an isolated top bid,
+    renewed sell pressure, or a falling best offer vetoes the overlay.
+    """
+
+    if not (
+        tick.ask1 > tick.bid1 > 0
+        and assessment.state in {"possible_rise", "rising"}
+        and assessment.short_ask_change
+            > -parameters.minimum_short_ask_drop + 1e-9
+        and assessment.recent_buy_bonds + 1e-9
+            >= assessment.recent_sell_bonds * 1.5
+    ):
+        return assessment
+
+    nearby_bids = tuple(
+        (price, bonds) for price, bonds in tick.bids
+        if tick.bid1 - price <= 0.10 + 1e-9
+    )
+    nearby_bid_bonds = sum(bonds for _, bonds in nearby_bids)
+    standard_quantity = parameters.order_quantity_bonds
+    disconnected_top_bid = (
+        len(tick.bids) >= 2
+        and tick.bid1 - tick.bids[1][0] + 1e-9
+            >= parameters.minimum_top_bid_gap
+    )
+    isolated_top_bid = (
+        disconnected_top_bid
+        and tick.bid1_bonds + 1e-9 < standard_quantity
+    )
+    tape_confirmed = (
+        assessment.recent_buy_bonds + 1e-9 >= 5.0 * standard_quantity
+    )
+    stock_accelerated_book = (
+        stock_extremely_strong
+        and assessment.state == "possible_rise"
+        and assessment.recent_buy_bonds + 1e-9 >= standard_quantity
+        and nearby_bid_bonds + 1e-9 >= 3.0 * standard_quantity
+    )
+    book_confirmed = (
+        len(nearby_bids) >= 2
+        and nearby_bid_bonds + 1e-9 >= 5.0 * standard_quantity
+    )
+    if require_connected_bid_staircase:
+        secondary_minimum = (
+            standard_quantity
+            if minimum_secondary_bid_bonds is None
+            else minimum_secondary_bid_bonds
+        )
+        book_confirmed = (
+            book_confirmed
+            and tick.bids[1][1] + 1e-9 >= secondary_minimum
+        )
+        overhead_ask_bonds = sum(
+            bonds for price, bonds in tick.asks
+            if tick.ask1 <= price <= tick.ask1 + overhead_ask_band + 1e-9
+        )
+        if (
+            maximum_overhead_ask_bonds is not None
+            and overhead_ask_bonds
+                > maximum_overhead_ask_bonds + 1e-9
+        ):
+            return assessment
+    strong_enough = (
+        assessment.state == "rising"
+        and (book_confirmed or tape_confirmed or stock_accelerated_book)
+    ) or (
+        assessment.state == "possible_rise"
+        and (
+            (book_confirmed and tape_confirmed)
+            or stock_accelerated_book
+        )
+    )
+    if (
+        (isolated_top_bid and not require_connected_bid_staircase)
+        or not strong_enough
+    ):
+        return assessment
+
+    lower = tick.bid1
+    upper = max(lower, tick.ask1)
+    reference = (lower + upper) / 2.0
+    evidence = (
+        f"强趋势价格发现：当前买一附近0.10元内约{nearby_bid_bonds:,.0f}张承托，"
+        f"近5分钟主动买入约{assessment.recent_buy_bonds:,.0f}张；"
+        "合理区随可靠当前买盘与可执行卖一上移。",
+        *assessment.evidence,
+    )
+    return replace(
+        assessment,
+        reference_price=reference,
+        reference_low=lower,
+        reference_high=upper,
+        reference_source="trend_price_discovery",
+        reference_confidence=max(assessment.reference_confidence, 0.78),
+        evidence=evidence,
+    )
+
+
 @dataclass
 class Opportunity:
     kind: str
@@ -370,8 +484,16 @@ class MakerAnalyzer:
         self.stock_code = stock_code
         self.parameters = parameters or MakerParameters()
         self.trade_evidence: deque[TradeEvidence] = deque()
+        # Some research branches need a causal view of the whole trading day,
+        # while the ordinary analyzer intentionally expires its rolling tape.
+        # Keep the two stores separate so old registered policies continue to
+        # see exactly the same rolling evidence they used before.
+        self.session_trade_evidence: deque[TradeEvidence] = deque()
+        self.session_market_date: str | None = None
         self.book_quotes: deque[BookQuote] = deque()
         self.stock_prices: deque[tuple[int, float]] = deque()
+        self.stock_previous_close = 0.0
+        self.stock_latest_price = 0.0
         self.ask_walls: dict[float, AskWall] = {}
         self.last_visible_asks: dict[float, float] = {}
         self.last_visible_asks_ts_ms = 0
@@ -392,16 +514,21 @@ class MakerAnalyzer:
         if tick.code != self.bond_code:
             return []
 
+        if self.session_market_date != tick.market_date:
+            self.session_trade_evidence.clear()
+            self.session_market_date = tick.market_date
         self._expire(tick.market_ts_ms)
         if tick.bid1 > 0 and tick.ask1 > tick.bid1:
             self.book_quotes.append(BookQuote(
                 tick.market_ts_ms, tick.bid1, tick.ask1,
             ))
         if tick.trade_bonds > 0 and tick.inferred_side in {"buy", "sell"}:
-            self.trade_evidence.append(TradeEvidence(
+            event = TradeEvidence(
                 tick.market_ts_ms, tick.last_price, tick.trade_bonds,
                 max(1, tick.transaction_delta), tick.inferred_side,
-            ))
+            )
+            self.trade_evidence.append(event)
+            self.session_trade_evidence.append(event)
 
         sweep_opportunities = self._update_ask_walls(tick)
         anchor = self._anchor(tick.market_ts_ms)
@@ -420,10 +547,26 @@ class MakerAnalyzer:
     def _on_stock(self, tick: ReplayTick) -> None:
         if tick.last_price <= 0:
             return
+        if tick.previous_close > 0:
+            self.stock_previous_close = tick.previous_close
+        self.stock_latest_price = tick.last_price
         self.stock_prices.append((tick.market_ts_ms, tick.last_price))
         cutoff = tick.market_ts_ms - self.parameters.evidence_window_seconds * 1000
         while self.stock_prices and self.stock_prices[0][0] < cutoff:
             self.stock_prices.popleft()
+
+    def stock_day_return(self) -> float | None:
+        """Return the causal underlying return from its exchange previous close."""
+
+        if self.stock_previous_close <= 0 or self.stock_latest_price <= 0:
+            return None
+        return self.stock_latest_price / self.stock_previous_close - 1.0
+
+    def stock_is_extremely_strong(self, minimum_return: float = 0.08) -> bool:
+        """Identify a near-limit-up underlying without guessing a limit price."""
+
+        day_return = self.stock_day_return()
+        return day_return is not None and day_return + 1e-12 >= minimum_return
 
     def _expire(self, now_ms: int) -> None:
         cutoff = now_ms - self.parameters.evidence_window_seconds * 1000

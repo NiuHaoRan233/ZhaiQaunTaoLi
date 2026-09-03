@@ -12,6 +12,24 @@ NODE = shutil.which("node")
 
 
 class DashboardLayoutTests(unittest.TestCase):
+    def test_manual_live_refresh_requests_a_fresh_snapshot(self) -> None:
+        script = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn(
+            'const freshness = manual && state.mode === "live" ? "&fresh=1" : "";',
+            script,
+        )
+        self.assertIn("${encodeURIComponent(state.modelId)}${freshness}", script)
+
+    def test_manual_takeover_is_a_third_mode_with_two_bond_forms(self) -> None:
+        html = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertIn('data-mode="manual"', html)
+        self.assertEqual(html.count('data-manual-bond="'), 2)
+        self.assertEqual(html.count('class="manual-form"'), 2)
+        self.assertIn('id="manualCancelAll"', html)
+        self.assertIn('name="quantity_bonds"', html)
+        self.assertIn('name="start_price"', html)
+        self.assertIn('name="extreme_price"', html)
+
     def test_action_streams_keep_sanxia_left_and_jiangtong_right(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         sanxia = html.index('data-action-bond="132026.SH"')
@@ -197,6 +215,19 @@ class BookOrderPlacementTests(unittest.TestCase):
         self.assertIn("最低卖价 138.205", sell_html)
         self.assertIn("上限未记录", legacy_html)
 
+    def test_live_priority_replenishment_uses_follow_label(self) -> None:
+        html = self.run_javascript(
+            "ui.renderBookRow(book.bids[0],'bid',["
+            "{side:'buy',limit_price:136.516,remaining:1000,"
+            "price_boundary:136.516,"
+            "price_boundary_kind:'live_priority_price',"
+            "price_boundary_label:'当前跟随价',kind_label:'动态底仓回补'}"
+            "])"
+        )
+        self.assertIn("跟随136.516", html)
+        self.assertIn("当前跟随价 136.516", html)
+        self.assertNotIn("上限136.516", html)
+
     def test_replay_playback_skips_the_lunch_break(self) -> None:
         result = self.run_javascript(
             "(()=>{"
@@ -236,6 +267,30 @@ class BookOrderPlacementTests(unittest.TestCase):
         )
         self.assertEqual(result, ["earliest", "middle", "latest"])
 
+    def test_intraday_chart_rejects_zero_and_invalid_last_prices(self) -> None:
+        result = self.run_javascript(
+            "ui.validChartHistory(["
+            "{ts:1,last:0},{ts:2,last:null},{ts:3,last:137.9},"
+            "{ts:4,last:137.3},{ts:5,last:136},{ts:6,last:136.6}"
+            "]).map(item=>item.last)"
+        )
+        self.assertEqual(result, [137.9, 137.3, 136, 136.6])
+
+    def test_observation_models_are_grouped_and_newest_first(self) -> None:
+        result = self.run_javascript(
+            "ui.modelDisplayOrder(["
+            "{model_id:'windfall',fill_mode:'windfall',model_version:'1.0'},"
+            "{model_id:'priority37',fill_mode:'priority',model_version:'1.37-candidate'},"
+            "{model_id:'queue17',fill_mode:'queue',model_version:'1.17-candidate'},"
+            "{model_id:'priority49',fill_mode:'priority',model_version:'1.49-candidate-r2'},"
+            "{model_id:'queue18',fill_mode:'queue',model_version:'1.18-candidate'}"
+            "]).map(item=>item.model_id)"
+        )
+        self.assertEqual(
+            result,
+            ["priority49", "priority37", "queue18", "queue17", "windfall"],
+        )
+
     def test_new_order_events_use_the_quiet_order_alert(self) -> None:
         result = self.run_javascript(
             "(()=>{"
@@ -247,6 +302,14 @@ class BookOrderPlacementTests(unittest.TestCase):
         self.assertEqual(result["alertType"], "order")
         self.assertEqual(len(result["newActions"]), 1)
         self.assertEqual(result["newActions"][0]["event_type"], "cancel")
+
+    def test_alert_gain_is_boosted_for_low_system_volume_without_clipping(self) -> None:
+        result = self.run_javascript(
+            "[ui.alertGain(.052),ui.alertGain(.13),ui.alertGain(1)]"
+        )
+        self.assertAlmostEqual(result[0], 0.0936)
+        self.assertAlmostEqual(result[1], 0.234)
+        self.assertEqual(result[2], 0.95)
 
     def test_fill_alert_wins_when_poll_contains_order_and_fill_events(self) -> None:
         result = self.run_javascript(
@@ -281,7 +344,10 @@ class BookOrderPlacementTests(unittest.TestCase):
         result = self.run_javascript(
             "["
             "'maker_reprice','entry_context_changed','passive_buy',"
-            "'active_turnover_replaced_passive_sell','低价承接','future_reason_code'"
+            "'active_turnover_replaced_passive_sell',"
+            "'active_isolated_top_bid_sell_wall_attack_replenishment',"
+            "'isolated_top_bid_guarded_base_replenish',"
+            "'低价承接','future_reason_code'"
             "].map(ui.actionReasonLabel)"
         )
         self.assertEqual(
@@ -291,11 +357,42 @@ class BookOrderPlacementTests(unittest.TestCase):
                 "买入条件变化",
                 "被动买入成交",
                 "主动周转替换被动卖单",
+                "卖墙受攻击主动回补",
+                "孤岛买一保护回补",
                 "低价承接",
                 "其他未登记原因",
             ],
         )
         self.assertTrue(all(not any(char.isascii() and char.isalpha() for char in item) for item in result))
+
+    def test_manual_extreme_price_direction_is_validated_for_both_sides(self) -> None:
+        result = self.run_javascript(
+            "["
+            "ui.manualPriceDirectionValid('buy',100,101),"
+            "ui.manualPriceDirectionValid('buy',100,100),"
+            "ui.manualPriceDirectionValid('sell',102,101),"
+            "ui.manualPriceDirectionValid('sell',102,103)"
+            "]"
+        )
+        self.assertEqual(result, [True, False, True, False])
+
+    def test_manual_alarm_only_reports_new_alert_events(self) -> None:
+        result = self.run_javascript(
+            "ui.detectManualAlerts(new Set([1]),["
+            "{event_id:1,alert:true},{event_id:2,alert:false},{event_id:3,alert:true}"
+            "]).map(item=>item.event_id)"
+        )
+        self.assertEqual(result, [3])
+
+    def test_latest_manual_task_is_isolated_by_bond(self) -> None:
+        result = self.run_javascript(
+            "ui.manualLatestTask(["
+            "{task_id:'old',bond_code:'132026.SH',created_at:'2026-08-25T01:00:00Z'},"
+            "{task_id:'other',bond_code:'132024.SH',created_at:'2026-08-25T03:00:00Z'},"
+            "{task_id:'new',bond_code:'132026.SH',created_at:'2026-08-25T02:00:00Z'}"
+            "],'132026.SH').task_id"
+        )
+        self.assertEqual(result, "new")
 
 
 if __name__ == "__main__":

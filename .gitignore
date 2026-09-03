@@ -3,6 +3,7 @@
 __pycache__/
 *.py[cod]
 tmp/
+scratch_*.py
 .pytest_cache/
 .idea/
 .vscode/

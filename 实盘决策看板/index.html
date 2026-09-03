@@ -33,6 +33,7 @@
       <div class="mode-switch" id="modeSwitch">
         <button class="active" data-mode="live" type="button">实时快照</button>
         <button data-mode="replay" type="button">模拟回看</button>
+        <button data-mode="manual" type="button">手动接管</button>
       </div>
       <div class="replay-controls" id="replayControls">
         <label>交易日 <select id="replayDate" aria-label="回看交易日"></select></label>
@@ -51,6 +52,109 @@
         <span id="marketDate">—</span><strong id="marketTime">--:--:--</strong>
         <span class="refresh-state" id="refreshState">等待数据</span>
       </div>
+    </section>
+
+    <section class="manual-takeover" id="manualTakeover" aria-label="手动接管干运行控制台">
+      <div class="manual-safety panel">
+        <div>
+          <span class="section-index">M01</span>
+          <div>
+            <h2>比价追价 · 手动接管</h2>
+            <p>输入方向、张数、起始价和极限价；程序只朝极限方向领先一厘。当前执行端为干运行，不发送真实委托。</p>
+          </div>
+        </div>
+        <div class="manual-safety-actions">
+          <span class="manual-mode-badge" id="manualModeBadge">干运行 · 券商委托关闭</span>
+          <button class="danger-button" id="manualCancelAll" type="button">全部撤销</button>
+        </div>
+      </div>
+
+      <div class="manual-grid">
+        <article class="manual-card panel" data-manual-bond="132026.SH">
+          <header class="manual-card-head">
+            <div><h2>G三峡EB2</h2><code>132026.SH</code></div>
+            <span class="manual-task-badge" id="manualStatus-132026-SH">未启动</span>
+          </header>
+          <div class="manual-quote-strip">
+            <span>买一 <strong class="bid" id="manualBid-132026-SH">—</strong></span>
+            <span>卖一 <strong class="ask" id="manualAsk-132026-SH">—</strong></span>
+            <span>行情 <strong id="manualQuoteTime-132026-SH">—</strong></span>
+          </div>
+          <form class="manual-form" data-bond-code="132026.SH">
+            <label>方向
+              <select name="side" aria-label="G三峡EB2方向">
+                <option value="buy">买入 · 领先买一</option>
+                <option value="sell">卖出 · 领先卖一</option>
+              </select>
+            </label>
+            <label>委托张数
+              <input name="quantity_bonds" type="number" min="10" step="10" value="1000" required>
+              <small>1手=10张</small>
+            </label>
+            <label>起始价格
+              <input name="start_price" type="number" min="0.001" step="0.001" placeholder="例如 100.000" required>
+              <small>启动时先按此价挂出</small>
+            </label>
+            <label><span data-extreme-label>最高停止价</span>
+              <input name="extreme_price" type="number" min="0.001" step="0.001" placeholder="例如 101.000" required>
+              <small data-extreme-help>触及即撤，不挂到该价</small>
+            </label>
+            <div class="manual-rule"><span>领先幅度</span><strong>0.001 元</strong><small>价格只向极限单向移动</small></div>
+            <div class="manual-form-actions">
+              <button class="start-button" type="submit">启动追价</button>
+              <button class="cancel-button" data-manual-cancel type="button">撤销本债</button>
+            </div>
+          </form>
+          <div class="manual-task-view" id="manualTask-132026-SH"><span>等待输入手动指令</span></div>
+        </article>
+
+        <article class="manual-card panel" data-manual-bond="132024.SH">
+          <header class="manual-card-head">
+            <div><h2>26江铜EB</h2><code>132024.SH</code></div>
+            <span class="manual-task-badge" id="manualStatus-132024-SH">未启动</span>
+          </header>
+          <div class="manual-quote-strip">
+            <span>买一 <strong class="bid" id="manualBid-132024-SH">—</strong></span>
+            <span>卖一 <strong class="ask" id="manualAsk-132024-SH">—</strong></span>
+            <span>行情 <strong id="manualQuoteTime-132024-SH">—</strong></span>
+          </div>
+          <form class="manual-form" data-bond-code="132024.SH">
+            <label>方向
+              <select name="side" aria-label="26江铜EB方向">
+                <option value="buy">买入 · 领先买一</option>
+                <option value="sell">卖出 · 领先卖一</option>
+              </select>
+            </label>
+            <label>委托张数
+              <input name="quantity_bonds" type="number" min="10" step="10" value="1000" required>
+              <small>1手=10张</small>
+            </label>
+            <label>起始价格
+              <input name="start_price" type="number" min="0.001" step="0.001" placeholder="例如 100.000" required>
+              <small>启动时先按此价挂出</small>
+            </label>
+            <label><span data-extreme-label>最高停止价</span>
+              <input name="extreme_price" type="number" min="0.001" step="0.001" placeholder="例如 101.000" required>
+              <small data-extreme-help>触及即撤，不挂到该价</small>
+            </label>
+            <div class="manual-rule"><span>领先幅度</span><strong>0.001 元</strong><small>价格只向极限单向移动</small></div>
+            <div class="manual-form-actions">
+              <button class="start-button" type="submit">启动追价</button>
+              <button class="cancel-button" data-manual-cancel type="button">撤销本债</button>
+            </div>
+          </form>
+          <div class="manual-task-view" id="manualTask-132024-SH"><span>等待输入手动指令</span></div>
+        </article>
+      </div>
+
+      <section class="manual-events panel">
+        <div class="panel-head">
+          <div><span class="section-index">M02</span><h2>手动接管动作流水</h2><span class="head-note">撤单确认后才允许重挂</span></div>
+          <span id="manualEventCount">0 条</span>
+        </div>
+        <div class="manual-event-columns"><span>时间</span><span>债券</span><span>动作</span><span>方向 / 价格 / 数量</span><span>说明</span></div>
+        <div class="manual-event-stream" id="manualEventStream"><div class="empty-inline">尚无手动接管动作</div></div>
+      </section>
     </section>
 
     <section class="market-grid" id="marketGrid" aria-label="双债盘口">

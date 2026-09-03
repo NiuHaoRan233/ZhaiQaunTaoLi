@@ -1,0 +1,166 @@
+{
+  "archived_at_asia_shanghai": "2026-09-02T00:14:56+08:00",
+  "archive_kind": "research_artifact_lock_not_sample_out_freeze",
+  "git_head": "21b6700240fd0a202439698e67da8b888516ce6b",
+  "working_tree_was_dirty": true,
+  "candidate_model_id": "maker_shared_1000_v0_1_candidate",
+  "public_name": "千张第一顺位0.1候选",
+  "parent_model_id": "maker_priority_v2_52_candidate_r2",
+  "execution_family": "shared_thousand_offline_research",
+  "status": "archived_offline_candidate_not_in_realtime_matrix",
+  "policy_profile_sha256": "325C93C7A14BA4FD643F22CFB30BAA320EA7591620A19C7FAE161A28ACE33954",
+  "incorrect_unit_audit_sibling": {
+    "model_id": "maker_one_hand_v0_1_candidate",
+    "quantity_bonds": 10,
+    "status": "permanently_stopped_audit_evidence_only",
+    "may_be_parent_or_baseline": false
+  },
+  "instruments": [
+    "132026.SH",
+    "132024.SH"
+  ],
+  "replay_dates": [
+    "2026-08-04",
+    "2026-08-05",
+    "2026-08-06",
+    "2026-08-07",
+    "2026-08-10",
+    "2026-08-11",
+    "2026-08-12",
+    "2026-08-13",
+    "2026-08-14",
+    "2026-08-17",
+    "2026-08-18",
+    "2026-08-19",
+    "2026-08-20",
+    "2026-08-21",
+    "2026-08-24",
+    "2026-08-25",
+    "2026-08-26",
+    "2026-08-27",
+    "2026-08-28",
+    "2026-08-31",
+    "2026-09-01"
+  ],
+  "account": {
+    "opening_base_inventory_bonds": 0,
+    "shared_buying_capacity_bonds": 1000,
+    "equivalent_hands": 100,
+    "shared_cash_slots": 1,
+    "maximum_aggregate_inventory_bonds": 1000,
+    "maximum_effective_buy_orders": 1,
+    "cash_seed": "higher_of_the_two_first_legal_asks_after_09_20_times_1000",
+    "cash_fixed_after_initialization": true,
+    "recapitalization_after_losses": false,
+    "force_end_of_day_liquidation": false
+  },
+  "allocation_parameters": {
+    "recent_flow_window_seconds": 300,
+    "minimum_evidence_scale_bonds": 1000,
+    "support_distance_cny_per_bond": 0.2,
+    "protection_distance_cny_per_bond": 0.3,
+    "support_multiple": 5.0,
+    "full_block_evidence_scale_bonds": 5000,
+    "downside_penalty_weight": 0.5,
+    "minimum_selection_dwell_seconds": 60,
+    "switch_minimum_score_advantage_cny_per_slot": 100.0,
+    "switch_relative_score_advantage": 0.3,
+    "unselected_tie_tolerance_cny_per_slot": 10.0,
+    "parameters_are_exploratory_not_user_confirmed_permanent_rules": true
+  },
+  "registered_replay_totals": {
+    "shared_causal_gross_pnl_cny": 79982.16,
+    "static_132026_gross_pnl_cny": 72304.89,
+    "static_132024_gross_pnl_cny": 52640.61,
+    "independent_two_1000_bond_accounts_upper_bound_cny": 124945.5,
+    "hindsight_daily_best_static_upper_bound_cny": 87141.14,
+    "fill_events": 757,
+    "direct_allocation_switches": 88,
+    "positive_marked_gross_days": 21,
+    "negative_marked_gross_days": 0,
+    "terminal_position_days": 11,
+    "terminal_unrealized_pnl_cny": -2381.6,
+    "closed_fifo_matches": 382,
+    "profitable_closed_matches": 320,
+    "losing_closed_matches": 60,
+    "flat_closed_matches": 2,
+    "closed_gross_pnl_cny": 82363.76,
+    "two_sided_traded_notional_cny": 70685759.35,
+    "net_after_0_5_bp_each_fill_notional_cny": 76447.872033,
+    "net_after_1_0_bp_each_fill_notional_cny": 72913.584065,
+    "inventory_invariants_hold_all_days": true,
+    "order_invariants_hold_all_days": true
+  },
+  "registered_adverse_cases": {
+    "worst_terminal_position": {
+      "market_date": "2026-08-21",
+      "bond_code": "132026.SH",
+      "entry_price": 136.49,
+      "quantity_bonds": 1000,
+      "terminal_unrealized_pnl_cny": -1216.0
+    },
+    "worst_closed_fifo_match": {
+      "market_date": "2026-08-31",
+      "bond_code": "132026.SH",
+      "buy_time": "14:41:15.000",
+      "sell_time": "14:44:03.000",
+      "buy_price": 134.701,
+      "sell_price": 133.999,
+      "quantity_bonds": 1000,
+      "gross_pnl_cny": -702.0
+    }
+  },
+  "greedy_sensitivity": {
+    "minimum_selection_dwell_seconds": 0,
+    "switch_minimum_score_advantage_cny_per_slot": 0.0,
+    "switch_relative_score_advantage": 0.0,
+    "unselected_tie_tolerance_cny_per_slot": 0.0,
+    "shared_causal_gross_pnl_cny": 84014.1,
+    "fill_events": 782,
+    "direct_allocation_switches": 337,
+    "registered_version_gross_sacrifice_cny": 4031.94,
+    "registered_version_switch_reduction_count": 249,
+    "registered_version_switch_reduction_ratio": 0.738872
+  },
+  "source_sha256": {
+    "src/zhaiquant/shared_thousand_maker_research.py": "3D6A1F3A3B0BFA4CE79804D9C8C03FC9F56C944165BF4085DE7FAD0272BCEC2F",
+    "src/zhaiquant/one_hand_maker_research.py": "33D1EA7D55610BC675F11A5947AE5E0AF43B084059F342DCD18DF781D524A4CC",
+    "src/zhaiquant/maker_paper.py": "9FFB3123626B3AE0C6D809980D37F31357047CF35C412E7642806074C577112D",
+    "tests/test_shared_thousand_maker_research.py": "1FD682D91F35F2E68AF9EE0080A6746C33C955C19831D7F958A42012FABA0B65",
+    "tests/test_one_hand_maker_research.py": "6CCB84A4D66CBEA9605CD28B489C4B5483BECD8EFC2B1557ADDBC01468F398F6"
+  },
+  "local_report_artifacts": [
+    {
+      "path": "output/research/shared_1000_v01_matrix_20260804_20260901.json",
+      "bytes": 5472310,
+      "sha256": "380FE7931B06504C41C9DCE2F2233ECAF01E5EAC54A21632C186C571F06A6D6C",
+      "repository_tracking": "local_only_gitignored"
+    },
+    {
+      "path": "output/research/shared_1000_v01_greedy_sensitivity_20260804_20260901.json",
+      "bytes": 6004929,
+      "sha256": "159F5A4D594C1C50EA31F39E5E2CDC27D3FF0E8B0BF2C842DF6F9C8B108B4B80",
+      "repository_tracking": "local_only_gitignored"
+    }
+  ],
+  "reproduction_commands": {
+    "registered": ".\\.venv\\Scripts\\python.exe -m zhaiquant.shared_thousand_maker_research --config config.toml --dates 2026-08-04 2026-08-05 2026-08-06 2026-08-07 2026-08-10 2026-08-11 2026-08-12 2026-08-13 2026-08-14 2026-08-17 2026-08-18 2026-08-19 2026-08-20 2026-08-21 2026-08-24 2026-08-25 2026-08-26 2026-08-27 2026-08-28 2026-08-31 2026-09-01 --codes 132026.SH 132024.SH --switch-minimum-cny 100 --switch-relative-advantage 0.30 --selection-dwell-seconds 60 --tie-tolerance-cny 10 --output output\\research\\shared_1000_v01_matrix_20260804_20260901.json",
+    "greedy_sensitivity": ".\\.venv\\Scripts\\python.exe -m zhaiquant.shared_thousand_maker_research --config config.toml --dates 2026-08-04 2026-08-05 2026-08-06 2026-08-07 2026-08-10 2026-08-11 2026-08-12 2026-08-13 2026-08-14 2026-08-17 2026-08-18 2026-08-19 2026-08-20 2026-08-21 2026-08-24 2026-08-25 2026-08-26 2026-08-27 2026-08-28 2026-08-31 2026-09-01 --codes 132026.SH 132024.SH --switch-minimum-cny 0 --switch-relative-advantage 0 --selection-dwell-seconds 0 --tie-tolerance-cny 0 --output output\\research\\shared_1000_v01_greedy_sensitivity_20260804_20260901.json"
+  },
+  "recorded_verification": {
+    "main_unittest_suite_passed": 315,
+    "bond_activity_suite_passed": 16,
+    "decision_dashboard_suite_passed": 56,
+    "screen_reader_suite_passed": 7,
+    "git_diff_check_passed": true,
+    "bootstrap_status_before_archive": "current"
+  },
+  "caveats": [
+    "All replay results are marked gross paper results and are not live executable profit evidence.",
+    "Level 1 data cannot establish the true queue position or full fill probability of a 1000-bond order.",
+    "Fees, minimum commissions, slippage, impact, and latency remain incomplete external inputs.",
+    "All 21 dates were visible during construction and cannot be relabeled as sample-out.",
+    "Eleven terminal inventory days were all underwater at the close.",
+    "Changing allocation scores, switching thresholds, cash initialization, capitalization, execution assumptions, or realtime assignment requires a new registered model ID."
+  ]
+}

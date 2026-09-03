@@ -101,6 +101,7 @@ class LocalOpportunityTurn:
 @dataclass(frozen=True)
 class ReplayFill:
     order_id: int
+    lot_id: int | None
     strategy_id: str
     model_id: str
     market_time: str
@@ -1295,7 +1296,7 @@ def replay_registered_models_readonly(
                 ticks_by_id = {tick.tick_id: tick for tick in ticks}
                 fills = []
                 for row in store.connection.execute(
-                    """SELECT order_id,strategy_id,market_ts_ms,side,price,
+                    """SELECT order_id,lot_id,strategy_id,market_ts_ms,side,price,
                               quantity,fill_reason,inventory_after,
                               reference_tick_id
                        FROM maker_paper_fills
@@ -1322,6 +1323,10 @@ def replay_registered_models_readonly(
                             residual_bonds = reference_tick.ask1_bonds
                     fills.append(asdict(ReplayFill(
                         order_id=int(row["order_id"]),
+                        lot_id=(
+                            int(row["lot_id"])
+                            if row["lot_id"] is not None else None
+                        ),
                         strategy_id=row["strategy_id"],
                         model_id=assignments.get(row["strategy_id"], "unregistered"),
                         market_time=market_time,
@@ -1363,6 +1368,13 @@ def replay_registered_models_readonly(
                     order["queue_position_kind"] = metadata.get(
                         "queue_position_kind"
                     )
+                    for field in (
+                        "protective_bid_floor_price",
+                        "protective_bid_ceiling_price",
+                        "protective_bid_entry_bonds",
+                        "protective_bid_entry_edge",
+                    ):
+                        order[field] = metadata.get(field, 0.0)
                     orders.append(order)
             finally:
                 store.close()
@@ -2001,7 +2013,7 @@ def write_model_opportunity_audit(
                     if branch["strategy_id"] == account["strategy_id"]
                 )
                 for account in replay["accounts"]
-                if "super_windfall" not in account["strategy_id"]
+                if account["fill_mode"] != "windfall"
             },
         },
         "comparisons": comparisons,

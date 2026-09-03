@@ -104,7 +104,7 @@ Copy-Item "D:\迁移文件\zhaiquant-20260810-151000.sqlite3" ".\data\zhaiquant.
 
 `MiniQMT connection failed on port 58611`：确认 MiniQMT 已登录、端口设置一致，且没有防火墙或安全软件拦截本机连接。
 
-`Another live runner is already using ... live.lock`：已有实时进程正在运行。先找到并正常停止旧窗口。锁由操作系统持有，进程退出后无需删除文件。
+`Another live runner is already using ... live.lock`：已有实时进程正在运行。优先从项目根目录双击 `start_live.cmd`，或运行 `scripts\run_live.ps1`；诊断成功后，启动脚本会自动替换本项目同一配置的旧模拟后台。若直接运行了 `zhaiquant run`，或旧进程不符合脚本的安全识别条件，仍需找到并停止旧窗口。锁由操作系统持有，进程退出后无需删除文件。
 
 某个机构债没有快照：先在 MiniQMT 客户端直接搜索代码，确认账户行情权限和证券代码后，再加入 `watch_codes`。程序不能绕过券商权限。
 

@@ -4,22 +4,31 @@ const BONDS = [
 ];
 
 const SOUND_PREFERENCE_KEY = "maker-dashboard-sound-enabled";
+const ALERT_VOLUME_BOOST = 1.8;
 const ORDER_EVENT_TYPES = new Set(["submit", "cancel", "complete"]);
 const ACTION_REASON_LABELS = {
+  active_stock_accelerated_trend_base_replenishment: "正股极强且债券吃墙，主动恢复底仓",
+  active_bond_confirmed_trend_base_replenishment: "债券上涨确认，主动恢复底仓",
   active_deep_discount: "深度折价主动买入",
+  active_adjacent_bid_cushion_risk_exit: "保护买簇受损主动卖出",
   active_downside_risk_exit: "下行风险主动卖出",
   active_entry_replaced_passive_buy: "主动买入替换被动买单",
   active_inventory_turn_replenish: "主动库存周转回补",
+  active_isolated_top_bid_sell_wall_attack_replenishment: "卖墙受攻击主动回补",
   active_medium_base_short_replenishment: "主动中等底仓缺口回补",
   active_risk_exit_replaced_passive_sell: "风险退出替换被动卖单",
   active_tail_sweep: "主动扫尾买入",
   active_tight_spread_turnover: "窄价差主动周转卖出",
   active_turnover_replaced_passive_sell: "主动周转替换被动卖单",
   dynamic_medium_base_short_replenishment: "中等底仓缺口动态变化",
+  adjacent_bid_cushion_risk_exit: "保护买簇受损退出",
   entry_context_changed: "买入条件变化",
   exit_context_changed: "卖出条件变化",
   inventory_turn_replenish: "库存周转回补",
   inventory_turnover_exit: "库存周转卖出",
+  isolated_top_bid_guarded_base_replenish: "孤岛买一保护回补",
+  isolated_top_bid_sell_wall_materially_attacked: "卖墙受到真实买盘攻击",
+  isolated_top_bid_wall_attack_base_replenish: "卖墙受攻击主动回补",
   maker_reprice: "做市比价改价",
   passive_buy: "被动买入成交",
   passive_sell: "被动卖出成交",
@@ -39,7 +48,7 @@ function loadSoundPreference() {
 
 const state = {
   snapshots: {},
-  modelId: "maker_priority_v1_1",
+  modelId: "",
   actionFilter: "all",
   mode: "live",
   replayMeta: null,
@@ -49,13 +58,17 @@ const state = {
   replayTimer: null,
   replayLoadTimer: null,
   poller: null,
+  manualPoller: null,
   loading: false,
+  manualLoading: false,
   requestId: 0,
   requestController: null,
   soundEnabled: loadSoundPreference(),
   soundReady: false,
   audioContext: null,
   knownActionKeys: null,
+  knownManualAlertIds: null,
+  manualStatus: null,
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -63,7 +76,9 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const BOOK_ROW_HEIGHT = 41;
 const fmtPrice = value => Number.isFinite(Number(value)) ? Number(value).toFixed(3) : "—";
 const fmtQty = value => Number(value || 0).toLocaleString("zh-CN", {maximumFractionDigits: 0});
-const orderBoundaryShortLabel = order => order.side === "buy" ? "上限" : "下限";
+const orderBoundaryShortLabel = order => order.price_boundary_kind === "live_priority_price"
+  ? "跟随"
+  : (order.side === "buy" ? "上限" : "下限");
 const orderBoundaryValue = order => order.price_boundary != null
   && Number.isFinite(Number(order.price_boundary))
   ? fmtPrice(order.price_boundary)
@@ -329,12 +344,16 @@ function scheduleTone(context, {start, frequency, endFrequency = frequency, dura
   oscillator.frequency.setValueAtTime(frequency, start);
   oscillator.frequency.exponentialRampToValueAtTime(endFrequency, start + duration);
   envelope.gain.setValueAtTime(.0001, start);
-  envelope.gain.exponentialRampToValueAtTime(gain, start + .012);
+  envelope.gain.exponentialRampToValueAtTime(alertGain(gain), start + .012);
   envelope.gain.exponentialRampToValueAtTime(.0001, start + duration);
   oscillator.connect(envelope);
   envelope.connect(context.destination);
   oscillator.start(start);
   oscillator.stop(start + duration + .015);
+}
+
+function alertGain(gain) {
+  return Math.min(.95, Math.max(.0001, Number(gain) * ALERT_VOLUME_BOOST));
 }
 
 async function playAlertSound(alertType) {
@@ -345,6 +364,12 @@ async function playAlertSound(alertType) {
   }
   const context = state.audioContext;
   const start = context.currentTime + .015;
+  if (alertType === "limit") {
+    scheduleTone(context, {start, frequency: 980, endFrequency: 720, duration: .20, gain: .12, type: "square"});
+    scheduleTone(context, {start: start + .22, frequency: 760, endFrequency: 520, duration: .24, gain: .13, type: "square"});
+    scheduleTone(context, {start: start + .49, frequency: 620, endFrequency: 410, duration: .30, gain: .14, type: "square"});
+    return;
+  }
   if (alertType === "fill") {
     scheduleTone(context, {start, frequency: 620, endFrequency: 790, duration: .20, gain: .105, type: "triangle"});
     scheduleTone(context, {start: start + .16, frequency: 790, endFrequency: 1050, duration: .28, gain: .13, type: "triangle"});
@@ -398,9 +423,10 @@ async function loadSnapshots({manual = false} = {}) {
   if (manual) $("#refreshButton").classList.add("loading");
   try {
     const requests = BONDS.map(async bond => {
+      const freshness = manual && state.mode === "live" ? "&fresh=1" : "";
       const url = state.mode === "replay"
         ? `/api/replay/snapshot?bond=${encodeURIComponent(bond.code)}&date=${encodeURIComponent(state.replayDate)}&ts=${Math.round(state.replayTs)}&model=${encodeURIComponent(state.modelId)}`
-        : `/api/snapshot?bond=${encodeURIComponent(bond.code)}&model=${encodeURIComponent(state.modelId)}`;
+        : `/api/snapshot?bond=${encodeURIComponent(bond.code)}&model=${encodeURIComponent(state.modelId)}${freshness}`;
       const response = await fetch(url, {cache: "no-store", signal: state.requestController.signal});
       const payload = await response.json();
       if (!response.ok || payload.error) throw new Error(`${bond.name}：${payload.error || "读取失败"}`);
@@ -455,7 +481,7 @@ async function loadReplayMetadata() {
     || commonDates.find(item => item.has_accounts)
     || commonDates[0];
   $("#replayDate").innerHTML = commonDates.map(item =>
-    `<option value="${escapeHtml(item.date)}">${escapeHtml(item.date)}${item.has_accounts ? " · 双债六模型" : " · 仅行情"}</option>`
+    `<option value="${escapeHtml(item.date)}">${escapeHtml(item.date)}${item.has_accounts ? " · 有模拟账户" : " · 仅行情"}</option>`
   ).join("");
   $("#replayDate").value = selected.date;
   configureReplayDate(selected);
@@ -634,10 +660,17 @@ function renderMarketTrade(item) {
   return `<div class="trade-row"><span>${escapeHtml(item.time)}</span><span class="trade-price ${side}">${fmtPrice(item.price)}</span><span class="trade-qty">${fmtQty(item.quantity)}</span><span class="trade-side ${side}">${label}</span></div>`;
 }
 
+function validChartHistory(history) {
+  return (history || []).filter(item => {
+    const price = Number(item?.last);
+    return Number.isFinite(price) && price > 0;
+  });
+}
+
 function renderChart(data) {
   const canvas = $(`#chart-${data.bond.code.replace(".", "-")}`);
-  if (!canvas || !data.history.length) return;
-  const history = data.history;
+  const history = validChartHistory(data.history);
+  if (!canvas || !history.length) return;
   const assessment = data.assessment;
   const rect = canvas.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
@@ -647,8 +680,12 @@ function renderChart(data) {
   ctx.scale(dpr, dpr);
   const width = rect.width, height = rect.height;
   const pad = {left: 6, right: 55, top: 6, bottom: 20};
-  const prices = history.map(item => Number(item.last)).filter(Number.isFinite);
-  prices.push(Number(assessment.reference_low), Number(assessment.reference_high));
+  const prices = history.map(item => Number(item.last));
+  const referenceLow = Number(assessment.reference_low);
+  const referenceHigh = Number(assessment.reference_high);
+  const hasReferenceBand = Number.isFinite(referenceLow) && referenceLow > 0
+    && Number.isFinite(referenceHigh) && referenceHigh >= referenceLow;
+  if (hasReferenceBand) prices.push(referenceLow, referenceHigh);
   let min = Math.min(...prices), max = Math.max(...prices);
   const margin = Math.max(.025, (max - min) * .15);
   min -= margin; max += margin;
@@ -664,13 +701,15 @@ function renderChart(data) {
     ctx.beginPath(); ctx.moveTo(pad.left, yy); ctx.lineTo(width - pad.right, yy); ctx.stroke();
     ctx.fillText((max - index * (max - min) / 2).toFixed(3), width - pad.right + 7, yy + 3);
   }
-  const fairTop = y(assessment.reference_high), fairBottom = y(assessment.reference_low);
-  ctx.fillStyle = "rgba(214,174,109,.09)";
-  ctx.fillRect(pad.left, fairTop, width - pad.left - pad.right, fairBottom - fairTop);
-  ctx.strokeStyle = "rgba(214,174,109,.4)";
-  ctx.setLineDash([5,5]);
-  [fairTop, fairBottom].forEach(yy => { ctx.beginPath(); ctx.moveTo(pad.left, yy); ctx.lineTo(width-pad.right, yy); ctx.stroke(); });
-  ctx.setLineDash([]);
+  if (hasReferenceBand) {
+    const fairTop = y(referenceHigh), fairBottom = y(referenceLow);
+    ctx.fillStyle = "rgba(214,174,109,.09)";
+    ctx.fillRect(pad.left, fairTop, width - pad.left - pad.right, fairBottom - fairTop);
+    ctx.strokeStyle = "rgba(214,174,109,.4)";
+    ctx.setLineDash([5,5]);
+    [fairTop, fairBottom].forEach(yy => { ctx.beginPath(); ctx.moveTo(pad.left, yy); ctx.lineTo(width-pad.right, yy); ctx.stroke(); });
+    ctx.setLineDash([]);
+  }
   const gradient = ctx.createLinearGradient(0, pad.top, 0, height-pad.bottom);
   gradient.addColorStop(0, "rgba(104,183,255,.22)"); gradient.addColorStop(1, "rgba(104,183,255,0)");
   ctx.beginPath();
@@ -688,17 +727,33 @@ function renderChart(data) {
 }
 
 function ensureModelOptions(accounts) {
+  const orderedAccounts = modelDisplayOrder(accounts);
   const select = $("#modelSelect");
   const currentIds = [...select.options].map(option => option.value);
-  const nextIds = accounts.map(account => account.model_id);
+  const nextIds = orderedAccounts.map(account => account.model_id);
   if (currentIds.join("|") !== nextIds.join("|")) {
-    select.innerHTML = accounts.map(account => `<option value="${escapeHtml(account.model_id)}">${escapeHtml(account.short)} · ${escapeHtml(account.status)}</option>`).join("");
+    select.innerHTML = orderedAccounts.map(account => `<option value="${escapeHtml(account.model_id)}">${escapeHtml(account.short)}</option>`).join("");
   }
   if (!nextIds.includes(state.modelId)) state.modelId = nextIds[0];
   select.value = state.modelId;
-  const selected = accounts.find(account => account.model_id === state.modelId);
+  const selected = orderedAccounts.find(account => account.model_id === state.modelId);
   $("#modelStatus").textContent = selected?.status || "—";
   $("#modelNote").textContent = selected?.note || "两债账户互不合并";
+}
+
+function modelDisplayOrder(accounts) {
+  const branchRank = {priority: 0, queue: 1, windfall: 2};
+  const versionParts = account => {
+    const match = String(account?.model_version || "").match(/(\d+)(?:\.(\d+))?/);
+    return match ? [Number(match[1]), Number(match[2] || 0)] : [0, 0];
+  };
+  return [...(accounts || [])].sort((left, right) => {
+    const familyDifference = (branchRank[left.fill_mode] ?? 3) - (branchRank[right.fill_mode] ?? 3);
+    if (familyDifference) return familyDifference;
+    const [leftMajor, leftMinor] = versionParts(left);
+    const [rightMajor, rightMinor] = versionParts(right);
+    return rightMajor - leftMajor || rightMinor - leftMinor;
+  });
 }
 
 function renderSelectedAccounts(data) {
@@ -762,15 +817,209 @@ function renderActions(data) {
   });
 }
 
+const MANUAL_TASK_LABELS = {
+  active: "追价中",
+  cancelled: "已撤销",
+  filled: "已成交",
+  limit_reached: "触及极限",
+  error: "执行异常",
+};
+
+function manualPriceDirectionValid(side, startPrice, extremePrice) {
+  const start = Number(startPrice);
+  const extreme = Number(extremePrice);
+  if (!Number.isFinite(start) || !Number.isFinite(extreme) || start <= 0 || extreme <= 0) return false;
+  return side === "buy" ? extreme > start : side === "sell" ? extreme < start : false;
+}
+
+function manualLatestTask(tasks, bondCode) {
+  return (tasks || [])
+    .filter(task => task.bond_code === bondCode)
+    .sort((left, right) => String(left.created_at).localeCompare(String(right.created_at)))
+    .at(-1) || null;
+}
+
+function detectManualAlerts(knownIds, events) {
+  return (events || []).filter(event => event.alert && !knownIds.has(event.event_id));
+}
+
+function rememberManualEvents(events) {
+  if (state.knownManualAlertIds === null) state.knownManualAlertIds = new Set();
+  (events || []).forEach(event => state.knownManualAlertIds.add(event.event_id));
+}
+
+function processManualNotifications(events) {
+  if (state.mode !== "manual") return;
+  if (state.knownManualAlertIds === null) {
+    rememberManualEvents(events);
+    return;
+  }
+  const alerts = detectManualAlerts(state.knownManualAlertIds, events);
+  rememberManualEvents(events);
+  if (!alerts.length) return;
+  const latest = alerts[0];
+  showToast(`${bondName(latest.bond_code)}：${latest.label}`);
+  if (state.soundEnabled) {
+    void playAlertSound("limit").catch(() => {
+      state.soundReady = false;
+      updateSoundButton();
+      showToast("手动接管报警播放失败，请点击声音按钮重新激活");
+    });
+  }
+}
+
+function manualDirectionCopy(form) {
+  const side = form.elements.side.value;
+  const label = form.querySelector("[data-extreme-label]");
+  const help = form.querySelector("[data-extreme-help]");
+  label.textContent = side === "buy" ? "最高停止价" : "最低停止价";
+  help.textContent = "触及即撤，不挂到该价";
+}
+
+function manualTaskMarkup(task) {
+  if (!task) return `<span>等待输入手动指令</span>`;
+  const sideClass = task.side === "buy" ? "buy" : "sell";
+  const boundaryLabel = task.side === "buy" ? "最高停止价" : "最低停止价";
+  return `<div class="manual-task-stat"><span>当前委托</span><strong class="${sideClass}">${task.current_price == null ? "—" : fmtPrice(task.current_price)}</strong></div>
+    <div class="manual-task-stat"><span>${boundaryLabel}</span><strong>${fmtPrice(task.extreme_price)}</strong></div>
+    <div class="manual-task-stat"><span>成交 / 剩余</span><strong>${fmtQty(task.filled_bonds)} / ${fmtQty(task.remaining_bonds)}张</strong></div>
+    <div class="manual-task-stat"><span>改价次数</span><strong>${fmtQty(task.reprice_count)}</strong></div>
+    <div class="manual-task-message ${task.status === "error" || task.status === "limit_reached" ? "alert" : ""}">${escapeHtml(task.message)}${task.unconfirmed_live_order ? " · 警告：撤单状态未确认" : ""}</div>`;
+}
+
+function manualEventDetail(event) {
+  if (event.detail) return event.detail;
+  if (event.event_type === "order_repriced") {
+    return `外部最优 ${fmtPrice(event.competitor_price)}，撤旧单后领先一厘`;
+  }
+  if (event.event_type === "limit_reached") {
+    return `所需 ${fmtPrice(event.required_price)} 已触及极限 ${fmtPrice(event.extreme_price)}`;
+  }
+  return event.paper_only ? "干运行订单" : "—";
+}
+
+function renderManualStatus(payload) {
+  state.manualStatus = payload;
+  processManualNotifications(payload.events || []);
+  $("#manualModeBadge").textContent = payload.execution_label || "干运行 · 券商委托关闭";
+  $("#sourceLabel").textContent = payload.window_active
+    ? `手动接管监控 · ${payload.poll_interval_ms}毫秒`
+    : "手动接管窗口外 · 行情轮询暂停";
+  $("#refreshState").textContent = payload.window_active ? "手动接管监控中" : "窗口外 · 不轮询行情";
+  $("#refreshState").classList.toggle("active", Boolean(payload.window_active));
+
+  const quotes = Object.values(payload.quotes || {}).sort((left, right) => Number(right.market_ts_ms) - Number(left.market_ts_ms));
+  if (quotes.length) {
+    $("#marketDate").textContent = quotes[0].market_date;
+    $("#marketTime").textContent = String(quotes[0].market_time || "").slice(0, 8);
+  }
+  $("#servedAt").textContent = `干运行控制器 · ${new Date().toLocaleTimeString("zh-CN", {hour12: false})}`;
+
+  BONDS.forEach(bond => {
+    const suffix = bond.code.replace(".", "-");
+    const quote = payload.quotes?.[bond.code];
+    $(`#manualBid-${suffix}`).textContent = quote ? fmtPrice(quote.bid_price) : "—";
+    $(`#manualAsk-${suffix}`).textContent = quote ? fmtPrice(quote.ask_price) : "—";
+    $(`#manualQuoteTime-${suffix}`).textContent = quote
+      ? `${String(quote.market_time).slice(0, 8)} · ${Number(quote.age_seconds).toFixed(1)}秒`
+      : "无可用行情";
+    const task = manualLatestTask(payload.tasks, bond.code);
+    const badge = $(`#manualStatus-${suffix}`);
+    badge.className = `manual-task-badge ${task?.status || ""}`;
+    badge.textContent = task ? (MANUAL_TASK_LABELS[task.status] || task.status) : "未启动";
+    $(`#manualTask-${suffix}`).innerHTML = manualTaskMarkup(task);
+    const form = $(`.manual-form[data-bond-code="${bond.code}"]`);
+    const active = task?.status === "active";
+    const cancellable = active || Boolean(task?.unconfirmed_live_order);
+    [...form.elements].forEach(element => {
+      if (["INPUT", "SELECT"].includes(element.tagName)) element.disabled = active;
+    });
+    form.querySelector(".start-button").disabled = active || !payload.window_active;
+    form.querySelector("[data-manual-cancel]").disabled = !cancellable;
+  });
+
+  const events = payload.events || [];
+  $("#manualEventCount").textContent = `${events.length} 条`;
+  const stream = $("#manualEventStream");
+  if (!events.length) {
+    stream.innerHTML = `<div class="empty-inline">尚无手动接管动作</div>`;
+    return;
+  }
+  stream.innerHTML = events.map(event => {
+    const price = event.price ?? event.required_price ?? event.previous_price;
+    const quantity = event.quantity_bonds == null ? "—" : `${fmtQty(event.quantity_bonds)}张`;
+    const sideClass = event.side === "buy" ? "buy" : "sell";
+    const orderText = `${event.side === "buy" ? "买" : "卖"} ${price == null ? "—" : fmtPrice(price)} × ${quantity}`;
+    return `<div class="manual-event-row ${event.alert ? "alert" : ""}">
+      <span class="manual-event-time">${escapeHtml(event.time)}</span>
+      <span class="manual-event-bond">${escapeHtml(bondName(event.bond_code))}</span>
+      <span class="manual-event-label">${escapeHtml(event.label)}</span>
+      <span class="manual-event-order ${sideClass}">${orderText}</span>
+      <span class="manual-event-detail">${escapeHtml(manualEventDetail(event))}</span>
+    </div>`;
+  }).join("");
+}
+
+async function manualRequest(path, payload = {}) {
+  const response = await fetch(path, {
+    method: "POST",
+    cache: "no-store",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload),
+  });
+  const result = await response.json();
+  if (!response.ok || result.error) throw new Error(result.error || `请求失败 ${response.status}`);
+  return result;
+}
+
+async function loadManualStatus({manual = false} = {}) {
+  if (state.manualLoading) return;
+  state.manualLoading = true;
+  if (manual) $("#refreshButton").classList.add("loading");
+  try {
+    const response = await fetch("/api/manual/status", {cache: "no-store"});
+    const payload = await response.json();
+    if (!response.ok || payload.error) throw new Error(payload.error || `请求失败 ${response.status}`);
+    if (state.mode === "manual") renderManualStatus(payload);
+  } finally {
+    state.manualLoading = false;
+    if (manual) $("#refreshButton").classList.remove("loading");
+  }
+}
+
+async function submitManualForm(form) {
+  const payload = {
+    bond_code: form.dataset.bondCode,
+    side: form.elements.side.value,
+    quantity_bonds: Number(form.elements.quantity_bonds.value),
+    start_price: Number(form.elements.start_price.value),
+    extreme_price: Number(form.elements.extreme_price.value),
+  };
+  if (!manualPriceDirectionValid(payload.side, payload.start_price, payload.extreme_price)) {
+    throw new Error(payload.side === "buy" ? "买入极限价必须高于起始价" : "卖出极限价必须低于起始价");
+  }
+  state.soundEnabled = true;
+  saveSoundPreference();
+  await activateSound();
+  const result = await manualRequest("/api/manual/start", payload);
+  renderManualStatus(result);
+  if (state.soundReady) await playAlertSound("order");
+  showToast(`${bondName(payload.bond_code)}已启动干运行追价`);
+}
+
 async function setMode(mode) {
   if (mode === state.mode) return;
   state.mode = mode;
   resetActionNotificationBaseline();
+  state.knownManualAlertIds = null;
   stopReplay();
   $$("#modeSwitch button").forEach(button => button.classList.toggle("active", button.dataset.mode === mode));
   $(".command-bar").classList.toggle("replay-active", mode === "replay");
+  $(".command-bar").classList.toggle("manual-active", mode === "manual");
+  document.body.classList.toggle("manual-mode", mode === "manual");
   try {
     if (mode === "replay") await loadReplayMetadata();
+    else if (mode === "manual") await loadManualStatus({manual: true});
     else await loadSnapshots({manual: true});
   } catch (error) {
     showToast(`模式切换失败：${error.message}`);
@@ -790,7 +1039,13 @@ function bindEvents() {
   updateSoundButton();
   $("#soundToggle").addEventListener("click", toggleSound);
   $$("#modeSwitch button").forEach(button => button.addEventListener("click", () => setMode(button.dataset.mode)));
-  $("#refreshButton").addEventListener("click", () => loadSnapshots({manual: true}));
+  $("#refreshButton").addEventListener("click", () => {
+    if (state.mode === "manual") {
+      void loadManualStatus({manual: true}).catch(error => showToast(`刷新失败：${error.message}`));
+    } else {
+      void loadSnapshots({manual: true});
+    }
+  });
   $("#replayDate").addEventListener("change", () => {
     stopReplay();
     const selected = state.replayMeta?.dates.find(item => item.date === $("#replayDate").value);
@@ -823,6 +1078,33 @@ function bindEvents() {
     $$("#actionFilter button").forEach(item => item.classList.toggle("active", item === button));
     renderActions(BONDS.map(bond => state.snapshots[bond.code]).filter(Boolean));
   });
+  $$(".manual-form").forEach(form => {
+    manualDirectionCopy(form);
+    form.elements.side.addEventListener("change", () => manualDirectionCopy(form));
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      void submitManualForm(form).catch(error => showToast(`启动失败：${error.message}`));
+    });
+    form.querySelector("[data-manual-cancel]").addEventListener("click", () => {
+      const code = form.dataset.bondCode;
+      if (!window.confirm(`确认撤销${bondName(code)}当前手动接管委托？`)) return;
+      void manualRequest("/api/manual/cancel", {bond_code: code})
+        .then(result => {
+          renderManualStatus(result);
+          showToast(`${bondName(code)}手动接管委托已撤销`);
+        })
+        .catch(error => showToast(`撤销失败：${error.message}`));
+    });
+  });
+  $("#manualCancelAll").addEventListener("click", () => {
+    if (!window.confirm("确认撤销两只债券全部手动接管委托？")) return;
+    void manualRequest("/api/manual/cancel-all")
+      .then(result => {
+        renderManualStatus(result);
+        showToast("全部手动接管委托已撤销");
+      })
+      .catch(error => showToast(`全部撤销失败：${error.message}`));
+  });
   window.addEventListener("resize", () => BONDS.forEach(bond => {
     const snapshot = state.snapshots[bond.code];
     if (snapshot) renderChart(snapshot);
@@ -838,7 +1120,12 @@ if (typeof module !== "undefined" && module.exports) {
     marketTradesAscending,
     normalizeReplayScrubTimestamp,
     actionNotificationKey,
+    alertGain,
+    detectManualAlerts,
     detectActionAlert,
+    manualLatestTask,
+    manualPriceDirectionValid,
+    modelDisplayOrder,
     placeBookOrders,
     priceGapFontSizePx,
     priceGapLabel,
@@ -847,6 +1134,7 @@ if (typeof module !== "undefined" && module.exports) {
     spreadFontSizePx,
     spreadGapUnits,
     synchronizedSpreadLayouts,
+    validChartHistory,
     renderBookRow,
     replayLunchWindow,
   };
@@ -858,4 +1146,9 @@ if (typeof document !== "undefined") {
   state.poller = setInterval(() => {
     if (state.mode === "live") loadSnapshots();
   }, 3000);
+  state.manualPoller = setInterval(() => {
+    if (state.mode === "manual") {
+      void loadManualStatus().catch(error => showToast(`手动接管状态失败：${error.message}`));
+    }
+  }, 1000);
 }

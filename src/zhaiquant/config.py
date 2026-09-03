@@ -17,6 +17,12 @@ DEFAULT_MAKER_UNDERLYING_STOCK_CODES = {
     "132024.SH": "600362.SH",
 }
 
+SUPPORTED_SUPER_WINDFALL_MODEL_IDS = {
+    "maker_windfall_v1_0",
+    "maker_windfall_v1_1_candidate",
+    "maker_windfall_v2_0_candidate",
+}
+
 
 @dataclass(frozen=True)
 class ConversionPrice:
@@ -111,6 +117,7 @@ class MakerPaperConfig:
     opening_caution_end: str = "09:30:00.000"
     opening_caution_minimum_edge: float = 1.00
     super_windfall_enabled: bool = False
+    super_windfall_model_id: str = "maker_windfall_v1_0"
     super_windfall_quantity_bonds: float = 10.0
     super_windfall_credit_cny: float = 2_000.0
 
@@ -304,6 +311,9 @@ def load_config(path: str | Path = "config.toml") -> AppConfig:
         super_windfall_enabled=bool(maker_paper_data.get(
             "super_windfall_enabled", False
         )),
+        super_windfall_model_id=str(maker_paper_data.get(
+            "super_windfall_model_id", "maker_windfall_v1_0"
+        )),
         super_windfall_quantity_bonds=float(maker_paper_data.get(
             "super_windfall_quantity_bonds", 10.0
         )),
@@ -377,7 +387,29 @@ def _validate(
         "maker_priority_v1_37_candidate",
         "maker_priority_v1_42_candidate",
         "maker_priority_v1_43_candidate",
-        "maker_priority_v1_44_candidate",
+        "maker_priority_v1_44",
+        "maker_priority_v1_45",
+        "maker_priority_v1_46",
+        "maker_priority_v1_47",
+        "maker_priority_v1_48_candidate",
+        "maker_priority_v1_49_candidate",
+        "maker_priority_v1_49_candidate_r2",
+        "maker_priority_v1_50_candidate",
+        "maker_priority_v2_1_candidate",
+        "maker_priority_v2_2_candidate",
+        "maker_priority_v2_3_candidate",
+        "maker_priority_v2_5_candidate",
+        "maker_priority_v2_5_candidate_r2",
+        "maker_priority_v2_51_candidate_r2",
+        "maker_priority_v2_51_candidate_r3",
+        "maker_priority_v2_52_candidate",
+        "maker_priority_v2_52_candidate_r2",
+        "maker_priority_v2_6_candidate",
+        "maker_priority_v2_6_candidate_r2",
+        "maker_priority_v2_6_candidate_r3",
+        "maker_priority_v2_63_candidate",
+        "maker_shared_1000_v0_1_candidate",
+        "maker_shared_1000_v0_13_candidate",
         "maker_queue_v1_13_candidate",
         "maker_queue_v1_17_candidate",
         "maker_queue_v1_18_candidate",
@@ -400,6 +432,16 @@ def _validate(
         raise ConfigError("maker_paper.bond_codes cannot contain blank codes")
     if len(set(maker_bond_codes)) != len(maker_bond_codes):
         raise ConfigError("maker_paper.bond_codes cannot contain duplicates")
+    configured_shared_models = {
+        "maker_shared_1000_v0_1_candidate",
+        "maker_shared_1000_v0_13_candidate",
+    }.intersection(comparison_models)
+    if configured_shared_models and len(maker_bond_codes) < 2:
+        raise ConfigError(
+            "shared-capital realtime models require at least two "
+            "maker_paper.bond_codes: "
+            f"{sorted(configured_shared_models)}"
+        )
     underlying_stock_codes = maker_paper.underlying_stock_codes
     if any(
         not bond_code or not stock_code
@@ -459,13 +501,15 @@ def _validate(
     ):
         raise ConfigError("maker_paper opening caution policy is invalid")
     if (
-        maker_paper.super_windfall_quantity_bonds <= 0
+        maker_paper.super_windfall_model_id
+            not in SUPPORTED_SUPER_WINDFALL_MODEL_IDS
+        or maker_paper.super_windfall_quantity_bonds <= 0
         or maker_paper.super_windfall_quantity_bonds % 10 != 0
         or maker_paper.super_windfall_credit_cny <= 0
     ):
         raise ConfigError(
-            "maker_paper super windfall quantity must be a positive multiple "
-            "of 10 bonds and credit must be positive"
+            "maker_paper super windfall model ID must be supported, quantity "
+            "must be a positive multiple of 10 bonds, and credit must be positive"
         )
     storage.database.parent.mkdir(parents=True, exist_ok=True)
 
