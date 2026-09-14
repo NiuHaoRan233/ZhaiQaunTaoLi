@@ -264,6 +264,14 @@ class OrderBoundaryViewTests(unittest.TestCase):
         )
         self.assertEqual(candidate["short"], "千张第一顺位0.13")
         self.assertEqual(candidate["branch"], "千张第一顺位")
+        arrival = server._default_model_meta(
+            "maker_shared_1000_v0_16_candidate_r2", "0.16-candidate-r2", "priority",
+        )
+        self.assertEqual(arrival["short"], "千张第一顺位0.16（实时修订）")
+        self.assertEqual(arrival["branch"], "千张第一顺位")
+        dadao = server._default_model_meta("maker_dadao_v0_1_candidate_r2", "0.1-candidate-r2", "priority")
+        self.assertEqual(dadao["short"], "大道至简0.1（实时修订）")
+        self.assertEqual(dadao["branch"], "大道至简")
 
     def test_v149_internal_audit_id_uses_unified_public_name(self) -> None:
         meta = server._default_model_meta(
@@ -307,6 +315,16 @@ class OrderBoundaryViewTests(unittest.TestCase):
                 "maker_priority_v2_63_candidate",
                 "2.63-candidate",
                 "第一顺位2.63",
+            ),
+            (
+                "maker_priority_v2_70_candidate_r2",
+                "2.70-candidate-r2",
+                "第一顺位2.70",
+            ),
+            (
+                "maker_priority_v2_71_candidate",
+                "2.71-candidate",
+                "第一顺位2.71",
             ),
         ):
             with self.subTest(model_id=model_id):

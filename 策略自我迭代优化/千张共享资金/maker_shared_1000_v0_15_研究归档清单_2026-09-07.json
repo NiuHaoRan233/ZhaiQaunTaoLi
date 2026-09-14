@@ -1,0 +1,88 @@
+{
+  "archive_date": "2026-09-07",
+  "user_authorization": "那你去优化一下试试呗",
+  "model_id": "maker_shared_1000_v0_15_candidate_r2",
+  "first_attempt_model_id": "maker_shared_1000_v0_15_candidate",
+  "direct_parent_both": "maker_shared_1000_v0_14_candidate",
+  "realtime_reference": "maker_shared_1000_v0_13_candidate",
+  "status": "implemented_offline_development_only_not_promoted_not_out_of_sample",
+  "report": "docs/千张第一顺位0.15择标优化试验.md",
+  "scope": [
+    "Native v0.14 orders, exits and account contract unchanged",
+    "Exit-price-local causal demand with 150-second half-life in a 300-second window",
+    "Session exit bonus retains 25 percent background; current demand supports the remainder",
+    "Lock proxy also uses quantity divided by recent exit demand; not a calibrated prediction",
+    "Small first-entry slot opportunity charge uses only previously observed legal peer opportunities",
+    "R2 preserves parent score for native active full low-offer consumption with current genuine buy attack",
+    "R2 distinguishes passive remaining order plan from the current partial fill",
+    "First attempt retained unchanged; r2 boundaries preregistered after causal first-attempt audit",
+    "No threshold search, automatic rotation sale, two-bond holdings or realtime activation"
+  ],
+  "results_24_days": {
+    "reference_gross_pnl_cny": 91866.15,
+    "parent_gross_pnl_cny": 93409.10,
+    "first_attempt_gross_pnl_cny": 91131.81,
+    "r2_gross_pnl_cny": 94294.67,
+    "r2_parent_delta_cny": 885.57,
+    "days_up_down_same": [7, 11, 6],
+    "equal_fill_days": 6,
+    "parent_r2_fills": [915, 909],
+    "parent_r2_quantity_weighted_slot_seconds": [111905.03, 105213.11],
+    "parent_r2_any_inventory_locked_slot_seconds": [121862, 116621],
+    "parent_r2_losing_fifo_segments": [92, 84],
+    "parent_r2_worst_fifo_segment_cny": [-308.88, -203.00],
+    "parent_r2_terminal_inventory_days": [9, 7],
+    "parent_r2_terminal_unrealized_cny": [-1237.20, -1184.20],
+    "aug17_delta_cny": 2174.29,
+    "other_23_days_delta_cny": -1288.72,
+    "aug07_delta_cny": -1556.00,
+    "aug20_delta_cny": -603.20
+  },
+  "target_20260907_cutoff_144500": {
+    "parent_r2_gross_pnl_cny": [5895.46, 5386.66],
+    "delta_cny": -508.80,
+    "parent_r2_terminal_inventory_bonds": [0, 1000],
+    "r2_terminal_unrealized_cny": -64.00,
+    "parent_r2_locked_slot_seconds": [11448, 12279],
+    "note": "Cutoff snapshot, not full-day final result; smaller quantity exposure did not mean a free slot"
+  },
+  "verification": {
+    "new_focused_tests": 25,
+    "main_tests_passed": 542,
+    "dashboard_tests_passed": 59,
+    "immutable_old_profile_constants": 113,
+    "saved_v013_and_v014_days_exact": 24,
+    "core_restores_exactly_after_removing_two_identity_declarations": true,
+    "first_attempt_source_and_replay_preserved": true,
+    "target_no_observer_exact": true,
+    "three_prominent_days_observer_exact": true,
+    "realtime_configuration_unchanged": true,
+    "readonly_source_sqlite_temporary_replay_ledgers": true
+  },
+  "limitations": [
+    "All dates are used development samples, not out of sample",
+    "Nine early historical dates lack mapped 600362 stock input; some opening coverage incomplete",
+    "Level 1 aggressor evidence is inferred, not exchange Level 2",
+    "Wall-clock slot durations include lunch and censor unclosed episodes at last observation",
+    "The Aug17 13:03 trade still holds 1551 seconds despite the longer 361.54-second prediction",
+    "No change to nine-second shadow lifetime or fixed switching thresholds",
+    "Gross PnL is not realized net broker performance"
+  ],
+  "source_hashes_sha256": {
+    "src/zhaiquant/maker_paper.py": "bc2cc91dd4a8c0fa0129e8b60ca747ff1713da4d3d0b0def668a428d371b8297",
+    "src/zhaiquant/shared_thousand_maker_v015_research.py": "9dce0553df82091e5a2dc6bcfa276e74ff9a15768f73405a0f96ce18de705905",
+    "src/zhaiquant/shared_thousand_maker_v015r2_research.py": "9cf4afa09c113ec3b3b424c57394a44b98c3f828947ec06c0e4ac69f4d5e4eb8",
+    "tests/test_shared_thousand_maker_v015_research.py": "0e3ae4a933719eea9b1950a218edba83e738f1fbefc85890ae3b85f9b8bd1263",
+    "tests/test_shared_thousand_maker_v015r2_research.py": "0302bc87d4d7ffb494aaa5e73d3ecf976ac9d0733b1893bd587f0a03073bcf70"
+  },
+  "local_report_hashes_sha256": {
+    "output/research/shared_v015_parent_freeze_20260907.json": "cb2131084430df3d5d7b843c79b3602e8f531d6ae712dc8d635bcef5ac5cdf42",
+    "output/research/shared_v015_matrix_20260804_20260904.json": "d16e5152fec4cf6b33a1b614d9314b41dd5b81085ca3e4233f71688e57509ab6",
+    "output/research/shared_v015_target_20260907_144500.json": "4a7952831ec30971c8f3c48709cfdcdca19426534451721fea9f9910db3d45fe",
+    "output/research/shared_v015_prominent_days.json": "7258560288026b32e19c993923c6ef05ffb694efb7ef3cc8cb70c55df5063bd2",
+    "output/research/shared_v015r2_matrix_20260804_20260904.json": "399229c2cf0e4937e67ce0c3ea540015afe5bca3a509cc637bfae32e70147e8a",
+    "output/research/shared_v015r2_target_20260907_144500.json": "3465316beae60ace6c3f8071fd95dc24d636454ba3b2b59507cce75804355f28",
+    "output/research/shared_v015r2_prominent_days.json": "d7653b849bb11eed043fa790d6fdd5b76eb5ccc01becba5e6bf41e2900b002a0",
+    "output/research/shared_v015r2_verification.json": "65be11ffcccb03be4d3b0e24de065f80605164c744b51e478b41daadd7ccbbd6"
+  }
+}

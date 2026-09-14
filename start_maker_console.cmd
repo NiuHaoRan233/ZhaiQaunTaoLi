@@ -1,7 +1,9 @@
 @echo off
+chcp 65001 >nul
 title 132026.SH G三峡EB2 做市模拟盘监控
 cd /d "%~dp0"
 set PYTHONUTF8=1
+set "PYTHONPATH=%~dp0src;%PYTHONPATH%"
 mode con cols=180 lines=55 >nul 2>&1
 if not exist ".\.venv\Scripts\python.exe" (
   echo Python virtual environment not found. Run scripts\setup_windows.ps1 first.

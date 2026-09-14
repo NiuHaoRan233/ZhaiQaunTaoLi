@@ -372,6 +372,20 @@ class MakerPolicyProfile:
     stalled_extra_exit_minimum_short_ask_drop: float = 0.10
     stalled_extra_exit_reentry_cooldown_seconds: int = 600
     stalled_extra_exit_reentry_minimum_improvement: float = 0.30
+    ordinary_risk_exit_uses_fresh_reentry: bool = False
+    enable_shared_current_opportunity_reentry: bool = False
+    enable_shared_resilient_exit_gap: bool = False
+    ordinary_entry_sell_pressure_mode: str = "off"
+    enable_ordinary_tape_turnover_regime: bool = False
+    enable_ordinary_tape_horizontal_recovery: bool = False
+    preserve_ordinary_tape_current_wide_corridor: bool = False
+    enable_causal_ordinary_inventory_turnover: bool = False
+    recognize_consumed_recovered_support: bool = False
+    quote_on_current_ordinary_recovery: bool = False
+    allow_horizontal_recovery_quote_with_bid_retreat: bool = False
+    protect_discounted_ordinary_lot_from_fragile_bid_exit: bool = False
+    require_strict_passive_order_timestamp: bool = False
+    normalize_native_priority_price_grid: bool = False
     # First-position 2.6 treats an ordinary extra lot's entry support as a
     # causal identity.  Once that support has disappeared, the offer ladder
     # has migrated down and a new lower support corridor is visible, follow
@@ -440,6 +454,16 @@ class MakerPolicyProfile:
     guarded_live_exit_ordinary_lot_kinds: tuple[str, ...] = (
         "low_bid_reversion",
     )
+    # Ordinary full-inventory accounts may reuse the guarded order-gap
+    # fallback while bounding downward repricing and qualifying the shared-
+    # capital branch's mechanical 600-second/0.30-yuan re-entry memory.
+    # ``None`` and ``True`` preserve every registered older model.
+    guarded_live_exit_maximum_loss: float | None = None
+    guarded_live_exit_records_stalled_reentry: bool = True
+    guarded_live_exit_release_reentry_on_high_attack: bool = False
+    retain_guarded_live_exit_across_parent_order_gap: bool = False
+    guarded_live_exit_requires_current_sell_side_repricing: bool = False
+    guarded_live_exit_protects_special_rapid_gap: bool = True
     guarded_live_exit_rapid_entry_seconds: int = 30
     guarded_live_exit_rapid_minimum_loss: float = 0.30
     guarded_live_exit_rapid_minimum_inside_spread: float = 0.20
@@ -1480,6 +1504,142 @@ PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE = replace(
     model_version="2.63-candidate",
     parent_model_id="maker_priority_v2_6_candidate_r3",
 )
+PRIORITY_POLICY_FIRST_POSITION_V269_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE,
+    model_id="maker_priority_v2_69_candidate",
+    model_version="2.69-candidate",
+    parent_model_id="maker_priority_v2_63_candidate",
+    # Direct rebuild requested by the user. No intermediate candidate
+    # profile, global price-grid repair or experimental entry mode is inherited.
+    enable_causal_ordinary_inventory_turnover=True,
+)
+PRIORITY_POLICY_FIRST_POSITION_V270_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE,
+    model_id="maker_priority_v2_70_candidate",
+    model_version="2.70-candidate",
+    parent_model_id="maker_priority_v2_63_candidate",
+    enable_causal_ordinary_inventory_turnover=True,
+    recognize_consumed_recovered_support=True,
+    quote_on_current_ordinary_recovery=True,
+)
+PRIORITY_POLICY_FIRST_POSITION_V270_R2_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE,
+    model_id="maker_priority_v2_70_candidate_r2",
+    model_version="2.70-candidate-r2",
+    parent_model_id="maker_priority_v2_63_candidate",
+    enable_causal_ordinary_inventory_turnover=True,
+    recognize_consumed_recovered_support=True,
+    quote_on_current_ordinary_recovery=True,
+    allow_horizontal_recovery_quote_with_bid_retreat=True,
+)
+PRIORITY_POLICY_FIRST_POSITION_V271_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE,
+    model_id="maker_priority_v2_71_candidate",
+    model_version="2.71-candidate",
+    parent_model_id="maker_priority_v2_63_candidate",
+    enable_causal_ordinary_inventory_turnover=True,
+    recognize_consumed_recovered_support=True,
+    quote_on_current_ordinary_recovery=True,
+    allow_horizontal_recovery_quote_with_bid_retreat=True,
+    protect_discounted_ordinary_lot_from_fragile_bid_exit=True,
+    require_strict_passive_order_timestamp=True,
+)
+PRIORITY_POLICY_FIRST_POSITION_V264_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE,
+    model_id="maker_priority_v2_64_candidate",
+    model_version="2.64-candidate",
+    parent_model_id="maker_priority_v2_63_candidate",
+    # A filled ordinary extra lot is T-making capacity, not a directional
+    # investment.  Preserve every native 2.63 exit first, then fill only a
+    # genuine order gap with the reliable live offer.  The inherited 0.25
+    # loss boundary keeps the fallback from chasing a deep discontinuity.
+    # Its normal 600-second/0.30-yuan low-side plan remains, but one full
+    # block of real buying back at the release price proves a fresh upward
+    # attack and returns any new entry decision to the unchanged parent.
+    enable_guarded_live_priority_extra_inventory_exit_exposure=True,
+    guarded_live_exit_maximum_loss=(
+        PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE
+            .support_collapse_initial_maximum_loss
+    ),
+    guarded_live_exit_release_reentry_on_high_attack=True,
+    retain_guarded_live_exit_across_parent_order_gap=True,
+)
+PRIORITY_POLICY_FIRST_POSITION_V264_R2_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE,
+    model_id="maker_priority_v2_64_candidate_r2",
+    model_version="2.64-candidate-r2",
+    parent_model_id="maker_priority_v2_63_candidate",
+    # The withdrawn first build treated every parent order gap as a falling
+    # market and then locked ordinary re-entry behind 600 seconds/0.30 yuan.
+    # The rebuild acts only while the parent's existing sell-side repricing
+    # evidence is live.  If that evidence clears, cancel the low exit and
+    # immediately return both sides of the next decision to unchanged v2.63.
+    enable_guarded_live_priority_extra_inventory_exit_exposure=True,
+    guarded_live_exit_maximum_loss=None,
+    guarded_live_exit_records_stalled_reentry=False,
+    guarded_live_exit_release_reentry_on_high_attack=False,
+    retain_guarded_live_exit_across_parent_order_gap=True,
+    guarded_live_exit_requires_current_sell_side_repricing=True,
+    guarded_live_exit_protects_special_rapid_gap=False,
+)
+PRIORITY_POLICY_FIRST_POSITION_V265_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V264_R2_CANDIDATE,
+    model_id="maker_priority_v2_65_candidate",
+    model_version="2.65-candidate",
+    parent_model_id="maker_priority_v2_64_candidate_r2",
+    # The native near-flat and guarded exits serve the same ordinary T lot.
+    # Neither may attach an old exit-price cap to the next independent trade.
+    ordinary_risk_exit_uses_fresh_reentry=True,
+)
+PRIORITY_POLICY_FIRST_POSITION_V266_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V265_CANDIDATE,
+    model_id="maker_priority_v2_66_candidate",
+    model_version="2.66-candidate",
+    parent_model_id="maker_priority_v2_65_candidate",
+    ordinary_entry_sell_pressure_mode="all_repricing",
+)
+PRIORITY_POLICY_FIRST_POSITION_V266_R2_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V265_CANDIDATE,
+    model_id="maker_priority_v2_66_candidate_r2",
+    model_version="2.66-candidate-r2",
+    parent_model_id="maker_priority_v2_65_candidate",
+    ordinary_entry_sell_pressure_mode="edge_stress",
+)
+PRIORITY_POLICY_FIRST_POSITION_V266_R3_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V265_CANDIDATE,
+    model_id="maker_priority_v2_66_candidate_r3",
+    model_version="2.66-candidate-r3",
+    parent_model_id="maker_priority_v2_65_candidate",
+    ordinary_entry_sell_pressure_mode="reentry_repricing",
+)
+PRIORITY_POLICY_FIRST_POSITION_V267_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V266_R3_CANDIDATE,
+    model_id="maker_priority_v2_67_candidate",
+    model_version="2.67-candidate",
+    parent_model_id="maker_priority_v2_66_candidate_r3",
+    normalize_native_priority_price_grid=True,
+)
+PRIORITY_POLICY_FIRST_POSITION_V268_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V267_CANDIDATE,
+    model_id="maker_priority_v2_68_candidate",
+    model_version="2.68-candidate",
+    parent_model_id="maker_priority_v2_67_candidate",
+    enable_ordinary_tape_turnover_regime=True,
+)
+PRIORITY_POLICY_FIRST_POSITION_V268_R2_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V268_CANDIDATE,
+    model_id="maker_priority_v2_68_candidate_r2",
+    model_version="2.68-candidate-r2",
+    parent_model_id="maker_priority_v2_68_candidate",
+    enable_ordinary_tape_horizontal_recovery=True,
+)
+PRIORITY_POLICY_FIRST_POSITION_V268_R3_CANDIDATE = replace(
+    PRIORITY_POLICY_FIRST_POSITION_V268_R2_CANDIDATE,
+    model_id="maker_priority_v2_68_candidate_r3",
+    model_version="2.68-candidate-r3",
+    parent_model_id="maker_priority_v2_68_candidate_r2",
+    preserve_ordinary_tape_current_wide_corridor=True,
+)
 ONE_HAND_POLICY_V01_CANDIDATE = replace(
     PRIORITY_POLICY_FIRST_POSITION_V252_R2_CANDIDATE,
     model_id="maker_one_hand_v0_1_candidate",
@@ -1552,6 +1712,50 @@ SHARED_THOUSAND_POLICY_V013_CANDIDATE = replace(
     # decision change lives in its independent shared-capital allocator,
     # which values a fully consumed deep-discount offer from the remaining
     # post-sweep ask book instead of the offer being bought.
+)
+SHARED_THOUSAND_POLICY_V014_CANDIDATE = replace(
+    SHARED_THOUSAND_POLICY_V013_CANDIDATE,
+    model_id="maker_shared_1000_v0_14_candidate",
+    model_version="0.14-candidate",
+    parent_model_id="maker_shared_1000_v0_13_candidate",
+    enable_shared_current_opportunity_reentry=True,
+    enable_shared_resilient_exit_gap=True,
+)
+SHARED_THOUSAND_POLICY_V015_CANDIDATE = replace(
+    SHARED_THOUSAND_POLICY_V014_CANDIDATE,
+    model_id="maker_shared_1000_v0_15_candidate",
+    model_version="0.15-candidate",
+    parent_model_id="maker_shared_1000_v0_14_candidate",
+    # Offline only: native trading is unchanged; use the v0.15 allocator.
+)
+SHARED_THOUSAND_POLICY_V015_R2_CANDIDATE = replace(
+    SHARED_THOUSAND_POLICY_V014_CANDIDATE,
+    model_id="maker_shared_1000_v0_15_candidate_r2",
+    model_version="0.15-candidate-r2",
+    parent_model_id="maker_shared_1000_v0_14_candidate",
+    # Independent offline boundary repair; never replaces the first v0.15.
+)
+SHARED_THOUSAND_POLICY_V016_CANDIDATE = replace(
+    SHARED_THOUSAND_POLICY_V014_CANDIDATE,
+    model_id="maker_shared_1000_v0_16_candidate",
+    model_version="0.16-candidate",
+    parent_model_id="maker_shared_1000_v0_14_candidate",
+    # Offline only; requires the independent causal engine and allocator.
+)
+SHARED_THOUSAND_POLICY_V016_R2_CANDIDATE = replace(
+    SHARED_THOUSAND_POLICY_V016_CANDIDATE,
+    model_id="maker_shared_1000_v0_16_candidate_r2",
+    model_version="0.16-candidate-r2",
+    parent_model_id="maker_shared_1000_v0_16_candidate",
+)
+
+# Only the selector's inherited evidence parameters are reused. This identity
+# must run the independent simple quote loop, never native trading decisions.
+DADAO_POLICY_V01_R2_CANDIDATE = replace(
+    SHARED_THOUSAND_POLICY_V016_CANDIDATE,
+    model_id="maker_dadao_v0_1_candidate_r2",
+    model_version="0.1-candidate-r2",
+    parent_model_id="probe_top_compare_20260908_v1_switch_v013",
 )
 QUEUE_POLICY_V10 = MakerPolicyProfile(
     model_id="maker_queue_v1_0",
@@ -2009,12 +2213,58 @@ REALTIME_COMPARISON_POLICIES = {
     PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE.model_id: (
         PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE
     ),
+    PRIORITY_POLICY_FIRST_POSITION_V264_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V264_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V264_R2_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V264_R2_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V265_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V265_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V266_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V266_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V266_R2_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V266_R2_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V266_R3_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V266_R3_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V267_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V267_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V268_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V268_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V268_R2_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V268_R2_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V268_R3_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V268_R3_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V269_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V269_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V270_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V270_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V270_R2_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V270_R2_CANDIDATE
+    ),
+    PRIORITY_POLICY_FIRST_POSITION_V271_CANDIDATE.model_id: (
+        PRIORITY_POLICY_FIRST_POSITION_V271_CANDIDATE
+    ),
     SHARED_THOUSAND_POLICY_V01_CANDIDATE.model_id: (
         SHARED_THOUSAND_POLICY_V01_CANDIDATE
     ),
     SHARED_THOUSAND_POLICY_V013_CANDIDATE.model_id: (
         SHARED_THOUSAND_POLICY_V013_CANDIDATE
     ),
+    SHARED_THOUSAND_POLICY_V016_R2_CANDIDATE.model_id: (
+        SHARED_THOUSAND_POLICY_V016_R2_CANDIDATE
+    ),
+    DADAO_POLICY_V01_R2_CANDIDATE.model_id: DADAO_POLICY_V01_R2_CANDIDATE,
     QUEUE_POLICY_V113_CANDIDATE.model_id: QUEUE_POLICY_V113_CANDIDATE,
     QUEUE_POLICY_V117_CANDIDATE.model_id: QUEUE_POLICY_V117_CANDIDATE,
     QUEUE_POLICY_V118_CANDIDATE.model_id: QUEUE_POLICY_V118_CANDIDATE,
@@ -2086,10 +2336,17 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _floor_to_tick(value: float, price_tick: float) -> float:
+def _floor_to_tick(
+    value: float, price_tick: float, *, snap_grid_noise: bool = False,
+) -> float:
     """Quantize a simulated limit price down to a legal exchange price tick."""
     step = Decimal(str(price_tick))
-    units = (Decimal(str(value)) / step).to_integral_value(rounding=ROUND_FLOOR)
+    raw_units = Decimal(str(value)) / step
+    if snap_grid_noise:
+        nearest = raw_units.to_integral_value()
+        if abs(raw_units - nearest) <= Decimal("0.000000001"):
+            raw_units = nearest
+    units = raw_units.to_integral_value(rounding=ROUND_FLOOR)
     return float(units * step)
 
 
@@ -2331,6 +2588,20 @@ class MakerAccount:
     last_falling_profitable_exit_ts_ms: int = 0
     last_stalled_extra_exit_price: float = 0.0
     last_stalled_extra_exit_ts_ms: int = 0
+    last_shared_reentry_exit_ts_ms: int = 0
+    shared_reentry_recovery_ts_ms: int = 0
+    shared_reentry_recovery_bid: float = 0.0
+    shared_reentry_recovery_ask: float = 0.0
+    last_ordinary_risk_exit_ts_ms: int = 0
+    last_new_extra_entry_ts_ms: int = 0
+    ordinary_tape_pressure_active: bool = False
+    ordinary_tape_pressure_since_ms: int = 0
+    ordinary_tape_recovery_ts_ms: int = 0
+    ordinary_tape_recovery_bid: float = 0.0
+    ordinary_tape_update_key: tuple[int, int] = (0, 0)
+    last_guarded_live_exit_price: float = 0.0
+    last_guarded_live_exit_ts_ms: int = 0
+    guarded_live_exit_reentry_released: bool = False
     last_support_collapse_exit_price: float = 0.0
     last_support_collapse_exit_ts_ms: int = 0
     last_support_collapse_entry_price: float = 0.0
@@ -2402,6 +2673,21 @@ class MakerPaperEngine:
             config, self.bond_code
         )
         self.priority_policy = priority_policy or PRIORITY_POLICY_V11
+        if (
+            self.priority_policy.model_id == "maker_dadao_v0_1_candidate_r2"
+            and not getattr(self, "dadao_execution", False)
+        ):
+            raise ValueError("Dadao requires DadaoLedgerEngine and its simple allocator")
+        if (
+            self.priority_policy.model_id == "maker_shared_1000_v0_16_candidate"
+            and not getattr(self, "causal_shared_execution", False)
+        ):
+            raise ValueError("v0.16 requires CausalSharedMakerEngine")
+        if (
+            self.priority_policy.model_id == "maker_shared_1000_v0_16_candidate_r2"
+            and not getattr(self, "arrival_shared_execution", False)
+        ):
+            raise ValueError("v0.16 r2 requires ArrivalSharedMakerEngine")
         self.queue_policy = queue_policy or QUEUE_POLICY_V10
         self.windfall_policy = (
             windfall_policy or configured_windfall_policy(config)
@@ -3458,6 +3744,10 @@ class MakerPaperEngine:
             effective_side == "buy"
             and book_side == "sell"
             and account.buy_order is not None
+            and (
+                not account.policy.require_strict_passive_order_timestamp
+                or account.buy_order.created_ms < tick.market_ts_ms
+            )
             and tick.last_price <= account.buy_order.limit_price + 1e-9
         )
         corrected_sell_order = (
@@ -3466,6 +3756,8 @@ class MakerPaperEngine:
             and any(
                 tick.last_price + 1e-9 >= order.limit_price
                 for order in account.sell_orders.values()
+                if not account.policy.require_strict_passive_order_timestamp
+                or order.created_ms < tick.market_ts_ms
             )
         )
         side_corrected = corrected_buy_order or corrected_sell_order
@@ -3479,6 +3771,10 @@ class MakerPaperEngine:
                 for order in account.sell_orders.values()
                 if order.kind == "high_ask_cluster_base_preposition"
                 and tick.last_price + 1e-9 >= order.limit_price
+                and (
+                    not account.policy.require_strict_passive_order_timestamp
+                    or order.created_ms < tick.market_ts_ms
+                )
             ]
             if high_cluster_prices and account.last_asks:
                 # A cumulative Level-1 frame can combine the removal of a
@@ -3502,7 +3798,9 @@ class MakerPaperEngine:
                 )
                 available = max(0.0, available - visibly_consumed_below)
             sell_orders = sorted(
-                list(account.sell_orders.items()),
+                [(lot_id, order) for lot_id, order in account.sell_orders.items()
+                 if not account.policy.require_strict_passive_order_timestamp
+                 or order.created_ms < tick.market_ts_ms],
                 key=lambda item: (
                     item[1].limit_price,
                     account.lots[item[0]].kind == "base",
@@ -3544,6 +3842,17 @@ class MakerPaperEngine:
             and effective_side in {"sell", "unknown"}
             and account.buy_order is not None
             and tick.last_price <= account.buy_order.limit_price + 1e-9
+            and not (
+                account.policy.require_strict_passive_order_timestamp
+                and tick.market_ts_ms <= account.buy_order.created_ms
+            )
+            and not (
+                account.policy.quote_on_current_ordinary_recovery
+                and account.buy_order.kind == "low_bid_reversion"
+                and account.last_ordinary_risk_exit_ts_ms > 0
+                and account.buy_order.created_ms == account.last_ordinary_risk_exit_ts_ms
+                and tick.market_ts_ms <= account.buy_order.created_ms
+            )
         ):
             order = account.buy_order
             clean_exact_queue_clear = self._clean_exact_queue_clear(
@@ -4114,6 +4423,8 @@ class MakerPaperEngine:
         self, account: MakerAccount, tick: ReplayTick,
         opportunity: Opportunity, *, persist: bool,
     ) -> None:
+        if self._ordinary_risk_exit_needs_new_frame(account, tick):
+            return
         if not self._entry_window_for_policy(
             tick.market_time, account.policy, tick.market_date,
         ):
@@ -5142,6 +5453,8 @@ class MakerPaperEngine:
         assessment: MarketAssessment, *, persist: bool,
     ) -> None:
         """Actively take a cheap ask when price distance or support makes it safe."""
+        if self._ordinary_risk_exit_needs_new_frame(account, tick):
+            return
         inventory_turn_replenishment = (
             account.policy.enable_downtrend_turn_while_extra_inventory
             and account.replenishment_quantity <= 1e-9
@@ -7017,6 +7330,51 @@ class MakerPaperEngine:
             account.last_falling_profitable_exit_price = exit_price
             account.last_falling_profitable_exit_ts_ms = tick.market_ts_ms
 
+    @staticmethod
+    def _ordinary_risk_exit_needs_new_frame(
+        account: MakerAccount, tick: ReplayTick,
+    ) -> bool:
+        """Do not reuse the risk-exit fill frame for a new extra position."""
+        return (
+            (account.policy.ordinary_risk_exit_uses_fresh_reentry
+             or account.policy.enable_causal_ordinary_inventory_turnover)
+            and account.fill_mode == "priority"
+            and account.last_ordinary_risk_exit_ts_ms > 0
+            and tick.market_ts_ms <= account.last_ordinary_risk_exit_ts_ms
+            and account.customer_base_short_bonds <= 1e-9
+        )
+
+    def _ordinary_recovery_allows_passive_quote(
+        self, account: MakerAccount, tick: ReplayTick,
+    ) -> bool:
+        """Current demand may authorize a future bid, never a same-frame fill."""
+        return (
+            account.policy.quote_on_current_ordinary_recovery
+            and account.policy.enable_causal_ordinary_inventory_turnover
+            and self._ordinary_risk_exit_needs_new_frame(account, tick)
+            and account.pending_inventory_turn_quantity <= 1e-9
+            and not account.ordinary_tape_pressure_active
+            and account.ordinary_tape_recovery_ts_ms == tick.market_ts_ms
+            and tick.inferred_side == "buy"
+            and tick.trade_bonds + 1e-9 >= self.parameters.order_quantity_bonds
+            and account.last_ask > 0
+            and tick.last_price + self.parameters.price_tick + 1e-9 >= account.last_ask
+            and (
+                tick.bid1 + 1e-9 >= account.last_bid
+                or (
+                    account.policy.allow_horizontal_recovery_quote_with_bid_retreat
+                    and tick.ask1 + 1e-9 >= account.last_ask
+                    and abs(tick.last_price - tick.ask1)
+                        <= self.parameters.fair_price_tolerance + 1e-9
+                )
+            )
+            and (
+                tick.ask1 > account.last_ask + self.parameters.price_tick * 0.5
+                or abs(tick.last_price - tick.ask1)
+                    <= self.parameters.fair_price_tolerance + 1e-9
+            )
+        )
+
     def _stalled_extra_inventory_near_flat_exit_ready(
         self, account: MakerAccount, lot: MakerLot, tick: ReplayTick,
         assessment: MarketAssessment,
@@ -7422,6 +7780,81 @@ class MakerPaperEngine:
             return None
         return tick.bid1, reentry_ceiling
 
+    def _discounted_ordinary_lot_has_normal_offer(
+        self, account: MakerAccount, lot: MakerLot, tick: ReplayTick,
+        assessment: MarketAssessment,
+    ) -> bool:
+        """A thin bid alone does not invalidate a valuable ordinary low fill.
+
+        Evaluate the current value and the still-visible normal offer together.
+        This is neither a post-fill cooldown nor permission to ignore genuine
+        selling/repricing. Only the isolated fragile-bid cause calls this guard.
+        All scales reuse existing research parameters, not a fitted price/time.
+        """
+        policy, parameters = account.policy, self.parameters
+        if not (
+            policy.protect_discounted_ordinary_lot_from_fragile_bid_exit
+            and account.initial_inventory > 0
+            and lot.kind == "low_bid_reversion"
+            and lot.entry_price is not None
+            and tick.ask1 > tick.bid1 > 0
+            and account.last_ask > 0
+            and account.last_market_ts_ms > 0
+            and 0 <= tick.market_ts_ms - account.last_market_ts_ms
+                <= parameters.book_reference_window_seconds * 1_000
+        ):
+            return False
+        band = parameters.price_cluster_width
+        # Do not infer a normal high side from a lone new offer or from a
+        # current offer that is migrating below the previously visible ladder.
+        previous_supply = sum(q for p, q in account.last_asks
+                              if account.last_ask <= p <= account.last_ask + band + 1e-9)
+        current_supply = sum(q for p, q in tick.asks
+                             if tick.ask1 <= p <= tick.ask1 + band + 1e-9)
+        if (
+            tick.ask1 < account.last_ask - band - 1e-9
+            or min(previous_supply, current_supply) + 1e-9
+                < parameters.order_quantity_bonds
+        ):
+            return False
+        basis = max(lot.entry_price, tick.bid1)
+        high_exit = tick.ask1 - parameters.price_tick
+        if high_exit - basis + 1e-9 < parameters.minimum_active_entry_edge:
+            return False
+        # A large actual hit or sustained low-side selling is independent
+        # evidence; a wide visible offer is not a blanket hold instruction.
+        if (tick.inferred_side == "sell" and tick.trade_bonds + 1e-9 >=
+                parameters.order_quantity_bonds
+                * policy.full_inventory_active_exit_minimum_frame_sell_multiple):
+            return False
+        cutoff = tick.market_ts_ms - parameters.downside_risk_window_seconds * 1_000
+        low_sells = sum(e.bonds for e in self.analyzer.trade_evidence
+                        if cutoff <= e.market_ts_ms <= tick.market_ts_ms
+                        and e.side == "sell" and e.price <= basis + band + 1e-9)
+        if (low_sells + 1e-9 >= parameters.order_quantity_bonds
+                * policy.full_inventory_active_exit_minimum_recent_sell_multiple
+                and low_sells + 1e-9 >= assessment.recent_buy_bonds
+                * parameters.downside_sell_imbalance_ratio):
+            return False
+        if (assessment.short_ask_change <= -parameters.minimum_short_ask_drop + 1e-9
+                and assessment.recent_sell_bonds + 1e-9 >= parameters.order_quantity_bonds * 2
+                and assessment.recent_sell_bonds + 1e-9 >= assessment.recent_buy_bonds
+                * parameters.downside_sell_imbalance_ratio):
+            return False
+        context = self._decision_context(tick, policy)
+        # Use this model's current continuity reference, never resurrect a
+        # stale close after intraday price discovery. Midpoint-only resets
+        # cannot independently prove that a very wide offer is good value.
+        if context.reference_source in {
+            "current_midpoint", "intraday_current_midpoint_reset",
+            "midday_current_midpoint_reset",
+        }:
+            return False
+        if (context.reference_source == "previous_close"
+                and tick.market_time >= policy.opening_discovery_nominal_end_time):
+            return False
+        return context.reference_price - basis + 1e-9 >= parameters.minimum_active_entry_edge
+
     def _active_inventory_risk_exit(
         self, account: MakerAccount, tick: ReplayTick,
         assessment: MarketAssessment, *, persist: bool,
@@ -7549,6 +7982,16 @@ class MakerPaperEngine:
                     and nearest_passive_exit - lot.entry_price + 1e-9
                         >= policy
                             .full_inventory_passive_exit_minimum_edge
+                )
+                and not (
+                    policy.protect_discounted_ordinary_lot_from_fragile_bid_exit
+                    and assessment.fragile_top_bid
+                    and not bearish_vacuum
+                    and not confirmed_falling_pressure
+                    and not full_inventory_pressure
+                    and self._discounted_ordinary_lot_has_normal_offer(
+                        account, lot, tick, assessment,
+                    )
                 )
             ),
             key=lambda lot: (lot.opened_ms, lot.db_id),
@@ -7688,8 +8131,12 @@ class MakerPaperEngine:
                 persist=persist,
                 reason="active_falling_profitable_bid_exit",
             )
-            account.last_falling_profitable_exit_price = tick.bid1
-            account.last_falling_profitable_exit_ts_ms = tick.market_ts_ms
+            if not (
+                policy.enable_causal_ordinary_inventory_turnover
+                and lot.kind == "low_bid_reversion"
+            ):
+                account.last_falling_profitable_exit_price = tick.bid1
+                account.last_falling_profitable_exit_ts_ms = tick.market_ts_ms
             available -= quantity
 
     def _active_profitable_turnover_exit(
@@ -7852,6 +8299,8 @@ class MakerPaperEngine:
         self, account: MakerAccount, lot: MakerLot,
     ) -> bool:
         policy = account.policy
+        if policy.enable_causal_ordinary_inventory_turnover:
+            return lot.kind == "low_bid_reversion"
         if not (
             policy.enable_live_priority_extra_inventory_exit_exposure
             or policy
@@ -7861,6 +8310,469 @@ class MakerPaperEngine:
         if not policy.enable_guarded_live_priority_extra_inventory_exit_exposure:
             return True
         return lot.kind in policy.guarded_live_exit_ordinary_lot_kinds
+
+    def _update_shared_reentry_recovery(
+        self, account: MakerAccount, tick: ReplayTick,
+    ) -> None:
+        """V0.14 observes new demand, without changing v0.13's exit regime."""
+        if not (
+            account.policy.enable_shared_current_opportunity_reentry
+            and account.fill_mode == "priority"
+            and account.initial_inventory <= 1e-9
+            and tick.ask1 > tick.bid1 > 0
+            and 0 < account.last_shared_reentry_exit_ts_ms < tick.market_ts_ms
+        ):
+            return
+        block = self.parameters.order_quantity_bonds
+        width = account.policy.turnover_hold_offer_cluster_width
+        if tick.inferred_side == "sell" and tick.trade_bonds + 1e-9 >= block:
+            if (
+                account.last_bid - tick.bid1 + 1e-9
+                    >= account.policy.stalled_extra_exit_minimum_short_ask_drop
+                or account.last_ask - tick.ask1 + 1e-9
+                    >= account.policy.stalled_extra_exit_minimum_short_ask_drop
+            ):
+                account.shared_reentry_recovery_ts_ms = 0
+        if (
+            tick.inferred_side == "buy"
+            and tick.trade_bonds + 1e-9 >= block
+            and account.last_ask > 0
+            and tick.last_price + self.parameters.price_tick + 1e-9
+                >= min(account.last_ask, tick.ask1)
+            and tick.ask1 + width + 1e-9 >= account.last_ask
+        ):
+            account.shared_reentry_recovery_ts_ms = tick.market_ts_ms
+            account.shared_reentry_recovery_bid = tick.bid1
+            account.shared_reentry_recovery_ask = tick.ask1
+
+    def _shared_current_opportunity_reentry_allowed(
+        self, account: MakerAccount, tick: ReplayTick,
+    ) -> bool:
+        """Waive only the matching stalled cap, not legality or allocation."""
+        policy = account.policy
+        recovery = account.shared_reentry_recovery_ts_ms
+        if not (
+            policy.enable_shared_current_opportunity_reentry
+            and account.fill_mode == "priority"
+            and account.initial_inventory <= 1e-9
+            and account.inventory <= 1e-9
+            and account.pending_inventory_turn_quantity <= 1e-9
+            and 0 < account.last_shared_reentry_exit_ts_ms < recovery
+            and account.last_shared_reentry_exit_ts_ms
+                == account.last_stalled_extra_exit_ts_ms
+            and 0 <= tick.market_ts_ms - recovery
+                <= policy.guarded_live_exit_repricing_window_seconds * 1_000
+            and tick.ask1 > tick.bid1 > 0
+        ):
+            return False
+        width = policy.turnover_hold_offer_cluster_width
+        support = sum(
+            bonds for price, bonds in tick.bids
+            if bonds > 0 and tick.bid1 >= price
+            and tick.bid1 - price <= policy.session_resilient_near_support_distance + 1e-9
+        )
+        # Conservative visible space: reserve one tick on each side. No
+        # retained reference or later high trade can impersonate an exit.
+        return (
+            tick.bid1 + width + 1e-9 >= account.shared_reentry_recovery_bid
+            and tick.ask1 + width + 1e-9 >= account.shared_reentry_recovery_ask
+            and support + 1e-9 >= self.parameters.order_quantity_bonds
+            and tick.ask1 - tick.bid1 - 2 * self.parameters.price_tick + 1e-9
+                >= self.parameters.minimum_entry_edge
+        )
+
+    def _shared_resilient_gap_price(
+        self, account: MakerAccount, lot: MakerLot, tick: ReplayTick,
+        assessment: MarketAssessment,
+    ) -> tuple[float, str]:
+        """Preserve an independently visible high ladder, never a cost anchor."""
+        policy = account.policy
+        width = policy.turnover_hold_offer_cluster_width
+        asks = [(p, q) for p, q in tick.asks if p > 0 and q > 0]
+        low = [(p, q) for p, q in asks if p <= tick.ask1 + width + 1e-9]
+        normal = next((p for p, q in asks if p > tick.ask1 + width + 1e-9), None)
+        block = self.parameters.order_quantity_bonds
+        previous_support = [(p, q) for p, q in account.last_bids
+                            if q > 0 and 0 <= account.last_bid - p <= width + 1e-9]
+        support_consumed = (
+            bool(previous_support)
+            and sum(q for p, q in previous_support) + 1e-9 >= block
+            and tick.inferred_side == "sell"
+            and tick.trade_bonds + 1e-9 >= sum(q for p, q in previous_support)
+            and min(p for p, q in previous_support) - self.parameters.price_tick - 1e-9
+                <= tick.last_price <= account.last_bid + self.parameters.price_tick + 1e-9
+            and account.last_bid - tick.bid1 + 1e-9
+                >= policy.stalled_extra_exit_minimum_short_ask_drop
+            and not any(q > 0 and p >= min(p0 for p0, q0 in previous_support) - 1e-9
+                        for p, q in tick.bids)
+        )
+        cutoff = max(lot.opened_ms, tick.market_ts_ms
+                     - policy.guarded_live_exit_repricing_window_seconds * 1_000)
+        events = [e for e in self.analyzer.trade_evidence
+                  if cutoff < e.market_ts_ms <= tick.market_ts_ms]
+        sells = [e for e in events if e.side == "sell"]
+        sell_bonds = sum(e.bonds for e in sells)
+        broad_repricing = (
+            len(sells) >= policy.guarded_live_exit_repricing_minimum_sell_events
+            and sell_bonds + 1e-9 >= block * policy.stalled_extra_exit_minimum_recent_sell_multiple
+            and sell_bonds + 1e-9 >= sum(e.bonds for e in events if e.side == "buy")
+                * policy.stalled_extra_exit_minimum_imbalance_ratio
+            and assessment.short_ask_change
+                <= -policy.stalled_extra_exit_minimum_short_ask_drop + 1e-9
+        )
+        protected = (
+            normal is not None and bool(low)
+            and normal - max(p for p, q in low) + 1e-9
+                >= policy.turnover_hold_minimum_gap_to_normal_offer
+            and sum(q for p, q in low) <= 3 * block + 1e-9
+            and any(q > 0 and abs(p - normal) <= width + 1e-9
+                    for p, q in account.last_asks)
+            and not support_consumed and not broad_repricing
+        )
+        offer = normal if protected else tick.ask1
+        assert offer is not None
+        price = _floor_to_tick(offer - self.parameters.price_tick * 0.5,
+                               self.parameters.price_tick)
+        if price <= tick.bid1 + 1e-9:
+            price = _ceil_to_tick(tick.ask1, self.parameters.price_tick)
+        return price, ("session_resilient_isolated_hold" if protected
+                       else "session_resilient_gap_exit")
+
+    def _update_guarded_live_exit_reentry_latch(
+        self, account: MakerAccount, tick: ReplayTick,
+    ) -> None:
+        """Release only the current live-exit low-side plan on a real attack."""
+
+        policy = account.policy
+        if not (
+            policy.guarded_live_exit_release_reentry_on_high_attack
+            and account.last_guarded_live_exit_price > 0
+            and account.last_guarded_live_exit_ts_ms > 0
+            and not account.guarded_live_exit_reentry_released
+            and account.last_stalled_extra_exit_ts_ms
+                == account.last_guarded_live_exit_ts_ms
+            and abs(
+                account.last_stalled_extra_exit_price
+                    - account.last_guarded_live_exit_price
+            ) <= 1e-9
+        ):
+            return
+        high_attack_bonds = sum(
+            event.bonds
+            for event in self.analyzer.trade_evidence
+            if event.side == "buy"
+            and event.market_ts_ms > account.last_guarded_live_exit_ts_ms
+            and event.market_ts_ms <= tick.market_ts_ms
+            and event.price + 1e-9
+                >= account.last_guarded_live_exit_price
+        )
+        if high_attack_bonds + 1e-9 >= self.parameters.order_quantity_bonds:
+            account.guarded_live_exit_reentry_released = True
+
+    def _update_ordinary_tape_turnover_regime(
+        self, account: MakerAccount, tick: ReplayTick,
+        assessment: MarketAssessment,
+    ) -> None:
+        """Track a real supply shock until new demand invalidates it.
+
+        This belongs to an actual ordinary T risk path, not to every first
+        entry on a falling day. Quote silence does not demonstrate recovery;
+        nor can pre-shock five-minute buying erase a fresh sell impulse.
+        """
+        policy = account.policy
+        if not (policy.enable_ordinary_tape_turnover_regime
+                or policy.enable_causal_ordinary_inventory_turnover):
+            return
+        key = (tick.market_ts_ms, tick.tick_id)
+        if account.ordinary_tape_update_key == key:
+            return
+        account.ordinary_tape_update_key = key
+        if not tick.ask1 > tick.bid1 > 0:
+            return
+        has_ordinary_risk = (
+            account.last_ordinary_risk_exit_ts_ms > 0
+            or (
+                (policy.enable_ordinary_tape_horizontal_recovery
+                 or policy.enable_causal_ordinary_inventory_turnover)
+                and account.ordinary_tape_pressure_active
+            )
+            or any(
+                lot.kind == "low_bid_reversion"
+                and lot.entry_price is not None
+                and lot.remaining_quantity > 1e-9
+                for lot in account.lots.values()
+            )
+        )
+        if not has_ordinary_risk:
+            return
+        quantity = self.parameters.order_quantity_bonds
+        minimum_sell = (
+            quantity * policy.stalled_extra_exit_minimum_recent_sell_multiple
+        )
+        sold = (
+            tick.trade_bonds
+            if tick.inferred_side == "sell" and account.last_bid > 0
+            and tick.last_price <= (
+                account.last_bid + self.parameters.fair_price_tolerance + 1e-9
+            ) else 0.0
+        )
+        previous_support = sum(
+            bonds for price, bonds in account.last_bids
+            if account.last_bid - price <= self.parameters.price_cluster_width + 1e-9
+        )
+        remaining_support = sum(
+            bonds for price, bonds in tick.bids
+            if abs(price - account.last_bid)
+                <= self.parameters.price_cluster_width + 1e-9
+        )
+        huge_support_consumed = (
+            previous_support >= quantity * self.parameters.iron_floor_multiple
+            and sold + 1e-9 >= previous_support * 0.5
+            and previous_support - remaining_support + 1e-9
+                >= previous_support * 0.5
+        )
+        fresh_shock = (
+            sold + 1e-9 >= minimum_sell
+            and tick.bid1 < account.last_bid - self.parameters.price_tick * 0.5
+            and (
+                account.last_ask - tick.ask1 + 1e-9
+                    >= policy.stalled_extra_exit_minimum_short_ask_drop
+                or account.last_bid - tick.bid1 + 1e-9
+                    >= policy.stalled_extra_exit_minimum_short_ask_drop
+                or huge_support_consumed
+            )
+        )
+        # A recently restored, still-local support can fail completely with
+        # fewer than five blocks. Attribute the whole loss to compatible real
+        # selling, not cancellations, a partly consumed wall or an old recovery.
+        recovered_support_consumed = (
+            policy.recognize_consumed_recovered_support
+            and account.extra_inventory_bonds > 1e-9
+            and any(lot.kind == "low_bid_reversion"
+                    and lot.entry_price is not None and lot.remaining_quantity > 1e-9
+                    for lot in account.lots.values())
+            and 0 < account.ordinary_tape_recovery_ts_ms
+                <= account.last_market_ts_ms < tick.market_ts_ms
+            and tick.market_ts_ms - account.ordinary_tape_recovery_ts_ms
+                <= policy.ordinary_liquidity_corridor_window_seconds * 1_000
+            and account.ordinary_tape_recovery_bid > 0
+            and account.last_bid + self.parameters.price_cluster_width + 1e-9
+                >= account.ordinary_tape_recovery_bid
+            and previous_support + 1e-9 >= quantity
+            and remaining_support <= 1e-9
+            and sold + 1e-9 >= previous_support
+            and abs(tick.last_price - account.last_bid)
+                <= self.parameters.price_cluster_width + 1e-9
+            and account.last_bid - tick.bid1 + 1e-9
+                >= policy.stalled_extra_exit_minimum_short_ask_drop
+            and account.last_ask - tick.ask1 + 1e-9
+                >= policy.stalled_extra_exit_minimum_short_ask_drop
+        )
+        new_sells_since_recovery = sum(
+            event.bonds for event in self.analyzer.trade_evidence
+            if account.ordinary_tape_recovery_ts_ms < event.market_ts_ms
+                <= tick.market_ts_ms
+            and event.side == "sell"
+        )
+        gradual_pressure = (
+            assessment.short_ask_change <= (
+                -policy.stalled_extra_exit_minimum_short_ask_drop + 1e-9
+            )
+            and assessment.recent_sell_bonds + 1e-9 >= minimum_sell
+            and assessment.recent_sell_bonds + 1e-9 >= (
+                assessment.recent_buy_bonds
+                * policy.stalled_extra_exit_minimum_imbalance_ratio
+            )
+            and (
+                account.ordinary_tape_recovery_ts_ms == 0
+                or new_sells_since_recovery + 1e-9 >= minimum_sell
+            )
+            and not self._confirmed_rise_is_recent(tick, policy)
+        )
+        demand_recovered = (
+            tick.inferred_side == "buy"
+            and tick.trade_bonds + 1e-9 >= quantity
+            and account.last_ask > 0
+            and tick.last_price + self.parameters.price_tick + 1e-9 >= account.last_ask
+            and tick.ask1 > account.last_ask + self.parameters.price_tick * 0.5
+            and tick.bid1 + 1e-9 >= account.last_bid
+        )
+        fresh_confirmed_rise = (
+            self._confirmed_rise_is_recent(tick, policy)
+            and max(
+                self.last_confirmed_rise_trade_ts_ms,
+                self.last_exact_offer_clear_rise_trade_ts_ms,
+            ) > account.ordinary_tape_pressure_since_ms
+        )
+        horizontal_recovery_ts_ms = 0
+        if (policy.enable_ordinary_tape_horizontal_recovery
+                or policy.enable_causal_ordinary_inventory_turnover):
+            # A traded high side need not move up: replenished offers can
+            # support ordinary two-sided turnover without a trend breakout.
+            # Only post-pressure demand near today's executable offer counts.
+            cutoff = max(
+                account.ordinary_tape_pressure_since_ms,
+                account.ordinary_tape_recovery_ts_ms,
+                tick.market_ts_ms
+                - policy.ordinary_liquidity_corridor_window_seconds * 1_000,
+            )
+            high_buys = [
+                event for event in self.analyzer.trade_evidence
+                if cutoff < event.market_ts_ms <= tick.market_ts_ms
+                and event.side == "buy"
+                and abs(event.price - tick.ask1)
+                    <= self.parameters.fair_price_tolerance + 1e-9
+            ]
+            if (
+                tick.ask1 - tick.bid1 - 2 * self.parameters.price_tick + 1e-9
+                    >= self.parameters.minimum_passive_turnover_edge
+                and sum(event.bonds for event in high_buys) + 1e-9 >= quantity
+            ):
+                horizontal_recovery_ts_ms = max(e.market_ts_ms for e in high_buys)
+            fresh_confirmed_rise = fresh_confirmed_rise and max(
+                self.last_confirmed_rise_trade_ts_ms,
+                self.last_exact_offer_clear_rise_trade_ts_ms,
+            ) > account.ordinary_tape_recovery_ts_ms
+        if fresh_shock or recovered_support_consumed:
+            account.ordinary_tape_pressure_active = True
+            account.ordinary_tape_pressure_since_ms = tick.market_ts_ms
+        elif demand_recovered or fresh_confirmed_rise:
+            account.ordinary_tape_pressure_active = False
+            account.ordinary_tape_recovery_ts_ms = tick.market_ts_ms
+            if policy.recognize_consumed_recovered_support:
+                account.ordinary_tape_recovery_bid = tick.bid1
+        elif horizontal_recovery_ts_ms:
+            account.ordinary_tape_pressure_active = False
+            account.ordinary_tape_recovery_ts_ms = horizontal_recovery_ts_ms
+            if policy.recognize_consumed_recovered_support:
+                account.ordinary_tape_recovery_bid = tick.bid1
+        elif gradual_pressure:
+            if not account.ordinary_tape_pressure_active:
+                account.ordinary_tape_pressure_since_ms = tick.market_ts_ms
+            account.ordinary_tape_pressure_active = True
+
+    def _guarded_live_exit_sell_side_repricing_active(
+        self, account: MakerAccount, tick: ReplayTick,
+        assessment: MarketAssessment,
+    ) -> bool:
+        """Return whether the rebuilt fallback still sees a bad live tape.
+
+        Older registered guarded profiles deliberately return ``True`` and
+        retain their immutable order-gap behavior.  The v2.64 rebuild reuses
+        the parent's existing sell-pressure scales but requires all of them
+        now: a materially lower short-window ask, enough real selling, a
+        sell/buy imbalance, and no still-live confirmed rise.  An order gap or
+        a single low displayed offer is not deterioration by itself.
+        """
+
+        policy = account.policy
+        if (policy.enable_ordinary_tape_turnover_regime
+                or policy.enable_causal_ordinary_inventory_turnover):
+            return account.ordinary_tape_pressure_active
+        if not policy.guarded_live_exit_requires_current_sell_side_repricing:
+            return True
+        if self._confirmed_rise_is_recent(tick, policy):
+            return False
+        return (
+            assessment.short_ask_change <= (
+                -policy.stalled_extra_exit_minimum_short_ask_drop + 1e-9
+            )
+            and assessment.recent_sell_bonds + 1e-9 >= (
+                self.parameters.order_quantity_bonds
+                * policy.stalled_extra_exit_minimum_recent_sell_multiple
+            )
+            and assessment.recent_sell_bonds + 1e-9 >= (
+                assessment.recent_buy_bonds
+                * policy.stalled_extra_exit_minimum_imbalance_ratio
+            )
+        )
+
+    def _ordinary_entry_sell_pressure_blocks(
+        self, account: MakerAccount, tick: ReplayTick,
+        assessment: MarketAssessment, context: MakerDecisionContext,
+        *, kind: str, price: float, quantity: float,
+    ) -> bool:
+        """Review a legal ordinary bid against currently shrinking exits."""
+        if (account.policy.enable_ordinary_tape_turnover_regime
+                or account.policy.enable_causal_ordinary_inventory_turnover):
+            if (
+                account.fill_mode != "priority"
+                or kind != "low_bid_reversion"
+                or quantity <= 1e-9
+                or account.customer_base_short_bonds > 1e-9
+                or account.pending_inventory_turn_quantity > 1e-9
+            ):
+                return False
+            hypothetical_lot = MakerLot(
+                db_id=-1, kind=kind, opened_ms=tick.market_ts_ms,
+                entry_price=price, original_quantity=quantity,
+                remaining_quantity=quantity,
+            )
+            protected_exit = self._live_priority_extra_inventory_isolated_offer_price(
+                account, hypothetical_lot, tick, assessment, context,
+            )
+            nearest_exit = (
+                protected_exit if protected_exit is not None
+                else max(tick.bid1 + self.parameters.price_tick,
+                         tick.ask1 - self.parameters.price_tick)
+            )
+            current_wide_corridor = (
+                (account.policy.preserve_ordinary_tape_current_wide_corridor
+                 or account.policy.enable_causal_ordinary_inventory_turnover)
+                and tick.market_ts_ms > account.ordinary_tape_pressure_since_ms
+                and nearest_exit - price + 1e-9 >= self.parameters.minimum_entry_edge
+            )
+            if (
+                account.ordinary_tape_pressure_active and protected_exit is None
+                and not current_wide_corridor
+            ):
+                return True
+            return (
+                context.reference_price > (
+                    tick.ask1 + self.parameters.fair_price_tolerance + 1e-9
+                )
+                and nearest_exit - price + 1e-9
+                    < self.parameters.minimum_passive_turnover_edge
+            )
+        mode = account.policy.ordinary_entry_sell_pressure_mode
+        if mode == "reentry_repricing" and not (
+            account.last_ordinary_risk_exit_ts_ms > 0
+            and account.last_ordinary_risk_exit_ts_ms
+                >= account.last_new_extra_entry_ts_ms
+        ):
+            return False
+        if (
+            mode == "off"
+            or account.fill_mode != "priority"
+            or kind != "low_bid_reversion"
+            or quantity <= 1e-9
+            or account.customer_base_short_bonds > 1e-9
+            or account.pending_inventory_turn_quantity > 1e-9
+            or not self._guarded_live_exit_sell_side_repricing_active(
+                account, tick, assessment,
+            )
+        ):
+            return False
+        hypothetical_lot = MakerLot(
+            db_id=-1, kind=kind, opened_ms=tick.market_ts_ms,
+            entry_price=price, original_quantity=quantity,
+            remaining_quantity=quantity,
+        )
+        if self._live_priority_extra_inventory_isolated_offer_price(
+            account, hypothetical_lot, tick, assessment, context,
+        ) is not None:
+            return False
+        if mode in {"all_repricing", "reentry_repricing"}:
+            return True
+        if mode == "edge_stress":
+            stressed_edge = (
+                tick.ask1 - self.parameters.price_tick - price
+                - max(0.0, -assessment.short_ask_change)
+            )
+            return stressed_edge + 1e-9 < (
+                self.parameters.minimum_passive_turnover_edge
+            )
+        raise ValueError(f"unsupported ordinary entry sell-pressure mode: {mode}")
 
     def _guarded_shared_rapid_gap_active_exit(
         self, account: MakerAccount, lot: MakerLot, tick: ReplayTick,
@@ -7878,6 +8790,7 @@ class MakerPaperEngine:
         policy = account.policy
         if not (
             policy.enable_guarded_live_priority_extra_inventory_exit_exposure
+            and policy.guarded_live_exit_protects_special_rapid_gap
             and lot.kind in {
                 "adjacent_bid_cushion_entry",
                 "joint_causal_corridor_entry",
@@ -8030,7 +8943,8 @@ class MakerPaperEngine:
             and tick.bid1 - price
                 <= policy.turnover_hold_bid_cluster_width + 1e-9
         )
-        if policy.enable_guarded_live_priority_extra_inventory_exit_exposure:
+        if (policy.enable_guarded_live_priority_extra_inventory_exit_exposure
+                or policy.enable_causal_ordinary_inventory_turnover):
             repricing_cutoff_ms = tick.market_ts_ms - (
                 policy.guarded_live_exit_repricing_window_seconds * 1_000
             )
@@ -8080,7 +8994,8 @@ class MakerPaperEngine:
                     -policy.stalled_extra_exit_minimum_short_ask_drop + 1e-9
                 )
             )
-        if policy.enable_guarded_live_priority_extra_inventory_exit_exposure:
+        if (policy.enable_guarded_live_priority_extra_inventory_exit_exposure
+                or policy.enable_causal_ordinary_inventory_turnover):
             # The user did not require a tight spread or a nearby passive bid
             # to recognise one small separated seller.  Those tests made the
             # first 0.11 follow obvious low-offer anomalies downward.  The
@@ -9495,6 +10410,8 @@ class MakerPaperEngine:
         self, account: MakerAccount, tick: ReplayTick,
         assessment: MarketAssessment, *, persist: bool,
     ) -> None:
+        self._update_ordinary_tape_turnover_regime(account, tick, assessment)
+        self._update_shared_reentry_recovery(account, tick)
         anchor = self.analyzer.last_anchor
         trend_assessment = self._assessment_for_account(
             account, tick, assessment,
@@ -9551,9 +10468,11 @@ class MakerPaperEngine:
             account.pending_inventory_turn_quantity,
             max(0.0, account.maximum_inventory - account.inventory),
         )
+        recovery_passive_quote = self._ordinary_recovery_allows_passive_quote(account, tick)
         in_entry_window = self._entry_window_for_policy(
             tick.market_time, account.policy, tick.market_date,
-        )
+        ) and (not self._ordinary_risk_exit_needs_new_frame(account, tick)
+               or recovery_passive_quote)
         if (
             context.reference_price > 0
             and in_entry_window
@@ -9572,8 +10491,10 @@ class MakerPaperEngine:
                 and assessment.state in {"possible_fall", "falling"}
                 and not confirmed_rise_recent
             )
+            self._update_guarded_live_exit_reentry_latch(account, tick)
             stalled_extra_reentry_active = (
                 account.policy.enable_stalled_extra_inventory_near_flat_exit
+                and not self._shared_current_opportunity_reentry_allowed(account, tick)
                 and inventory_deficit <= 1e-9
                 and account.last_stalled_extra_exit_price > 0
                 and 0 <= (
@@ -9586,12 +10507,27 @@ class MakerPaperEngine:
                 and (
                     account.policy
                         .enable_live_priority_extra_inventory_exit_exposure
-                    or account.policy
-                        .enable_guarded_live_priority_extra_inventory_exit_exposure
+                    or (
+                        account.policy
+                            .enable_guarded_live_priority_extra_inventory_exit_exposure
+                        and account.policy
+                            .guarded_live_exit_records_stalled_reentry
+                    )
                     or (
                         assessment.state in {"possible_fall", "falling"}
                         and not confirmed_rise_recent
                     )
+                )
+                and not (
+                    account.policy
+                        .guarded_live_exit_release_reentry_on_high_attack
+                    and account.guarded_live_exit_reentry_released
+                    and account.last_stalled_extra_exit_ts_ms
+                        == account.last_guarded_live_exit_ts_ms
+                    and abs(
+                        account.last_stalled_extra_exit_price
+                            - account.last_guarded_live_exit_price
+                    ) <= 1e-9
                 )
             )
             support_collapse_reentry_active = (
@@ -9920,7 +10856,11 @@ class MakerPaperEngine:
                     price = improved
             if falling_profitable_reentry_cap is not None:
                 price = min(price, falling_profitable_reentry_cap)
-            price = _floor_to_tick(price, self.parameters.price_tick)
+            price = _floor_to_tick(
+                price, self.parameters.price_tick,
+                snap_grid_noise=(account.fill_mode == "priority"
+                    and account.policy.normalize_native_priority_price_grid),
+            )
             apply_opening_trade_constraint = (
                 inventory_deficit <= 1e-9
                 and not inventory_turn_plan_pending
@@ -10554,6 +11494,24 @@ class MakerPaperEngine:
             adjacent_bid_cushion_decision = None
             joint_causal_corridor_decision = None
             isolated_top_bid_decision = None
+        if recovery_passive_quote and desired_buy_kind != "low_bid_reversion":
+            # Only ordinary future quoting is newly allowed. Special entries
+            # and dedicated redeployment plans keep their original frame rule.
+            desired_buy = None
+            adjacent_bid_cushion_decision = None
+            joint_causal_corridor_decision = None
+            isolated_top_bid_decision = None
+        if desired_buy is not None and self._ordinary_entry_sell_pressure_blocks(
+            account, tick, assessment, context, kind=desired_buy_kind,
+            price=desired_buy[0], quantity=desired_buy[1],
+        ):
+            desired_buy = None
+            # Bypass ordinary quote-retention grace on current adverse evidence.
+            if account.buy_order is not None and account.buy_order.kind == "low_bid_reversion":
+                self._cancel_order(
+                    account, account.buy_order, tick,
+                    "ordinary_entry_sell_pressure", persist,
+                )
         self._replace_buy(
             account, tick, desired_buy, desired_buy_kind,
             price_boundary=desired_buy_boundary,
@@ -10958,7 +11916,11 @@ class MakerPaperEngine:
                     and not self._sell_is_reasonable(price, context)
                 ):
                     continue
-                price = _floor_to_tick(price, self.parameters.price_tick)
+                price = _floor_to_tick(
+                    price, self.parameters.price_tick,
+                    snap_grid_noise=(account.fill_mode == "priority"
+                        and account.policy.normalize_native_priority_price_grid),
+                )
                 opening_sell_edge = price - context.reference_price
                 if lot.entry_price is not None:
                     opening_sell_edge = max(
@@ -11283,6 +12245,24 @@ class MakerPaperEngine:
                         or self._retain_queue_cleared_inventory_turn_corridor(
                             account, lot, order, tick, assessment, context,
                         )
+                        or (
+                            (account.policy.retain_guarded_live_exit_across_parent_order_gap
+                             or account.policy.enable_causal_ordinary_inventory_turnover)
+                            and order.kind in {
+                                "live_priority_extra_inventory_exit",
+                                "live_priority_extra_inventory_isolated_hold",
+                            }
+                            and tick.market_ts_ms > lot.opened_ms
+                            and tick.ask1 > tick.bid1 > 0
+                            and self
+                                ._live_priority_extra_inventory_exit_enabled_for_lot(
+                                    account, lot,
+                                )
+                            and self
+                                ._guarded_live_exit_sell_side_repricing_active(
+                                    account, tick, assessment,
+                                )
+                        )
                     )
                 ):
                     continue
@@ -11295,11 +12275,27 @@ class MakerPaperEngine:
         # first-position fallback; active-value, sweep-tail and evidence-specific
         # lots keep their own native exits.
         if (
-            account.policy
-                .enable_guarded_live_priority_extra_inventory_exit_exposure
+            (account.policy.enable_guarded_live_priority_extra_inventory_exit_exposure
+             or account.policy.enable_causal_ordinary_inventory_turnover)
             and account.fill_mode == "priority"
             and tick.ask1 > tick.bid1 > 0
+            and self._guarded_live_exit_sell_side_repricing_active(
+                account, tick, assessment,
+            )
         ):
+            ordinary_exit_capacity = max(
+                0.0, account.inventory - account.initial_inventory,
+            )
+            if account.policy.enable_causal_ordinary_inventory_turnover:
+                ordinary_exit_capacity = max(0.0, ordinary_exit_capacity - sum(
+                    order.remaining for lot_id, order in account.sell_orders.items()
+                    if lot_id in account.lots
+                    and account.lots[lot_id].entry_price is not None
+                    and order.kind not in {
+                        "live_priority_extra_inventory_exit",
+                        "live_priority_extra_inventory_isolated_hold",
+                    }
+                ))
             for lot in list(account.lots.values()):
                 if (
                     lot.remaining_quantity <= 1e-9
@@ -11307,13 +12303,33 @@ class MakerPaperEngine:
                     # causal state.  Wait for one strictly later snapshot before
                     # deciding that the parent truly left an exit gap.
                     or tick.market_ts_ms <= lot.opened_ms
-                    or lot.db_id in account.sell_orders
                     or not self
                         ._live_priority_extra_inventory_exit_enabled_for_lot(
                             account, lot,
                         )
                 ):
                     continue
+                existing = account.sell_orders.get(lot.db_id)
+                retained_fallback = (
+                    existing is not None
+                    and (account.policy.retain_guarded_live_exit_across_parent_order_gap
+                         or account.policy.enable_causal_ordinary_inventory_turnover)
+                    and existing.kind in {
+                        "live_priority_extra_inventory_exit",
+                        "live_priority_extra_inventory_isolated_hold",
+                    }
+                )
+                if existing is not None and not retained_fallback:
+                    continue
+                exit_quantity = lot.remaining_quantity
+                if account.policy.enable_causal_ordinary_inventory_turnover:
+                    exit_quantity = min(exit_quantity, ordinary_exit_capacity)
+                    ordinary_exit_capacity -= exit_quantity
+                    if exit_quantity <= 1e-9:
+                        if retained_fallback:
+                            self._cancel_order(account, existing, tick,
+                                               "ordinary_neutral_capacity", persist)
+                        continue
                 protected_price = (
                     self._live_priority_extra_inventory_isolated_offer_price(
                         account, lot, tick, assessment, context,
@@ -11334,14 +12350,75 @@ class MakerPaperEngine:
                     price = _ceil_to_tick(
                         tick.ask1, self.parameters.price_tick,
                     )
+                maximum_loss = (
+                    account.policy.guarded_live_exit_maximum_loss
+                )
+                if (
+                    maximum_loss is not None
+                    and lot.entry_price is not None
+                    and lot.entry_price - price
+                        > maximum_loss + 1e-9
+                ):
+                    # This fallback keeps a normal executable sell intention
+                    # alive; it is not permission to chase a discontinuous
+                    # low offer indefinitely.  Native active and support-
+                    # collapse risk routes remain free to act on their own
+                    # complete evidence.
+                    if retained_fallback:
+                        assert existing is not None
+                        self._cancel_order(
+                            account, existing, tick,
+                            "exit_context_changed", persist,
+                        )
+                    continue
+                if (
+                    retained_fallback
+                    and existing is not None
+                    and existing.kind == desired_kind
+                    and abs(existing.limit_price - price) < 1e-9
+                    and abs(existing.remaining - exit_quantity)
+                        < 1e-9
+                ):
+                    continue
+                if retained_fallback:
+                    assert existing is not None
+                    self._cancel_order(
+                        account, existing, tick, "maker_reprice", persist,
+                    )
                 order = self._new_order(
                     account, tick, side="sell", kind=desired_kind,
                     lot_id=lot.db_id, price=price,
-                    quantity=lot.remaining_quantity, queue_ahead=0.0,
+                    quantity=exit_quantity, queue_ahead=0.0,
                     target_price=price, price_boundary=price,
                     persist=persist,
                 )
                 account.sell_orders[lot.db_id] = order
+
+        # V0.14 is a separate, narrow repair after every native and ordinary
+        # exit. Other special lot lifecycles remain entirely with the parent.
+        if (account.policy.enable_shared_resilient_exit_gap
+                and account.fill_mode == "priority"
+                and account.initial_inventory <= 1e-9
+                and tick.ask1 > tick.bid1 > 0):
+            capacity = max(0.0, account.inventory - sum(
+                order.remaining for order in account.sell_orders.values()
+            ))
+            for lot in account.lots.values():
+                if (lot.kind != "session_resilient_value_entry"
+                        or lot.entry_price is None or lot.remaining_quantity <= 1e-9
+                        or tick.market_ts_ms <= lot.opened_ms
+                        or lot.db_id in account.sell_orders):
+                    continue
+                quantity = min(lot.remaining_quantity, capacity)
+                if quantity <= 1e-9:
+                    continue
+                price, kind = self._shared_resilient_gap_price(account, lot, tick, assessment)
+                account.sell_orders[lot.db_id] = self._new_order(
+                    account, tick, side="sell", kind=kind, lot_id=lot.db_id,
+                    price=price, quantity=quantity, queue_ahead=0.0,
+                    target_price=price, price_boundary=price, persist=persist,
+                )
+                capacity -= quantity
 
     def _supported_post_replenishment_extra_entry(
         self, account: MakerAccount, tick: ReplayTick,
@@ -12855,6 +13932,8 @@ class MakerPaperEngine:
             )
             components.append(("base", restored, None, base_target))
         extra = quantity - restored
+        if extra > 1e-9 and account.policy.ordinary_entry_sell_pressure_mode == "reentry_repricing":
+            account.last_new_extra_entry_ts_ms = tick.market_ts_ms
         if extra > 1e-9:
             components.append((
                 kind,
@@ -12965,12 +14044,55 @@ class MakerPaperEngine:
             account.last_priority_extra_inventory_exit_ts_ms = (
                 tick.market_ts_ms
             )
+        fresh_ordinary_risk_exit = (
+            (account.policy.ordinary_risk_exit_uses_fresh_reentry
+             or account.policy.enable_causal_ordinary_inventory_turnover)
+            and account.fill_mode == "priority"
+            and lot.kind == "low_bid_reversion"
+            and lot.entry_price is not None
+            and previous_inventory > account.initial_inventory + 1e-9
+            and (
+                order.kind in {
+                    "stalled_extra_inventory_near_flat_exit",
+                    "live_priority_extra_inventory_exit",
+                    "live_priority_extra_inventory_isolated_hold",
+                }
+                or (
+                    (account.policy.enable_ordinary_tape_turnover_regime
+                     or account.policy.enable_causal_ordinary_inventory_turnover)
+                    and order.kind in {
+                        "full_inventory_capacity_release_exit",
+                        "inventory_risk_exit",
+                        "falling_profitable_bid_exit",
+                    }
+                )
+            )
+        )
+        if fresh_ordinary_risk_exit:
+            account.last_ordinary_risk_exit_ts_ms = tick.market_ts_ms
+        shared_resilient_exit = (
+            account.policy.enable_shared_resilient_exit_gap
+            and order.kind in {"session_resilient_gap_exit", "session_resilient_isolated_hold"}
+        )
+        stalled_reentry_exit = not fresh_ordinary_risk_exit and (
+            shared_resilient_exit
+            or
+            order.kind == "stalled_extra_inventory_near_flat_exit"
+            or (
+                order.kind in {
+                    "live_priority_extra_inventory_exit",
+                    "live_priority_extra_inventory_isolated_hold",
+                }
+                and (
+                    not account.policy
+                        .enable_guarded_live_priority_extra_inventory_exit_exposure
+                    or account.policy
+                        .guarded_live_exit_records_stalled_reentry
+                )
+            )
+        )
         if (
-            order.kind in {
-                "stalled_extra_inventory_near_flat_exit",
-                "live_priority_extra_inventory_exit",
-                "live_priority_extra_inventory_isolated_hold",
-            }
+            stalled_reentry_exit
             or (
                 order.kind == "support_collapse_capacity_release_exit"
                 and not account.policy
@@ -12979,6 +14101,24 @@ class MakerPaperEngine:
         ):
             account.last_stalled_extra_exit_price = order.limit_price
             account.last_stalled_extra_exit_ts_ms = tick.market_ts_ms
+            if (account.policy.enable_shared_current_opportunity_reentry
+                    and account.fill_mode == "priority"
+                    and account.initial_inventory <= 1e-9
+                    and stalled_reentry_exit
+                    and lot.kind in {"low_bid_reversion", "session_resilient_value_entry"}):
+                account.last_shared_reentry_exit_ts_ms = tick.market_ts_ms
+                account.shared_reentry_recovery_ts_ms = 0
+        if (
+            order.kind in {
+                "live_priority_extra_inventory_exit",
+                "live_priority_extra_inventory_isolated_hold",
+            }
+            and account.policy
+                .guarded_live_exit_release_reentry_on_high_attack
+        ):
+            account.last_guarded_live_exit_price = order.limit_price
+            account.last_guarded_live_exit_ts_ms = tick.market_ts_ms
+            account.guarded_live_exit_reentry_released = False
         if order.kind == "support_collapse_capacity_release_exit":
             account.last_support_collapse_exit_price = order.limit_price
             account.last_support_collapse_exit_ts_ms = tick.market_ts_ms
@@ -13298,6 +14438,7 @@ class SharedCapitalPaperRuntime:
         supported_model_ids = {
             SHARED_THOUSAND_POLICY_V01_CANDIDATE.model_id,
             SHARED_THOUSAND_POLICY_V013_CANDIDATE.model_id,
+            SHARED_THOUSAND_POLICY_V016_R2_CANDIDATE.model_id,
         }
         if policy.model_id not in supported_model_ids:
             raise ValueError(
@@ -13321,7 +14462,16 @@ class SharedCapitalPaperRuntime:
                 super_windfall_enabled=False,
             ),
         )
-        if policy.model_id == SHARED_THOUSAND_POLICY_V013_CANDIDATE.model_id:
+        engine_class = MakerPaperEngine
+        if policy.model_id == SHARED_THOUSAND_POLICY_V016_R2_CANDIDATE.model_id:
+            from .shared_thousand_maker_v016_live import (
+                ArrivalSharedAllocator, ArrivalSharedMakerEngine,
+            )
+            from .shared_thousand_maker_v013_research import AllocationParametersV03
+            self.parameters = AllocationParametersV03()
+            self.allocator_class = ArrivalSharedAllocator
+            engine_class = ArrivalSharedMakerEngine
+        elif policy.model_id == SHARED_THOUSAND_POLICY_V013_CANDIDATE.model_id:
             from .shared_thousand_maker_v013_research import (
                 AllocationParametersV03,
                 SharedThousandV013Allocator,
@@ -13341,7 +14491,7 @@ class SharedCapitalPaperRuntime:
             )
             self.allocator_class = OneHandSharedAllocator
         self.engines = {
-            code: MakerPaperEngine(
+            code: engine_class(
                 self.config,
                 store,
                 bond_code=code,
@@ -13538,6 +14688,8 @@ class MakerPaperPortfolio:
         shared_model_ids = {
             SHARED_THOUSAND_POLICY_V01_CANDIDATE.model_id,
             SHARED_THOUSAND_POLICY_V013_CANDIDATE.model_id,
+            SHARED_THOUSAND_POLICY_V016_R2_CANDIDATE.model_id,
+            DADAO_POLICY_V01_R2_CANDIDATE.model_id,
         }
         self.comparison_engines = {
             code: tuple(
@@ -13565,8 +14717,14 @@ class MakerPaperPortfolio:
             )
             for code in configured_maker_bond_codes(config)
         }
+        from .shared_thousand_maker_v016_live import ArrivalSharedPaperRuntime
+        from .dadao_maker_live import DadaoPaperRuntime
         self.shared_capital_runtimes = tuple(
-            SharedCapitalPaperRuntime(config, store, policy=policy)
+            (DadaoPaperRuntime
+             if policy.model_id == DADAO_POLICY_V01_R2_CANDIDATE.model_id
+             else ArrivalSharedPaperRuntime
+             if policy.model_id == SHARED_THOUSAND_POLICY_V016_R2_CANDIDATE.model_id
+             else SharedCapitalPaperRuntime)(config, store, policy=policy)
             for policy in comparison_policies
             if policy.model_id in shared_model_ids
         )

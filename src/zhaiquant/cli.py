@@ -46,6 +46,7 @@ def _parser() -> argparse.ArgumentParser:
     tape.add_argument("--date", required=True, help="Actual market date in YYYY-MM-DD")
     tape.add_argument("--code", required=True, help="Security code, for example 132026.SH")
     tape.add_argument("--output-dir", required=True, help="Ignored local structured-data directory")
+    tape.add_argument("--cache-dir", default=None, help="Reuse raw OCR tokens by panel pixel hash")
     orders = commands.add_parser(
         "tdx-extract-orders",
         help="OCR verified 通达信 full-day 逐笔委托 screenshots",
@@ -54,6 +55,9 @@ def _parser() -> argparse.ArgumentParser:
     orders.add_argument("--date", required=True, help="Actual market date in YYYY-MM-DD")
     orders.add_argument("--code", required=True, help="Security code, for example 132026.SH")
     orders.add_argument("--output-dir", required=True, help="Ignored local structured-data directory")
+    orders.add_argument("--panels", type=int, choices=(8, 10), default=None,
+                        help="Explicit verified ultrawide order layout; confirm visible column count")
+    orders.add_argument("--cache-dir", default=None, help="Reuse raw OCR tokens by panel pixel hash")
     audit = commands.add_parser(
         "tdx-opportunity-report",
         help="Enumerate every positive ordered B/S tape pair and readable local turns",
@@ -335,6 +339,7 @@ def main(argv: list[str] | None = None) -> int:
                 Path(args.input_dir).expanduser().resolve(),
                 market_date=args.date,
                 code=args.code,
+                cache_dir=Path(args.cache_dir).expanduser().resolve() if args.cache_dir else None,
             )
             output_dir = Path(args.output_dir).expanduser().resolve()
             write_trade_extraction(output_dir, raw, deduplicated, summary)
@@ -347,6 +352,8 @@ def main(argv: list[str] | None = None) -> int:
                 Path(args.input_dir).expanduser().resolve(),
                 market_date=args.date,
                 code=args.code,
+                panels=args.panels,
+                cache_dir=Path(args.cache_dir).expanduser().resolve() if args.cache_dir else None,
             )
             output_dir = Path(args.output_dir).expanduser().resolve()
             write_order_extraction(output_dir, raw, deduplicated, summary)

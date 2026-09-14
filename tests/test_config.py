@@ -27,8 +27,12 @@ class ConfigTests(unittest.TestCase):
                     "maker_priority_v1_50_candidate",
                     "maker_priority_v2_52_candidate_r2",
                     "maker_priority_v2_63_candidate",
+                    "maker_priority_v2_70_candidate_r2",
+                    "maker_priority_v2_71_candidate",
                     "maker_shared_1000_v0_1_candidate",
                     "maker_shared_1000_v0_13_candidate",
+                    "maker_shared_1000_v0_16_candidate_r2",
+                    "maker_dadao_v0_1_candidate_r2",
                 ),
             )
 
@@ -275,6 +279,64 @@ class ConfigTests(unittest.TestCase):
                 config.maker_paper.realtime_comparison_model_ids,
             )
 
+    def test_first_position_v264_is_supported_but_not_enabled_by_default(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn('"maker_priority_v2_64_candidate",', source)
+            source = source.replace(
+                '"maker_priority_v2_63_candidate",',
+                '"maker_priority_v2_63_candidate",\n'
+                '  "maker_priority_v2_64_candidate",',
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v2_64_candidate",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_first_position_v264_r2_is_supported_but_not_enabled_by_default(
+        self,
+    ) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(
+                encoding="utf-8"
+            )
+            self.assertNotIn(
+                '"maker_priority_v2_64_candidate_r2",', source,
+            )
+            source = source.replace(
+                '"maker_priority_v2_63_candidate",',
+                '"maker_priority_v2_63_candidate",\n'
+                '  "maker_priority_v2_64_candidate_r2",',
+            )
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            config = load_config(target)
+            self.assertIn(
+                "maker_priority_v2_64_candidate_r2",
+                config.maker_paper.realtime_comparison_model_ids,
+            )
+
+    def test_first_position_v265_is_supported_but_not_enabled_by_default(self) -> None:
+        repository = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as temp:
+            source = (repository / "config.example.toml").read_text(encoding="utf-8")
+            self.assertNotIn('"maker_priority_v2_65_candidate",', source)
+            source = source.replace('"maker_priority_v2_63_candidate",',
+                '"maker_priority_v2_63_candidate",\n  "maker_priority_v2_65_candidate",')
+            target = Path(temp) / "config.toml"
+            target.write_text(source, encoding="utf-8")
+            self.assertIn("maker_priority_v2_65_candidate",
+                load_config(target).maker_paper.realtime_comparison_model_ids)
+
     def test_example_config_loads_and_resolves_database(self) -> None:
         repository = Path(__file__).resolve().parents[1]
         with tempfile.TemporaryDirectory() as temp:
@@ -314,8 +376,12 @@ class ConfigTests(unittest.TestCase):
                     "maker_priority_v1_50_candidate",
                     "maker_priority_v2_52_candidate_r2",
                     "maker_priority_v2_63_candidate",
+                    "maker_priority_v2_70_candidate_r2",
+                    "maker_priority_v2_71_candidate",
                     "maker_shared_1000_v0_1_candidate",
                     "maker_shared_1000_v0_13_candidate",
+                    "maker_shared_1000_v0_16_candidate_r2",
+                    "maker_dadao_v0_1_candidate_r2",
                 ),
             )
             self.assertEqual(

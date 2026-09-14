@@ -1,0 +1,57 @@
+{
+  "model_id": "maker_shared_1000_v0_16_candidate",
+  "parent_model_id": "maker_shared_1000_v0_14_candidate",
+  "comparison_model_id": "maker_shared_1000_v0_15_candidate_r2",
+  "date": "2026-09-07",
+  "status": "offline_research_complete_not_promoted",
+  "runtime_matrix_unchanged": true,
+  "profile_count_frozen": 115,
+  "tests": {
+    "new_focused": 19,
+    "main": 568,
+    "dashboard": 59
+  },
+  "historical": {
+    "days": 24,
+    "parent_gross_cny": 93409.1,
+    "candidate_gross_cny": 96286,
+    "gross_delta_cny": 2876.9,
+    "losing_fifo_segments": 110,
+    "worst_fifo_segment_cny": -503,
+    "locked_slot_seconds": 126914
+  },
+  "today": {
+    "cutoff": "14:45:00",
+    "gross_cny": 3880.79,
+    "delta_to_parent_cny": -2014.67,
+    "terminal_bonds": 0
+  },
+  "assumptions": [
+    "Market-time causal L1 replay, not measured receipt-time simulation",
+    "Passive first-priority fill and inferred aggressor side",
+    "Active visible depth with zero latency, per-timestamp budget",
+    "No fee, calibrated queue or market impact; used development samples"
+  ],
+  "sha256": {
+    "src/zhaiquant/maker_paper.py": "da798003db367da02be1c96285727c374f500e59b525fb220f1322b25dfe44ee",
+    "src/zhaiquant/one_hand_maker_research.py": "add4de8a15648c7f52500164dfca592cf04b59885634f93d383f118a4e770d02",
+    "src/zhaiquant/shared_thousand_maker_v016_research.py": "b58a5eae2ea377f79c3f496dbb1437cb460dc0765ec2c99e073be5f239b0c98d",
+    "tests/test_shared_thousand_maker_v016_research.py": "4cab819c8ccf1af21488ae8c0f594ac4352af688e25841aa584ca3eefffc721c",
+    "scripts/replay_shared_v016.py": "8f73c7ffef5820d47ed50af307567b831d0e3b9cb3d466879700782021c3da61",
+    "scripts/freeze_shared_v016_parent.py": "7e5042d69fddee8a4f05bcd39e5e94d6f4aa15ebd95e73d31dc704e5b4b40e71",
+    "scripts/audit_shared_v016.py": "37e6595390fe7b2acc2ea5c3f74341f19df2eb7c5f235bd65b0ef8dd46081f51",
+    "scripts/verify_shared_v016.py": "48e09e566cf69af7f758c9ca457d1f7b9ae906d8f2fce0265715c02e81c5b41a",
+    "scripts/verify_shared_v016_causality.py": "b4f03880cbee2b80e2d44763a07fff8dde48bbc800e5be41167fe9490a34ebbe",
+    "docs/千张第一顺位0.16因果时序修复.md": "6a6a18def8d639de93909184537bec06e8929f4e7d55249977b65bf99057191e",
+    "config.toml": "a75b515ff9e80d761281661cc948f4f1097d7c80490619b67de1dfe92dcaa859",
+    "config.example.toml": "14c1e7e6a647eb89c1fd26e119ae290882ff0aae580e9bb5425a075087fb7cd0",
+    "output/research/shared_v016_causal_audit_20260907.json": "c3c3c53318042972f9eb335798e96a22263ab2824999537850fd50658a24f1a4",
+    "output/research/shared_v016_matrix_20260804_20260904.json": "193abd3f3e2bbcaf35647a79e08cd810a42279835ff773cb78305a1914f72902",
+    "output/research/shared_v016_parent_freeze_20260907.json": "a0135bbced9d20b321e55bb7e200d336b05e544ad28167b06dbf2a75c3f10442",
+    "output/research/shared_v016_prefix_causality_20260907.json": "d816131da70cb8767316b26196c86085e63b09f2409ce10fd41817ca9c2755e2",
+    "output/research/shared_v016_target_20260907_144500.json": "565cbed8e5ebf4648c15496fdd00bd0f64c29109539f53e9358bc87d082bd707",
+    "output/research/shared_v016_target_days_20260907.json": "08220ef74f44d567e1a0254790889f4a8ed133d1cf02f9722604986da5073e60",
+    "output/research/shared_v016_verification_20260907.json": "398baaed26febbb3fa4df7d3131cad0832233b15127f4482cc96efd77fa96016",
+    "output/research/shared_v016_worst_loss_audit_20260907.json": "2d03b383efb4532c9eee523e34e2f7d80b6c3901bccf75b1d8ccf2e7eee45960"
+  }
+}

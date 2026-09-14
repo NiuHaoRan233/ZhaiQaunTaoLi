@@ -44,6 +44,20 @@ from zhaiquant.maker_paper import (
     PRIORITY_POLICY_FIRST_POSITION_V26_R2_CANDIDATE,
     PRIORITY_POLICY_FIRST_POSITION_V26_R3_CANDIDATE,
     PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V264_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V264_R2_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V265_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V266_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V266_R2_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V266_R3_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V267_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V268_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V268_R2_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V268_R3_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V269_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V270_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V270_R2_CANDIDATE,
+    PRIORITY_POLICY_FIRST_POSITION_V271_CANDIDATE,
 )
 from zhaiquant.opportunity_audit import replay_registered_models_readonly
 
@@ -85,6 +99,20 @@ CANDIDATES = {
     "v26r2": PRIORITY_POLICY_FIRST_POSITION_V26_R2_CANDIDATE,
     "v26r3": PRIORITY_POLICY_FIRST_POSITION_V26_R3_CANDIDATE,
     "v263": PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE,
+    "v264": PRIORITY_POLICY_FIRST_POSITION_V264_CANDIDATE,
+    "v264r2": PRIORITY_POLICY_FIRST_POSITION_V264_R2_CANDIDATE,
+    "v265": PRIORITY_POLICY_FIRST_POSITION_V265_CANDIDATE,
+    "v266": PRIORITY_POLICY_FIRST_POSITION_V266_CANDIDATE,
+    "v266r2": PRIORITY_POLICY_FIRST_POSITION_V266_R2_CANDIDATE,
+    "v266r3": PRIORITY_POLICY_FIRST_POSITION_V266_R3_CANDIDATE,
+    "v267": PRIORITY_POLICY_FIRST_POSITION_V267_CANDIDATE,
+    "v268": PRIORITY_POLICY_FIRST_POSITION_V268_CANDIDATE,
+    "v268r2": PRIORITY_POLICY_FIRST_POSITION_V268_R2_CANDIDATE,
+    "v268r3": PRIORITY_POLICY_FIRST_POSITION_V268_R3_CANDIDATE,
+    "v269": PRIORITY_POLICY_FIRST_POSITION_V269_CANDIDATE,
+    "v270": PRIORITY_POLICY_FIRST_POSITION_V270_CANDIDATE,
+    "v270r2": PRIORITY_POLICY_FIRST_POSITION_V270_R2_CANDIDATE,
+    "v271": PRIORITY_POLICY_FIRST_POSITION_V271_CANDIDATE,
 }
 
 NEW_PERMISSION_FILL_REASONS = {
@@ -135,6 +163,20 @@ NEW_PERMISSION_FILL_REASONS = {
     "v26r2": set(),
     "v26r3": set(),
     "v263": set(),
+    "v264": set(),
+    "v264r2": set(),
+    "v265": set(),
+    "v266": set(),
+    "v266r2": set(),
+    "v266r3": set(),
+    "v267": set(),
+    "v268": set(),
+    "v268r2": set(),
+    "v268r3": set(),
+    "v269": set(),
+    "v270": set(),
+    "v270r2": set(),
+    "v271": set(),
 }
 
 NEW_PERMISSION_ORDER_KINDS = {
@@ -199,6 +241,19 @@ NEW_PERMISSION_ORDER_KINDS = {
     "v263": {
         "support_collapse_capacity_release_exit",
         "support_collapse_capacity_redeploy_entry",
+    },
+    "v264": {
+        "live_priority_extra_inventory_exit",
+        "live_priority_extra_inventory_isolated_hold",
+    },
+    "v264r2": {
+        "live_priority_extra_inventory_exit",
+        "live_priority_extra_inventory_isolated_hold",
+    },
+    "v265": {
+        "stalled_extra_inventory_near_flat_exit",
+        "live_priority_extra_inventory_exit",
+        "live_priority_extra_inventory_isolated_hold",
     },
 }
 
@@ -540,12 +595,28 @@ def main() -> None:
         if args.candidate == "v26r3"
         else PRIORITY_POLICY_FIRST_POSITION_V26_R3_CANDIDATE
         if args.candidate == "v263"
+        else PRIORITY_POLICY_FIRST_POSITION_V264_R2_CANDIDATE
+        if args.candidate == "v265"
+        else PRIORITY_POLICY_FIRST_POSITION_V265_CANDIDATE
+        if args.candidate in {"v266", "v266r2", "v266r3"}
+        else PRIORITY_POLICY_FIRST_POSITION_V266_R3_CANDIDATE
+        if args.candidate == "v267"
+        else PRIORITY_POLICY_FIRST_POSITION_V267_CANDIDATE
+        if args.candidate == "v268"
+        else PRIORITY_POLICY_FIRST_POSITION_V268_CANDIDATE
+        if args.candidate == "v268r2"
+        else PRIORITY_POLICY_FIRST_POSITION_V268_R2_CANDIDATE
+        if args.candidate == "v268r3"
+        else PRIORITY_POLICY_FIRST_POSITION_V263_CANDIDATE
+        if args.candidate in {"v264", "v264r2", "v269", "v270", "v270r2", "v271"}
         else PRIORITY_POLICY_V143_CANDIDATE
         if args.candidate == "v144"
         else PRIORITY_POLICY_V133_CANDIDATE
         if args.candidate == "v134"
         else PRIORITY_POLICY_V130_CANDIDATE
     )
+    if args.candidate in {"v268", "v268r2", "v268r3", "v269", "v270", "v270r2", "v271"}:
+        assert parent_policy.model_id == candidate_policy.parent_model_id
     policies = (parent_policy, candidate_policy)
     cells = []
     for market_date in args.dates:
@@ -599,7 +670,7 @@ def main() -> None:
                             "v134", "v135", "v136", "v137", "v138",
                             "v139",
                             "v140", "v141", "v143", "v144", "v145",
-                            "v148", "v149", "v149r2",
+                            "v148", "v149", "v149r2", "v264", "v264r2", "v265",
                         }
                         else [
                             fill for fill in fills

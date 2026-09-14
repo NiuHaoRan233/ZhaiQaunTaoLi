@@ -74,13 +74,18 @@ price_tick = 0.001
 fill_modes = []
 # Paper-only comparison models that run in real time. Historical registrations
 # and ledgers for removed matrix members remain immutable.
+# Dadao owns a separate zero-base shared 1,000-bond slot and arrival journal.
 realtime_comparison_model_ids = [
   "maker_priority_v1_37_candidate",
   "maker_priority_v1_50_candidate",
   "maker_priority_v2_52_candidate_r2",
   "maker_priority_v2_63_candidate",
+  "maker_priority_v2_70_candidate_r2",
+  "maker_priority_v2_71_candidate",
   "maker_shared_1000_v0_1_candidate",
   "maker_shared_1000_v0_13_candidate",
+  "maker_shared_1000_v0_16_candidate_r2",
+  "maker_dadao_v0_1_candidate_r2",
 ]
 earliest_entry = "09:20:00.000"
 latest_entry = "15:29:59.999"

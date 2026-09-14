@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "zhaiquant"
 version = "0.1.0"
-description = "Read-only MiniQMT recorder, exchangeable-bond research, and paper-only maker engine"
+description = "Read-only MiniQMT recorder, bond and commodity-option research, and paper-only strategies"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -15,6 +15,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+research = [
+  "matplotlib==3.11.1",
+]
 ocr = [
   "rapidocr-onnxruntime==1.4.4",
 ]

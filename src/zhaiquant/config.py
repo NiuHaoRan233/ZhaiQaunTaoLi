@@ -408,8 +408,19 @@ def _validate(
         "maker_priority_v2_6_candidate_r2",
         "maker_priority_v2_6_candidate_r3",
         "maker_priority_v2_63_candidate",
+        "maker_priority_v2_70_candidate_r2",
+        "maker_priority_v2_71_candidate",
+        "maker_priority_v2_64_candidate",
+        "maker_priority_v2_64_candidate_r2",
+        "maker_priority_v2_65_candidate",
+        "maker_priority_v2_66_candidate",
+        "maker_priority_v2_66_candidate_r2",
+        "maker_priority_v2_66_candidate_r3",
+        "maker_priority_v2_67_candidate",
         "maker_shared_1000_v0_1_candidate",
         "maker_shared_1000_v0_13_candidate",
+        "maker_shared_1000_v0_16_candidate_r2",
+        "maker_dadao_v0_1_candidate_r2",
         "maker_queue_v1_13_candidate",
         "maker_queue_v1_17_candidate",
         "maker_queue_v1_18_candidate",
@@ -435,6 +446,8 @@ def _validate(
     configured_shared_models = {
         "maker_shared_1000_v0_1_candidate",
         "maker_shared_1000_v0_13_candidate",
+        "maker_shared_1000_v0_16_candidate_r2",
+        "maker_dadao_v0_1_candidate_r2",
     }.intersection(comparison_models)
     if configured_shared_models and len(maker_bond_codes) < 2:
         raise ConfigError(
@@ -442,6 +455,8 @@ def _validate(
             "maker_paper.bond_codes: "
             f"{sorted(configured_shared_models)}"
         )
+    if "maker_dadao_v0_1_candidate_r2" in comparison_models and set(maker_bond_codes) != {"132026.SH", "132024.SH"}:
+        raise ConfigError("Dadao 0.1 requires the registered 132026.SH / 132024.SH pair")
     underlying_stock_codes = maker_paper.underlying_stock_codes
     if any(
         not bond_code or not stock_code

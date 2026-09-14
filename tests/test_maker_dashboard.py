@@ -109,6 +109,31 @@ class MakerDashboardTests(unittest.TestCase):
             "fill_mode": "priority",
         }), "第一顺位2.63")
         self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_70_candidate_r2",
+            "model_version": "2.70-candidate-r2",
+            "fill_mode": "priority",
+        }), "第一顺位2.70")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_71_candidate",
+            "model_version": "2.71-candidate",
+            "fill_mode": "priority",
+        }), "第一顺位2.71")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_64_candidate",
+            "model_version": "2.64-candidate",
+            "fill_mode": "priority",
+        }), "第一顺位2.64")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_65_candidate",
+            "model_version": "2.65-candidate",
+            "fill_mode": "priority",
+        }), "第一顺位2.65")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_priority_v2_64_candidate_r2",
+            "model_version": "2.64-candidate-r2",
+            "fill_mode": "priority",
+        }), "第一顺位2.64")
+        self.assertEqual(_model_display_name({
             "model_id": "maker_shared_1000_v0_1_candidate",
             "model_version": "0.1-candidate",
             "fill_mode": "priority",
@@ -118,6 +143,11 @@ class MakerDashboardTests(unittest.TestCase):
             "model_version": "0.13-candidate",
             "fill_mode": "priority",
         }), "千张第一顺位0.13")
+        self.assertEqual(_model_display_name({
+            "model_id": "maker_shared_1000_v0_16_candidate_r2",
+            "model_version": "0.16-candidate-r2",
+            "fill_mode": "priority",
+        }), "千张第一顺位0.16（实时修订）")
         self.assertEqual(_model_display_name({
             "model_id": "maker_windfall_v1_0",
             "model_version": "1.0",

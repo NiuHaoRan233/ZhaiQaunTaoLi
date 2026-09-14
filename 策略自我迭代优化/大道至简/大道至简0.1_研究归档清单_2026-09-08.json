@@ -1,0 +1,464 @@
+{
+  "public_name": "大道至简0.1",
+  "public_version": "0.1",
+  "archived_at_asia_shanghai": "2026-09-08T03:46:11+08:00",
+  "archive_kind": "research_evidence_lock_and_public_name_mapping",
+  "status": "archived_offline_not_promoted",
+  "original_model_id": "probe_top_compare_20260908_v1_switch_v013",
+  "original_family": "probe_top_compare_20260908_v1",
+  "naming_changes_economic_behavior": false,
+  "original_order_and_fill_ids_preserved": true,
+  "runtime_registration_added": false,
+  "not_same_as_model_id": "maker_shared_1000_v0_1_candidate",
+  "main_variant": "switch_v013",
+  "naming_scope_note": "本轮极简千张双债择标作为主方案，固定单债与加底仓为对照；用户指定公开名，不倒写原始ID。",
+  "instruments": [
+    "132026.SH",
+    "132024.SH"
+  ],
+  "account": {
+    "opening_inventory_bonds": 0,
+    "shared_capacity_bonds": 1000,
+    "exchange_hands": 100,
+    "shared_slots": 1,
+    "maximum_simultaneous_held_instruments": 1,
+    "daily_reset": true,
+    "overnight_carry_simulated": false,
+    "cash_initialization": "max(first_eligible_ask_of_each_bond)*1000, available only after both quotes arrive",
+    "intraday_cash_top_up": false,
+    "first_partial_buy_switches_to_selling_actual_inventory": true,
+    "end_of_day_mark": "bid1",
+    "fees": "gross_no_commission_deducted_matches_project_ledger"
+  },
+  "trading_contract": {
+    "quote": "improve bid1/ask1 by 0.001 when spread permits; otherwise quote exact top; never cross",
+    "sell_at_loss_allowed": true,
+    "active_liquidation_to_switch_bonds": false,
+    "allocation_component": "unmodified SharedThousandV013Allocator score/choose/record_selection and AllocationParametersV03",
+    "cash_score": 0,
+    "minimum_dwell_seconds": 60,
+    "switch_minimum_score_advantage_cny": 50,
+    "switch_relative_advantage": 0.3,
+    "unselected_shadow_ttl_seconds": 9,
+    "passive_match": "old selected orders before new scoring; strictly later source timestamp, new trade quantity, compatible inferred side and last price",
+    "current_bond_snapshot_invalidates_old_shadow": true
+  },
+  "replay_dates": [
+    "2026-08-04",
+    "2026-08-05",
+    "2026-08-06",
+    "2026-08-07",
+    "2026-08-10",
+    "2026-08-11",
+    "2026-08-12",
+    "2026-08-13",
+    "2026-08-14",
+    "2026-08-17",
+    "2026-08-18",
+    "2026-08-19",
+    "2026-08-20",
+    "2026-08-21",
+    "2026-08-24",
+    "2026-08-25",
+    "2026-08-26",
+    "2026-08-27",
+    "2026-08-28",
+    "2026-08-31",
+    "2026-09-01",
+    "2026-09-02",
+    "2026-09-03",
+    "2026-09-04"
+  ],
+  "main_registered_totals": {
+    "pnl": 88446.53,
+    "days": 24,
+    "fills": 1563,
+    "exposure_seconds": 170279.888,
+    "base_short_seconds": 0.0,
+    "terminal_exposure_days": 15,
+    "worst_day": 45.92,
+    "profitable_days": 24,
+    "turnover_cny": 175603339.41,
+    "worst_cycle": -503.0000000000143,
+    "terminal_unrealized_cny": -3227.24,
+    "closed_cycles": 758,
+    "losing_cycles": 225,
+    "cross_bond_reselections": 950
+  },
+  "main_daily": [
+    {
+      "market_date": "2026-08-04",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 8219.7,
+      "fill_count": 98,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-05",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 1385.88,
+      "fill_count": 112,
+      "terminal_inventories": {
+        "132026.SH": 1000,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-06",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 2014.24,
+      "fill_count": 31,
+      "terminal_inventories": {
+        "132026.SH": 1000,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-07",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 7677.0,
+      "fill_count": 86,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-10",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 4206.27,
+      "fill_count": 89,
+      "terminal_inventories": {
+        "132026.SH": 1000,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-11",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 2813.05,
+      "fill_count": 57,
+      "terminal_inventories": {
+        "132026.SH": 1000,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-12",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 3092.66,
+      "fill_count": 72,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-13",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 4043.73,
+      "fill_count": 74,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 1000
+      }
+    },
+    {
+      "market_date": "2026-08-14",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 11810.43,
+      "fill_count": 118,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 390
+      }
+    },
+    {
+      "market_date": "2026-08-17",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 975.69,
+      "fill_count": 70,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-18",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 2401.18,
+      "fill_count": 24,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 1000
+      }
+    },
+    {
+      "market_date": "2026-08-19",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 2544.92,
+      "fill_count": 52,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 1000
+      }
+    },
+    {
+      "market_date": "2026-08-20",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 8428.72,
+      "fill_count": 74,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-21",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 6089.0,
+      "fill_count": 42,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-24",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 45.92,
+      "fill_count": 36,
+      "terminal_inventories": {
+        "132026.SH": 1000,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-25",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 1357.02,
+      "fill_count": 46,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 1000
+      }
+    },
+    {
+      "market_date": "2026-08-26",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 1639.9,
+      "fill_count": 72,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-27",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 2297.31,
+      "fill_count": 76,
+      "terminal_inventories": {
+        "132026.SH": 1000,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-08-28",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 1573.78,
+      "fill_count": 52,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 1000
+      }
+    },
+    {
+      "market_date": "2026-08-31",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 989.48,
+      "fill_count": 46,
+      "terminal_inventories": {
+        "132026.SH": 350,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-09-01",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 1943.32,
+      "fill_count": 59,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 1000
+      }
+    },
+    {
+      "market_date": "2026-09-02",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 4557.0,
+      "fill_count": 44,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-09-03",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 4405.42,
+      "fill_count": 66,
+      "terminal_inventories": {
+        "132026.SH": 0,
+        "132024.SH": 0
+      }
+    },
+    {
+      "market_date": "2026-09-04",
+      "model_id": "probe_top_compare_20260908_v1_switch_v013",
+      "trading_pnl": 3934.91,
+      "fill_count": 67,
+      "terminal_inventories": {
+        "132026.SH": 350,
+        "132024.SH": 0
+      }
+    }
+  ],
+  "supporting_comparisons": [
+    {
+      "variant": "fixed_132026",
+      "original_model_id": "probe_top_compare_20260908_v1_fixed_132026",
+      "account_family": "shared_slot_1000_flat_start",
+      "gross_pnl_cny": 79038.48
+    },
+    {
+      "variant": "fixed_132024",
+      "original_model_id": "probe_top_compare_20260908_v1_fixed_132024",
+      "account_family": "shared_slot_1000_flat_start",
+      "gross_pnl_cny": 47729.42
+    },
+    {
+      "variant": "ordinary_132026",
+      "original_model_id": "probe_top_compare_20260908_v1_ordinary_132026",
+      "account_family": "ordinary_base_1000_plus_capacity_1000",
+      "gross_pnl_cny": 107080.04
+    },
+    {
+      "variant": "ordinary_132024",
+      "original_model_id": "probe_top_compare_20260908_v1_ordinary_132024",
+      "account_family": "ordinary_base_1000_plus_capacity_1000",
+      "gross_pnl_cny": 83614.07
+    }
+  ],
+  "historical_precursor": {
+    "original_model_id": "probe_top_cycle_1000_20260908_improve_l1",
+    "days": 25,
+    "gross_pnl_cny": 92715.02,
+    "account": "continuous_cash_and_inventory_not_the_24_daily_reset_main_strategy"
+  },
+  "recorded_validation": {
+    "focused_tests": 16,
+    "audited_day_accounts": 120,
+    "audited_fills": 11329,
+    "prefix_checks": 15,
+    "native_baseline_sample_model_days": 5,
+    "archive_does_not_claim_a_new_replay": true
+  },
+  "artifact_sha256_at_archive": {
+    "scripts/probe_top_cycle_comparison.py": "dbbcca10204bfe8713bdf7a789594611b818c3573b56a8b3561a88f2303d34d4",
+    "scripts/probe_top_of_book_cycle.py": "88cf0aaff1bc893849f98bbe9487d7ee538bd9ae0a3f8295a8ba3559de300d72",
+    "tests/test_top_cycle_comparison.py": "8d20bc31f03e07b5aec5f4d5b1da67851f9e0fe6f7f963e0a4e65e8167a1c113",
+    "tests/test_top_of_book_cycle_probe.py": "d77aa6adccadebbbb8fe411c8a4b1cd4be25e2556911e3c671f892794f233f15",
+    "docs/极简做市与千张模型横向比较.md": "8a943afa5729e49be3e66184673853549a6f709fb3a9d79631086461e216c679",
+    "docs/三峡千张买卖一极简验证.md": "091f4a4326088e0ba21459c3cb376a3cb611e6bf13a2b3011fc9cdefb0ffd9ff",
+    "策略自我迭代优化/大道至简/README.md": "ea99771e7a2a6b354c5c3d7a3e4b5d062cad0ae6c2fefa392c34e0c918391bce"
+  },
+  "local_report_artifacts": [
+    {
+      "path": "output/research/top_cycle_comparison_20260908_matrix.json",
+      "bytes": 49729147,
+      "sha256": "8fd1a1dde4a8d9e1beaec4eacba2f4c1284516ec89cfeac43ecf95c6d1810055",
+      "tracking": "local_only_gitignored"
+    },
+    {
+      "path": "output/research/top_cycle_comparison_20260908_audit_verified.json",
+      "bytes": 64918,
+      "sha256": "d08f1af0a3cb2a924ae5ea2cd91040a9116259a58f3982b19bc8559a2e190168",
+      "tracking": "local_only_gitignored"
+    },
+    {
+      "path": "output/research/top_cycle_comparison_20260908_baseline_verification.json",
+      "bytes": 828,
+      "sha256": "afafb48ba7f0d2d4cdb7dae8f8477062743efb32f1657c7905228d69f3b5b698",
+      "tracking": "local_only_gitignored"
+    },
+    {
+      "path": "output/research/top_cycle_comparison_20260908_freeze.json",
+      "bytes": 1634,
+      "sha256": "7ef6cc50fee59c41aa981d1057bff18ab07a85096e417d3618d943dc196ecc77",
+      "tracking": "local_only_gitignored"
+    },
+    {
+      "path": "output/research/top_cycle_comparison_20260908_post_audit_source_drift.json",
+      "bytes": 593,
+      "sha256": "27dbb42fde52fc9c937889549a96d4baa3524de8f04ceaec7649a16fe0f6c033",
+      "tracking": "local_only_gitignored"
+    },
+    {
+      "path": "output/research/top_cycle_1000_20260908_verified.json",
+      "bytes": 17044258,
+      "sha256": "d6ae2fdd224ad59813d5dfd5aa8e876d4c4f9dcb36df3e4827821c289b734bfc",
+      "tracking": "local_only_gitignored"
+    },
+    {
+      "path": "output/research/top_cycle_1000_20260908_fee_basis.json",
+      "bytes": 1829,
+      "sha256": "4a76019390cfa9e403f82802d3682f3fbba223459678df6b59a52a02603cbd9f",
+      "tracking": "local_only_gitignored"
+    }
+  ],
+  "execution_dependency_sha256": {
+    "src/zhaiquant/maker_paper.py": "da798003db367da02be1c96285727c374f500e59b525fb220f1322b25dfe44ee",
+    "src/zhaiquant/maker.py": "61259a05fdca0046da2e47f55d29f6a3a0010020c7092f46e11adfe6607522fb",
+    "src/zhaiquant/one_hand_maker_research.py": "add4de8a15648c7f52500164dfca592cf04b59885634f93d383f118a4e770d02",
+    "src/zhaiquant/shared_thousand_maker_v013_research.py": "22e62844d972223f2a3cd938a1509a5065b4f6dfefd0349e7b52454317ed8d4e",
+    "src/zhaiquant/shared_thousand_maker_v014_research.py": "70255b954b4e3ec89b215b596e30dd2eb139d49178396ed884230e593c1500c7",
+    "src/zhaiquant/shared_thousand_maker_v016_research.py": "b58a5eae2ea377f79c3f496dbb1437cb460dc0765ec2c99e073be5f239b0c98d",
+    "src/zhaiquant/shared_thousand_maker_v02_research.py": "44d0d8da5eb721dd856f406ef1233fa764e96dd409233a5b1579398508f17563",
+    "src/zhaiquant/shared_thousand_maker_v03_research.py": "43598ab3bdeff800332251a354228fed6eadd0d7d1179d90d8c2bc6da2fa4615",
+    "scripts/probe_top_of_book_cycle.py": "88cf0aaff1bc893849f98bbe9487d7ee538bd9ae0a3f8295a8ba3559de300d72",
+    "config.toml": "a75b515ff9e80d761281661cc948f4f1097d7c80490619b67de1dfe92dcaa859",
+    "config.example.toml": "14c1e7e6a647eb89c1fd26e119ae290882ff0aae580e9bb5425a075087fb7cd0",
+    "output/research/shared_v016_matrix_20260804_20260904.json": "193abd3f3e2bbcaf35647a79e08cd810a42279835ff773cb78305a1914f72902",
+    "output/research/priority_v269_matrix_20260804_20260904.json": "01b5d3be177333a0534b42bfb41159ec5dc46460681af948bc87b6d9390e7cb5",
+    "output/research/top_cycle_1000_20260908_verified.json": "d6ae2fdd224ad59813d5dfd5aa8e876d4c4f9dcb36df3e4827821c289b734bfc"
+  },
+  "dependency_drift_at_archive": [
+    {
+      "path": "src/zhaiquant/maker_paper.py",
+      "execution_sha256": "da798003db367da02be1c96285727c374f500e59b525fb220f1322b25dfe44ee",
+      "at_archive_sha256": "e2cad60168d22a48e9568490d4227b72a7c4eed592d1d50ff6fdf43dee2c92a7"
+    },
+    {
+      "path": "config.toml",
+      "execution_sha256": "a75b515ff9e80d761281661cc948f4f1097d7c80490619b67de1dfe92dcaa859",
+      "at_archive_sha256": "08d1c884b86a4e285ff5e00d4c6e5e6cdbb5538b564aedf7067f0f7e98467f99"
+    },
+    {
+      "path": "config.example.toml",
+      "execution_sha256": "14c1e7e6a647eb89c1fd26e119ae290882ff0aae580e9bb5425a075087fb7cd0",
+      "at_archive_sha256": "9da176188e19a97e5ce090a9a4cb91102022dd444d98c5f5830abcfd3dc10643"
+    }
+  ],
+  "reproducibility_note": "冻结执行依赖已部分随其他开发变化，原脚本保护会拒绝直接复跑。恢复原冻结源码或另建新版本验证，不能更新旧执行哈希冒充原结果。",
+  "caveats": [
+    "L1 first-position, inferred direction and aggregate last-price matching are not measured exchange queue execution.",
+    "Daily resets mark terminal positions but do not simulate an actual liquidation or overnight risk.",
+    "Simple and native matchers differ; gross PnL difference is not pure strategy attribution.",
+    "Naming/archive is neither out-of-sample validation nor authorization to add a live paper or broker account.",
+    "Any later change to behavior, parameters, account path or execution assumptions requires a new registered version and ID."
+  ]
+}

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import re
 import statistics
@@ -62,7 +63,16 @@ def _trade_screenshot_layout(width: int, height: int) -> ScreenshotLayout | None
     return None
 
 
-def _order_screenshot_layout(width: int, height: int) -> ScreenshotLayout | None:
+def _order_screenshot_layout(
+    width: int, height: int, *, panels: int | None = None,
+) -> ScreenshotLayout | None:
+    if panels is not None:
+        # The same resolution has two verified layouts. Never silently change
+        # historical ten-panel captures to the 2026-09-07 eight-panel view.
+        if (width, height) == (2560, 1392) and panels == 8:
+            return ScreenshotLayout(8, 50, height - 24, 241.0)
+        if not (2_550 <= width <= 2_570 and 1_380 <= height <= 1_405 and panels == 10):
+            raise ValueError(f"Unverified order layout override: {width}x{height}, {panels} panels")
     if 1_590 <= width <= 1_605 and 970 <= height <= 990:
         # The 2026-08-26 full-screen order-detail capture uses six equal
         # panels on a 1598x979 client area.  Normalize to the verified
@@ -305,17 +315,24 @@ def parse_trade_panel(
 ) -> tuple[list[TdxTrade], str | None]:
     """Parse one verified five-panel 通达信逐笔成交 screenshot column.
 
-    The parser deliberately keeps uncertain rows and marks them for review. It does
-    not manufacture a B/S direction when neither OCR nor the source pixel colour
-    supplies one.
+    The parser keeps uncertain rows for review and reads B/S only from the
+    quantity suffix. Price colour does not establish a trade's direction.
     """
 
     trades: list[TdxTrade] = []
     last_time = inherited_time
     for row_number, row_tokens in enumerate(_cluster_rows(tokens), start=1):
         time_text = _field_text(row_tokens, 0, 82)
-        price_text = _field_text(row_tokens, 72, 170)
-        quantity_text = _field_text(row_tokens, 162, 236)
+        # A four-digit size starts inside the price region. Joining tokens
+        # without whitespace turned 136.127 + 2000S into an invalid price.
+        price_text = " ".join(
+            token.text for token in sorted(row_tokens, key=lambda item: item.x)
+            if 72 <= token.x < 170
+        )
+        quantity_tokens = _field_tokens(row_tokens, 155, 228)
+        quantity_text = "".join(
+            token.text for token in sorted(quantity_tokens, key=lambda item: item.x)
+        ).upper().replace(" ", "")
         buy_text = _field_text(row_tokens, 228, 294)
         sell_text = _field_text(row_tokens, 286, 340)
 
@@ -329,33 +346,22 @@ def parse_trade_panel(
         if last_time is None:
             continue
 
-        quantity = _first_integer(quantity_text)
+        quantity_match = re.fullmatch(r"(\d+)([BS])?", quantity_text)
+        quantity = int(quantity_match.group(1)) if quantity_match else None
         buy_order = _first_integer(buy_text)
         sell_order = _first_integer(sell_text)
 
-        side_candidates = [
-            token for token in _field_tokens(row_tokens, 72, 236)
-            if token.side_hint in {"B", "S"}
-        ]
-        side: str | None = None
-        side_confidence = 0.0
-        if side_candidates:
-            strongest = max(side_candidates, key=lambda item: item.side_confidence)
-            side = strongest.side_hint
-            side_confidence = strongest.side_confidence
-        else:
-            compact = (price_text + quantity_text).upper()
-            if "B" in compact and "S" not in compact:
-                side = "B"
-                side_confidence = 0.6
-            elif "S" in compact and "B" not in compact:
-                side = "S"
-                side_confidence = 0.6
+        # Price colour is the direction of a price change, not the trade's B/S.
+        # Malformed text such as S009 must enter review, not become 9 hands.
+        side = quantity_match.group(2) if quantity_match else None
+        side_confidence = min(
+            (token.confidence for token in quantity_tokens), default=0.0,
+        ) if side else 0.0
 
         relevant = _field_tokens(row_tokens, 0, 236)
         confidence = min((token.confidence for token in relevant), default=0.0)
         review_required = (
-            quantity is None
+            quantity is None or quantity <= 0
             or side is None
             or not _is_valid_market_time(last_time)
             or confidence < 0.85
@@ -434,19 +440,61 @@ def _page_sequence(path: Path) -> int:
     return int(match.group(1))
 
 
+class _PanelOCR:
+    """Cache raw panel tokens, independently of layout normalization/parsing."""
+
+    def __init__(self, cache_dir: Path | None = None, *, engine_factory=None):
+        self.cache_dir = cache_dir
+        self.engine_factory = engine_factory
+        self.engine = None
+        self.hits = 0
+        self.misses = 0
+
+    def __call__(self, image: Any) -> list[OCRToken]:
+        from importlib.metadata import version
+
+        signature = f"tdx-panel-v1|{version('rapidocr-onnxruntime')}|{image.shape}|{image.dtype}"
+        digest = hashlib.sha256(signature.encode() + image.tobytes()).hexdigest()
+        target = self.cache_dir / f"{digest}.json" if self.cache_dir else None
+        if target is not None and target.exists():
+            payload = json.loads(target.read_text(encoding="utf-8"))
+            tokens = [OCRToken(**item) for item in payload["tokens"]]
+            self.hits += 1
+            return tokens
+        if self.engine is None:
+            if self.engine_factory is None:
+                from rapidocr_onnxruntime import RapidOCR
+                self.engine = RapidOCR()
+            else:
+                self.engine = self.engine_factory()
+        tokens = _ocr_tokens(self.engine, image)
+        if target is not None:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with target.open("x", encoding="utf-8") as handle:
+                json.dump({"signature": signature, "tokens": [asdict(t) for t in tokens]}, handle, ensure_ascii=False)
+        self.misses += 1
+        return tokens
+
+
 def _remove_page_overlap(pages: list[list[TdxTrade]]) -> tuple[list[TdxTrade], int]:
     output: list[TdxTrade] = []
     removed = 0
-    previous_last_time: str | None = None
     for page in pages:
         if not page:
             continue
-        for trade in page:
-            if previous_last_time is not None and trade.market_time <= previous_last_time:
-                removed += 1
-                continue
-            output.append(trade)
-        previous_last_time = max(trade.market_time for trade in page)
+        def key(trade: TdxTrade) -> tuple[Any, ...]:
+            # Merged buy/sell-order cells can differ across page boundaries.
+            return trade.market_time, trade.price, trade.hands, trade.side
+
+        before = [key(trade) for trade in output]
+        after = [key(trade) for trade in page]
+        overlap = next((n for n in range(min(len(before), len(after)), 0, -1)
+                        if before[-n:] == after[:n]), 0)
+        if output and page[0].market_time < output[-1].market_time and overlap == 0:
+            # Keep uncertain overlap for review instead of deleting by time.
+            page = [replace(trade, review_required=True) for trade in page]
+        output.extend(page[overlap:])
+        removed += overlap
     return output, removed
 
 
@@ -516,6 +564,7 @@ def _mark_price_outliers_for_review(
 
 def extract_trade_screenshots(
     input_dir: Path, *, market_date: str, code: str,
+    cache_dir: Path | None = None,
 ) -> tuple[list[TdxTrade], list[TdxTrade], dict[str, Any]]:
     try:
         import cv2
@@ -535,7 +584,7 @@ def extract_trade_screenshots(
     if actual != expected:
         raise ValueError(f"Screenshot sequence is not contiguous: {actual}")
 
-    engine = RapidOCR()
+    ocr = _PanelOCR(cache_dir)
     pages: list[list[TdxTrade]] = []
     dimensions: set[tuple[int, int]] = set()
     for path in screenshots:
@@ -558,7 +607,7 @@ def extract_trade_screenshots(
             right = round(width * (panel + 1) / layout.panels)
             crop = image[layout.top:layout.bottom, left:right]
             tokens = _normalize_panel_tokens(
-                _ocr_tokens(engine, crop),
+                ocr(crop),
                 actual_width=right - left,
                 canonical_width=layout.canonical_panel_width,
             )
@@ -594,6 +643,8 @@ def extract_trade_screenshots(
         "page_sequences": actual,
         "dimensions": [list(item) for item in sorted(dimensions)],
         "raw_rows": len(raw),
+        "ocr_cache_hits": ocr.hits,
+        "ocr_cache_misses": ocr.misses,
         "overlap_rows_removed": overlap_removed,
         "deduplicated_rows": len(deduplicated),
         "review_required_rows": review_count,
@@ -606,12 +657,14 @@ def extract_trade_screenshots(
     return raw, deduplicated, summary
 
 
-def _order_event_glyph_feature(event: TdxOrderEvent, image: Any) -> Any:
+def _order_event_glyph_feature(
+    event: TdxOrderEvent, image: Any, *, panels: int | None = None,
+) -> Any:
     import cv2
     import numpy as np
 
     height, width = image.shape[:2]
-    layout = _order_screenshot_layout(width, height)
+    layout = _order_screenshot_layout(width, height, panels=panels)
     if layout is None:
         return None
     panel_left = round(width * (event.panel - 1) / layout.panels)
@@ -645,6 +698,7 @@ def _order_glyph_repair_requires_review(event: TdxOrderEvent) -> bool:
 
 def _classify_unknown_order_glyphs(
     pages: list[list[TdxOrderEvent]], page_images: dict[str, Any],
+    *, panels: int | None = None,
 ) -> tuple[list[list[TdxOrderEvent]], dict[str, Any]]:
     """Recover unread final event glyphs from the verified fixed TDX layout.
 
@@ -665,7 +719,7 @@ def _classify_unknown_order_glyphs(
                 and event.event_confidence >= 0.75
             ):
                 feature = _order_event_glyph_feature(
-                    event, page_images[event.source_page],
+                    event, page_images[event.source_page], panels=panels,
                 )
                 if feature is not None:
                     known.append((event, feature))
@@ -755,7 +809,7 @@ def _classify_unknown_order_glyphs(
                 repaired_page.append(event)
                 continue
             feature = _order_event_glyph_feature(
-                event, page_images[event.source_page],
+                event, page_images[event.source_page], panels=panels,
             )
             if feature is None:
                 repaired_page.append(event)
@@ -803,6 +857,7 @@ def _classify_unknown_order_glyphs(
 
 def extract_order_screenshots(
     input_dir: Path, *, market_date: str, code: str,
+    panels: int | None = None, cache_dir: Path | None = None,
 ) -> tuple[list[TdxOrderEvent], list[TdxOrderEvent], dict[str, Any]]:
     try:
         import cv2
@@ -821,7 +876,7 @@ def extract_order_screenshots(
     if actual != expected:
         raise ValueError(f"Screenshot sequence is not contiguous: {actual}")
 
-    engine = RapidOCR()
+    ocr = _PanelOCR(cache_dir)
     pages: list[list[TdxOrderEvent]] = []
     page_images: dict[str, Any] = {}
     dimensions: set[tuple[int, int]] = set()
@@ -833,7 +888,7 @@ def extract_order_screenshots(
         page_images[path.name] = image
         height, width = image.shape[:2]
         dimensions.add((width, height))
-        layout = _order_screenshot_layout(width, height)
+        layout = _order_screenshot_layout(width, height, panels=panels)
         if layout is None:
             raise ValueError(
                 f"Unverified screenshot layout {width}x{height}: {path.name}"
@@ -846,7 +901,7 @@ def extract_order_screenshots(
             right = round(width * (panel_index + 1) / layout.panels)
             panel_crop = image[layout.top:layout.bottom, left:right]
             tokens_for_panel = _normalize_panel_tokens(
-                _ocr_tokens(engine, panel_crop),
+                ocr(panel_crop),
                 actual_width=right - left,
                 canonical_width=layout.canonical_panel_width,
             )
@@ -863,7 +918,7 @@ def extract_order_screenshots(
         pages.append(page_events)
 
     pages, glyph_classifier = _classify_unknown_order_glyphs(
-        pages, page_images,
+        pages, page_images, panels=panels,
     )
     raw = [event for page in pages for event in page]
     deduplicated, overlap_removed = _remove_order_page_overlap(pages)
@@ -887,12 +942,14 @@ def extract_order_screenshots(
         "pages": len(screenshots),
         "page_sequences": actual,
         "panels_per_page": next(iter({
-            _order_screenshot_layout(width, height).panels
+            _order_screenshot_layout(width, height, panels=panels).panels
             for width, height in dimensions
-            if _order_screenshot_layout(width, height) is not None
+            if _order_screenshot_layout(width, height, panels=panels) is not None
         })),
         "dimensions": [list(item) for item in sorted(dimensions)],
         "raw_rows": len(raw),
+        "ocr_cache_hits": ocr.hits,
+        "ocr_cache_misses": ocr.misses,
         "overlap_rows_removed": overlap_removed,
         "deduplicated_rows": len(deduplicated),
         "event_counts": dict(sorted(event_counts.items())),

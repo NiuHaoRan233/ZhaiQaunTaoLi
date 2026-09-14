@@ -1,0 +1,590 @@
+{
+  "schema": 1,
+  "family": "commodity_flow_20260913_v0_1_r2",
+  "variants": [
+    "flow_patient",
+    "flow_entry"
+  ],
+  "fee_cents": 170,
+  "delay_ms": 0,
+  "capacity": 1,
+  "instruments": [
+    {
+      "code": "SR611P5700.ZF",
+      "name": "白糖期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261013",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "c2701-C-2220.DF",
+      "name": "玉米期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261216",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "CF703P17400.ZF",
+      "name": "棉花期权",
+      "unit": 5.0,
+      "price_tick": 1.0,
+      "expiry": "20270211",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "CF703P17200.ZF",
+      "name": "棉花期权",
+      "unit": 5.0,
+      "price_tick": 1.0,
+      "expiry": "20270211",
+      "initial_cents": 1100000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "c2611-C-2300.DF",
+      "name": "玉米期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261023",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "SR611C4900.ZF",
+      "name": "白糖期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261013",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "au2702C976.SF",
+      "name": "沪金期权",
+      "unit": 1000.0,
+      "price_tick": 0.02,
+      "expiry": "20270125",
+      "initial_cents": 18400000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "au2612C840.SF",
+      "name": "沪金期权",
+      "unit": 1000.0,
+      "price_tick": 0.02,
+      "expiry": "20261124",
+      "initial_cents": 22400000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "cu2611P114000.SF",
+      "name": "沪铜期权",
+      "unit": 5.0,
+      "price_tick": 2.0,
+      "expiry": "20261026",
+      "initial_cents": 11100000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "CJ701C8400.ZF",
+      "name": "红枣期权",
+      "unit": 5.0,
+      "price_tick": 1.0,
+      "expiry": "20261126",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "ag2612P16000.SF",
+      "name": "沪银期权",
+      "unit": 15.0,
+      "price_tick": 0.5,
+      "expiry": "20261124",
+      "initial_cents": 2400000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "cu2612P100000.SF",
+      "name": "沪铜期权",
+      "unit": 5.0,
+      "price_tick": 2.0,
+      "expiry": "20261124",
+      "initial_cents": 6900000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "FG701C1000.ZF",
+      "name": "玻璃期权",
+      "unit": 20.0,
+      "price_tick": 0.5,
+      "expiry": "20261211",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "ag2612P15800.SF",
+      "name": "沪银期权",
+      "unit": 15.0,
+      "price_tick": 0.5,
+      "expiry": "20261124",
+      "initial_cents": 2200000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "rb2701C2950.SF",
+      "name": "螺纹钢期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261225",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "rb2701C3000.SF",
+      "name": "螺纹钢期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261225",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "PK611P8300.ZF",
+      "name": "花生期权",
+      "unit": 5.0,
+      "price_tick": 0.5,
+      "expiry": "20261013",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "OI703P9500.ZF",
+      "name": "菜籽油期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20270211",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "i2701-C-700.DF",
+      "name": "铁矿石期权",
+      "unit": 100.0,
+      "price_tick": 0.1,
+      "expiry": "20261216",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "UR701P1860.ZF",
+      "name": "尿素期权",
+      "unit": 20.0,
+      "price_tick": 0.5,
+      "expiry": "20261211",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "m2701-P-3050.DF",
+      "name": "豆粕期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261216",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "pg2611-P-6600.DF",
+      "name": "液化气期权",
+      "unit": 20.0,
+      "price_tick": 0.2,
+      "expiry": "20261023",
+      "initial_cents": 2300000,
+      "budget_source_date": "20260825"
+    },
+    {
+      "code": "bz2611-P-8200.DF",
+      "name": "纯苯期权",
+      "unit": 30.0,
+      "price_tick": 0.5,
+      "expiry": "20261023",
+      "initial_cents": 3100000,
+      "budget_source_date": "20260825"
+    },
+    {
+      "code": "eb2611-P-9800.DF",
+      "name": "苯乙烯期权",
+      "unit": 5.0,
+      "price_tick": 0.5,
+      "expiry": "20261023",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "a2701-P-5500.DF",
+      "name": "豆一期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261216",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "bu2611P5100.SF",
+      "name": "沥青期权",
+      "unit": 10,
+      "price_tick": 0.5,
+      "expiry": "20261026",
+      "initial_cents": 1200000,
+      "budget_source_date": "20260826"
+    },
+    {
+      "code": "pt2612-C-448.GF",
+      "name": "pt2612C",
+      "unit": 1000,
+      "price_tick": 0.05,
+      "expiry": "20261106",
+      "initial_cents": 5700000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "ps2611-P-40000.GF",
+      "name": "多晶硅期权",
+      "unit": 3.0,
+      "price_tick": 1.0,
+      "expiry": "20261014",
+      "initial_cents": 1700000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "jm2701-P-1460.DF",
+      "name": "",
+      "unit": 60.0,
+      "price_tick": 0.1,
+      "expiry": "20261216",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "au2612C920.SF",
+      "name": "沪金期权",
+      "unit": 1000.0,
+      "price_tick": 0.02,
+      "expiry": "20261124",
+      "initial_cents": 17400000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "i2701-P-770.DF",
+      "name": "铁矿石期权",
+      "unit": 100.0,
+      "price_tick": 0.1,
+      "expiry": "20261216",
+      "initial_cents": 1700000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "op2611P3800.SF",
+      "name": "胶版印刷纸期权",
+      "unit": 40,
+      "price_tick": 1.0,
+      "expiry": "20261026",
+      "initial_cents": 1200000,
+      "budget_source_date": "20260826"
+    },
+    {
+      "code": "si2611-P-9500.GF",
+      "name": "工业硅期权",
+      "unit": 5.0,
+      "price_tick": 1.0,
+      "expiry": "20261014",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "AP701P7200.ZF",
+      "name": "苹果期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261126",
+      "initial_cents": 1100000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "ru2701P19750.SF",
+      "name": "橡胶期权",
+      "unit": 10.0,
+      "price_tick": 1.0,
+      "expiry": "20261225",
+      "initial_cents": 2900000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "m2612-P-3450.DF",
+      "name": "豆粕期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261117",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "p2701-P-10800.DF",
+      "name": "棕榈油期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261216",
+      "initial_cents": 1300000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "eg2611-P-5700.DF",
+      "name": "乙二醇期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261023",
+      "initial_cents": 1200000,
+      "budget_source_date": "20260826"
+    },
+    {
+      "code": "lc2701-P-158000.GF",
+      "name": "碳酸锂期权",
+      "unit": 1.0,
+      "price_tick": 10.0,
+      "expiry": "20261207",
+      "initial_cents": 2700000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "PK612P8400.ZF",
+      "name": "花生期权",
+      "unit": 5.0,
+      "price_tick": 0.5,
+      "expiry": "20261111",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "cs2611-P-2700.DF",
+      "name": "淀粉期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261023",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "RM703P2375.ZF",
+      "name": "菜籽粕期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20270211",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "pp2611-P-9200.DF",
+      "name": "聚丙烯期权",
+      "unit": 5.0,
+      "price_tick": 0.5,
+      "expiry": "20261023",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "cu2612C104000.SF",
+      "name": "沪铜期权",
+      "unit": 5.0,
+      "price_tick": 2.0,
+      "expiry": "20261124",
+      "initial_cents": 6300000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "pd2612-C-308.GF",
+      "name": "pd2612C",
+      "unit": 1000,
+      "price_tick": 0.05,
+      "expiry": "20261106",
+      "initial_cents": 4200000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "SR703P5500.ZF",
+      "name": "白糖期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20270211",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "rb2701P3300.SF",
+      "name": "螺纹钢期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261225",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "sn2611C500000.SF",
+      "name": "沪锡期权",
+      "unit": 1.0,
+      "price_tick": 2.0,
+      "expiry": "20261026",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "c2701-C-2240.DF",
+      "name": "玉米期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261216",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "br2611C17600.SF",
+      "name": "BR橡胶期权",
+      "unit": 5.0,
+      "price_tick": 1.0,
+      "expiry": "20261026",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260908"
+    },
+    {
+      "code": "PF612C8900.ZF",
+      "name": "短纤期权",
+      "unit": 5.0,
+      "price_tick": 0.5,
+      "expiry": "20261111",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260911"
+    },
+    {
+      "code": "CJ701C8900.ZF",
+      "name": "红枣期权",
+      "unit": 5.0,
+      "price_tick": 1.0,
+      "expiry": "20261126",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "pg2611-P-6100.DF",
+      "name": "液化气期权",
+      "unit": 20.0,
+      "price_tick": 0.2,
+      "expiry": "20261023",
+      "initial_cents": 1400000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "bz2611-P-8400.DF",
+      "name": "纯苯期权",
+      "unit": 30.0,
+      "price_tick": 0.5,
+      "expiry": "20261023",
+      "initial_cents": 5300000,
+      "budget_source_date": "20260826"
+    },
+    {
+      "code": "a2701-P-5600.DF",
+      "name": "豆一期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261216",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "ag2612C16400.SF",
+      "name": "沪银期权",
+      "unit": 15.0,
+      "price_tick": 0.5,
+      "expiry": "20261124",
+      "initial_cents": 4100000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "m2701-P-3600.DF",
+      "name": "豆粕期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261216",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "i2701-P-780.DF",
+      "name": "铁矿石期权",
+      "unit": 100.0,
+      "price_tick": 0.1,
+      "expiry": "20261216",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "ag2612P15400.SF",
+      "name": "沪银期权",
+      "unit": 15.0,
+      "price_tick": 0.5,
+      "expiry": "20261124",
+      "initial_cents": 1900000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "si2611-P-9600.GF",
+      "name": "工业硅期权",
+      "unit": 5.0,
+      "price_tick": 1.0,
+      "expiry": "20261014",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "i2701-P-640.DF",
+      "name": "铁矿石期权",
+      "unit": 100.0,
+      "price_tick": 0.1,
+      "expiry": "20261216",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "p2701-P-11000.DF",
+      "name": "棕榈油期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20261216",
+      "initial_cents": 1600000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "pp2701-P-8800.DF",
+      "name": "聚丙烯期权",
+      "unit": 5.0,
+      "price_tick": 0.5,
+      "expiry": "20261216",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    },
+    {
+      "code": "SR703C5400.ZF",
+      "name": "白糖期权",
+      "unit": 10.0,
+      "price_tick": 0.5,
+      "expiry": "20270211",
+      "initial_cents": 1000000,
+      "budget_source_date": "20260824"
+    }
+  ],
+  "universe": "Frozen 64 contracts from 2026-09-12, not a winner whitelist"
+}

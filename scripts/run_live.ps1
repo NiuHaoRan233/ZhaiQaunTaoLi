@@ -8,6 +8,15 @@ $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $ProjectRoot
 $Python = [IO.Path]::GetFullPath((Join-Path $ProjectRoot ".venv\Scripts\python.exe"))
+$SourcePath = [IO.Path]::GetFullPath((Join-Path $ProjectRoot "src"))
+# A copied virtual environment can retain an editable-install pointer to the old
+# drive.  Put this checkout first so the live runner always imports the code
+# beside this script, even before setup_windows.ps1 repairs that metadata.
+$env:PYTHONPATH = if ([string]::IsNullOrWhiteSpace($env:PYTHONPATH)) {
+    $SourcePath
+} else {
+    $SourcePath + [IO.Path]::PathSeparator + $env:PYTHONPATH
+}
 $ConfigPath = if ([IO.Path]::IsPathRooted($Config)) {
     [IO.Path]::GetFullPath($Config)
 } else {
@@ -176,6 +185,11 @@ if (-not (Test-Path -LiteralPath $Python)) {
 }
 if (-not (Test-Path -LiteralPath $ConfigPath)) {
     throw "Configuration not found: $Config"
+}
+
+& $Python -c "import zhaiquant"
+if ($LASTEXITCODE -ne 0) {
+    throw "Project import failed. Run scripts\setup_windows.ps1 to repair the virtual environment after moving the project."
 }
 
 if ($ListReplacementTargetsOnly) {

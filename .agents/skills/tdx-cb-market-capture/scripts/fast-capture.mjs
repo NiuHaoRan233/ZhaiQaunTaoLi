@@ -1,7 +1,14 @@
 import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import sharp from "sharp";
+// Inject the runtime's already loaded CommonJS sharp. A static ESM import
+// can fail in node_repl on sharp's package.json import and waste the capture.
+let sharp;
+
+export function configureCapture({ imageProcessor }) {
+  if (typeof imageProcessor !== "function") throw new Error("A loaded sharp function is required");
+  sharp = imageProcessor;
+}
 
 function screenshotFrom(state) {
   const screenshot = state?.screenshots?.[0];
@@ -16,6 +23,7 @@ function screenshotBytes(screenshot) {
 }
 
 export async function stableDataHash(state, region = {}) {
+  if (!sharp) throw new Error("Call configureCapture({ imageProcessor: sharp }) first");
   const input = screenshotBytes(screenshotFrom(state));
   const metadata = await sharp(input).metadata();
   const width = metadata.width ?? 0;
@@ -39,14 +47,24 @@ export async function stableDataHash(state, region = {}) {
 async function pressAndRefresh(sky, state, key) {
   if (!state?.window) throw new Error("Fresh window state is required");
   await sky.press_key({ window: state.window, key });
-  return sky.get_window_state({
+  const next = await sky.get_window_state({
     window: state.window,
     include_screenshot: true,
     include_text: false,
   });
+  if (next.window?.id !== state.window.id || next.window?.app !== state.window.app) {
+    throw new Error("Capture window changed; reselect and observe before continuing");
+  }
+  const before = await sharp(screenshotBytes(screenshotFrom(state))).metadata();
+  const after = await sharp(screenshotBytes(screenshotFrom(next))).metadata();
+  if (before.width !== after.width || before.height !== after.height) {
+    throw new Error("Screenshot dimensions changed; recalibrate the view");
+  }
+  return next;
 }
 
 export async function moveToBoundary({ sky, state, key, maxSteps = 100, region }) {
+  if (!["PageUp", "PageDown"].includes(key)) throw new Error("Only paging keys are supported");
   let current = state;
   let currentHash = await stableDataHash(current, region);
 
@@ -69,17 +87,34 @@ export async function captureForward({
   stem,
   maxPages = 100,
   region,
+  normalizedDir,
+  normalizedStem,
 }) {
   await mkdir(outputDir, { recursive: true });
+  if (normalizedDir) {
+    if (!normalizedStem) throw new Error("normalizedStem is required with normalizedDir");
+    await mkdir(normalizedDir, { recursive: true });
+  }
   const pages = [];
   let current = state;
   let currentHash = await stableDataHash(current, region);
 
   for (let sequence = 1; sequence <= maxPages; sequence += 1) {
-    const filename = `${stem}_${String(sequence).padStart(2, "0")}.png`;
+    const bytes = screenshotBytes(screenshotFrom(current));
+    const format = (await sharp(bytes).metadata()).format;
+    const extension = format === "jpeg" ? "jpg" : format === "png" ? "png" : null;
+    if (!extension) throw new Error(`Unsupported screenshot encoding: ${format}`);
+    const suffix = String(sequence).padStart(2, "0");
+    const filename = `${stem}_${suffix}.${extension}`;
     const path = join(outputDir, filename);
-    await writeFile(path, screenshotBytes(screenshotFrom(current)), { flag: "wx" });
-    pages.push({ sequence, path, hash: currentHash });
+    await writeFile(path, bytes, { flag: "wx" });
+    let normalized;
+    if (normalizedDir) {
+      normalized = join(normalizedDir, `${normalizedStem}_${suffix}.png`);
+      await writeFile(normalized, await sharp(bytes).png().toBuffer(), { flag: "wx" });
+    }
+    pages.push({ sequence, path, normalized, encoding: format, hash: currentHash,
+      capturedAt: new Date().toISOString() });
 
     const next = await pressAndRefresh(sky, current, "PageDown");
     const nextHash = await stableDataHash(next, region);

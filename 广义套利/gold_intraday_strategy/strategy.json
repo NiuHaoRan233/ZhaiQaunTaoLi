@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "public_name": "黄金期权日内估值做市0.1",
+  "family": "probe_gold_fast_validation_20260913_v5",
+  "date": "20260911",
+  "codes": ["au2610C960.SF", "au2610C952.SF"],
+  "capital_per_code_cny": 250000,
+  "max_contracts": 1,
+  "fee_per_side_cny": 1.7,
+  "order_delay_ms": 0,
+  "future_signal_delay_ms": 0,
+  "fast_iv_seconds": 10,
+  "slow_iv_seconds": 60,
+  "direction": "long_only",
+  "reference": "source_aligned_min_fast_slow_iv",
+  "exit": "bounded_patient",
+  "primary_settlement": "entry_cost_virtual_at_every_break",
+  "market_comparison_close_before_seconds": 5,
+  "run_strict_through_comparison": true,
+  "execution": "offline_replay_only"
+}

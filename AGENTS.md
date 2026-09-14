@@ -102,6 +102,9 @@ During each strategy discussion:
   committed.
 - `债券活跃度观察/`, `实盘决策看板/`, and `行情屏幕高速读取/` are independent read-only
   tools. Preserve their local `.gitignore` rules and keep their READMEs current.
+- Before answering a bond-activity request, read `债券活跃度观察/AGENTS.md` for the
+  user's persistent output requirements: always include both EB benchmarks and show
+  scores for every bond in the reported observation list, including follow-up lists.
 
 ## Current Maker Paper Matrix
 
@@ -112,21 +115,38 @@ During each strategy discussion:
 - The current persisted real-time comparison order is
   `maker_priority_v1_37_candidate`, `maker_priority_v1_50_candidate`,
   `maker_priority_v2_52_candidate_r2`, `maker_priority_v2_63_candidate`,
-  `maker_shared_1000_v0_1_candidate`, then
-  `maker_shared_1000_v0_13_candidate`.
+  `maker_priority_v2_70_candidate_r2`, `maker_priority_v2_71_candidate`,
+  `maker_shared_1000_v0_1_candidate`, `maker_shared_1000_v0_13_candidate`, then
+  `maker_shared_1000_v0_16_candidate_r2`, then `maker_dadao_v0_1_candidate_r2`.
 - Publicly present the active ordinary first-position models as 1.37, 1.50,
-  2.52, and 2.63. The 2.63 candidate is a direct child of immutable 2.6 r3 and
+  2.52, 2.63, 2.70, and 2.71. The 2.70 identity is the validated r2, directly based on
+  immutable 2.63 and added by the user on 2026-09-07 without replacing any of
+  the previous six models. The initial 2.70 and 2.69 remain offline research.
+  The 2.63 candidate is a direct child of immutable 2.6 r3 and
   keeps its trading behavior while receiving its own model identity and ledger.
-  Also present the two active shared-capital models as thousand-bond
-  first-position 0.1 and 0.13. Each has its own runtime and 1,000-bond capital
+  Also present the three active shared-capital models as thousand-bond
+  first-position 0.1, 0.13, and 0.16 (live revision). The 0.16 r2 is a direct
+  child of immutable 0.16 with arrival-ordered execution and a private input
+  journal; never replay its forward account by resorting raw market times.
+  Each has its own runtime and 1,000-bond capital
   slot; only the two bonds inside the same model share that slot. Former 2.5,
   2.51, 2.6, the other shared-capital 0.x versions, queue, and Windfall forward
   accounts are inactive in the current matrix, but all registrations and
   historical ledgers remain immutable together with 2.52 ancestors and every
   earlier version.
+- On 2026-09-11 the user added ordinary 2.71 after 2.70, retaining all nine
+  previous models (ten total). ID `maker_priority_v2_71_candidate` is the
+  user-corrected former offline numbering 2.73, directly based on immutable 2.63.
+  Its profile is unchanged; ordinary same-day recovery replays saved ticks.
 - A candidate entering the real-time paper matrix is not a production promotion. Do not
   describe it as deployed or current production, and do not merge its account, fills,
   inventory, or PnL with another model.
+- The Dadao model is publicly “大道至简0.1（实时修订）”, a direct child of
+  `probe_top_compare_20260908_v1_switch_v013`. It has its own zero-base 1,000-bond
+  shared slot and simple buy-one/sell-one loop with the archived v013 selector.
+  Its runtime is `src/zhaiquant/dadao_maker_live.py`; native ordinary trading
+  decisions must not run under this identity. Restore only its own arrival journal,
+  retaining the original 0.1 reports and all other models independently.
 - Keep `config.example.toml`, the model registry, the formal specification, runtime model
   registration, and tests consistent whenever this matrix changes.
 

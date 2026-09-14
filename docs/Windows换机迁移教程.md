@@ -1,13 +1,13 @@
 # Windows换机迁移教程
 
-版本：2026-08-21
+版本：2026-09-06
 
 ## 1. 旧电脑导出
 
 先正常停止实时程序，再创建一致性数据库备份：
 
 ```powershell
-cd C:\Users\NHR\Desktop\债券套利策略
+Set-Location -LiteralPath 'E:\QuantProject\债券套利策略'
 powershell -ExecutionPolicy Bypass -File .\scripts\backup_data.ps1
 ```
 
@@ -17,6 +17,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\backup_data.ps1
 - `config.toml`
 
 代码不需要手工复制，直接从 GitHub 克隆。`logs/` 可选，仅用于保留排错记录。不要复制 `.venv/`，虚拟环境带有旧电脑的绝对路径，换机后应重建。
+如果只是在同一台电脑上换盘符或移动项目目录，也要在新根目录执行一次
+`powershell -ExecutionPolicy Bypass -File .\scripts\setup_windows.ps1 -SkipDoctor`，用于刷新可编辑安装的绝对路径；项目内置启动器会另外优先使用新根目录下的 `src`。
 
 仓库内的 `.agents/skills/` 也随 Git 一起迁移。Codex 从仓库根目录启动时会自动发现这些项目技能，不需要重新讲解通达信采集步骤，也不需要复制旧电脑的个人技能目录。
 

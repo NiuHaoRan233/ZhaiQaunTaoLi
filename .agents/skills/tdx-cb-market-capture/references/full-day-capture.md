@@ -4,13 +4,54 @@ Use this workflow when the user asks for the complete trading day, daily screens
 
 ## Performance target and fast path
 
-Treat speed as part of correctness. After 通达信 is open, connected, and showing the verified security, aim to finish both datasets in about 60 seconds on the known layout. Do not narrate or emit every page while collecting.
+Treat speed as part of correctness. After 通达信 is open and connected, aim to finish
+both securities' four datasets in about 60 seconds on the known layout. Measure
+from the first app discovery/navigation action through the last saved screenshot;
+also record OCR/review separately. Do not present paging-helper time as total task
+time. Do not narrate or emit every page while collecting.
+
+Complete all four screenshot batches before OCR, directory reports, or parser
+debugging. Report the screenshot milestone immediately; then finish the default
+OCR/review task unless the user requested screenshots only. If an entrance is not
+obvious, inspect the bottom row beside `资金流向` at native resolution once before
+trying unrelated menus. Do not repeatedly explore the same failed route.
 
 Prefer the bundled `scripts/fast-capture.mjs` after visually verifying the full-screen title and data pane. Import it in the persistent `node_repl` session and use its boundary and forward-capture helpers. The helper presses only one paging key at a time, obtains a fresh screenshot after every key press, hashes the stable data rectangle, saves every changed page immediately, and stops only when the cropped data is unchanged. This preserves the Computer Use fresh-observation requirement without a model/tool round trip per page.
 
+### Load once in node_repl
+
+Load `sharp` using `createRequire` from the Node runtime directory returned by
+`load_workspace_dependencies`, then inject it into the helper. Do not use a static
+ESM `import sharp` or rewrite the helper into a temporary module after an import
+failure. The Node dependency path is discovered per computer, not stored here.
+
+```js
+var { createRequire } = await import('node:module');
+var { pathToFileURL } = await import('node:url');
+var path = await import('node:path');
+// dependencyNodeRoot = parent of the discovered node_modules directory.
+var runtimeRequire = createRequire(path.join(dependencyNodeRoot, 'capture.cjs'));
+var sharp = runtimeRequire('sharp');
+var fast = await import(pathToFileURL(path.join(nodeRepl.cwd,
+  '.agents/skills/tdx-cb-market-capture/scripts/fast-capture.mjs')).href);
+fast.configureCapture({ imageProcessor: sharp });
+```
+
+Use `moveToBoundary({sky, state, key:'PageUp', region})`, retain its returned
+`state`, then `captureForward` with that state. On the verified 2560×1392 detail
+view, `region:{top:50,bottom:24}` excludes clocks/status; recheck other layouts.
+Set `outputDir` to the security root and a timestamped `stem` for original bytes;
+set `normalizedDir` to `<security>/<date>/<kind>` and `normalizedStem` to
+`<date>_<code>_<kind>` for actual PNG copies. The helper preserves original JPEG
+as `.jpg`, writes normalized PNG in the same pass, refuses overwrites, and records
+capture timestamps. Save the returned page log once per batch.
+
 Use the fast path only post-close, when the data is no longer changing. Crop out the top title/clock area and bottom status bar for boundary hashing. Keep the mouse stationary and use only `PageUp` / `PageDown` while the batch is running. If the full-screen view, security identity, window, or screenshot dimensions change, abandon the batch and return to the manual verified flow below.
 
-Save lossless sequence-first files during the batch, such as `2026-08-14_132026.SH_逐笔委托_01.png`. After both batches finish, derive visible boundary times and rename/write the index in one pass. If reliable automatic time extraction is unavailable, keep the sequence-first filenames and record the times in `截图索引.md`; never slow or risk the actual page capture merely to construct filenames.
+Save sequence-first PNG copies during the batch, such as `2026-08-14_132026.SH_逐笔委托_01.png`.
+The PNG retains the decoded pixels; it cannot restore detail lost in a source JPEG.
+After all batches finish, derive visible boundary times and write the index in one
+pass. Keep times in `截图索引.md`, not in filenames; never slow capture for naming.
 
 ## Output layout
 
@@ -30,7 +71,7 @@ Use the repository-local root `成交委托数据截图保存/`. Separate securi
 
 Name each image as:
 
-`交易日_证券代码.SH_数据类型_画面最早时间-画面最晚时间_两位序号.png`
+`交易日_证券代码.SH_数据类型_两位序号.png`
 
 Keep this output ignored by Git. Never overwrite an existing official page silently; compare it first or use a clearly marked retry filename.
 
@@ -65,3 +106,25 @@ After both datasets are captured:
 6. If any page, boundary, or file write is uncertain, mark the day incomplete and recapture. Never label a partial set complete.
 
 The 2026-08-14 UI trial verified that `PageUp` moves toward earlier records and `PageDown` moves toward later records in both full-screen views. On that day, the earliest成交 page began at 09:31:51; this correctly represented the first visible成交 rather than a missing 09:30 page.
+
+## OCR after the capture milestone
+
+- At 2560×1392, the 2026-09-07 order view has **eight** 320-pixel panels; older
+  captures at the same resolution have ten. Visually count columns and use
+  `tdx-extract-orders --panels 8` only for the eight-panel view. The parser retains
+  the historical default; no per-day monkeypatch is needed.
+- Pass `--cache-dir <ignored-local-cache>` to both extract commands. Raw OCR tokens
+  are cached by exact panel pixels and OCR version before coordinate normalization.
+  Fixing parsing or reviewing a row should reuse these tokens, not run all OCR again.
+  Use a new output directory for a retry; preserve first-pass CSV and review files.
+- Check screenshot counts, parsed rows per column, remaining review flags and
+  displayed `总笔` immediately after first extraction. This layout had 77 order
+  rows or 75 trade rows per full column; partial/empty last columns are legitimate.
+- Trade direction comes from the quantity's B/S suffix, never from price colour.
+  Malformed quantity text enters review even when OCR confidence is high.
+- Trade overlap is matched as a consecutive time/price/size/direction sequence.
+  Same-second events after the last saved row must survive. An OCR mismatch in
+  the overlap is retained for review; apply the verified correction, then repeat
+  overlap matching from cached tokens rather than deleting rows by time.
+- Batch review crops from saved originals, retaining preceding timestamps for
+  inherited-time rows. Do not navigate 通达信 again for an OCR-only discrepancy.

@@ -2,11 +2,16 @@ from __future__ import annotations
 
 import unittest
 import tempfile
+from dataclasses import replace
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 from zhaiquant.tdx_tape import (
     OCRToken,
     TdxOrderEvent,
+    TdxTrade,
+    _PanelOCR,
+    _remove_page_overlap,
     _normalize_panel_tokens,
     _order_glyph_repair_requires_review,
     _order_screenshot_layout,
@@ -20,6 +25,86 @@ from zhaiquant.tdx_tape import (
 
 
 class TdxTapeParserTests(unittest.TestCase):
+    def _trade(self, price: float, hands: int = 100, time: str = "14:33:42") -> TdxTrade:
+        return TdxTrade("2026-09-07", "132026.SH", time, price, hands, "S",
+                        None, None, "page_01.png", 1, 1, 1, False, 0.99, 0.99, False)
+
+    def test_four_digit_quantity_is_not_joined_to_price_or_price_colour(self):
+        trades, _ = parse_trade_panel([
+            OCRToken(3, 37, "13:29:46", 0.99),
+            OCRToken(92, 37, "137.000", 0.99, "B", 1.0),
+            OCRToken(165, 37, "1000S", 0.99, "B", 1.0),
+            OCRToken(92, 54, "137.000", 0.99, "S", 1.0),
+            OCRToken(165, 54, "2000B", 0.99, "S", 1.0),
+        ], market_date="2026-09-07", code="132024.SH", source_page="page_01.png",
+            page_sequence=1, panel=1)
+        self.assertEqual([(r.price, r.hands, r.side, r.market_time) for r in trades],
+                         [(137.0, 1000, "S", "13:29:46"), (137.0, 2000, "B", "13:29:46")])
+        self.assertFalse(any(r.review_required for r in trades))
+
+    def test_price_colour_without_quantity_suffix_needs_review(self):
+        trades, _ = parse_trade_panel([
+            OCRToken(3, 37, "10:00:00", 0.99),
+            OCRToken(92, 37, "136.500", 0.99, "B", 1.0),
+            OCRToken(179, 37, "100", 0.99, "B", 1.0),
+        ], market_date="2026-09-07", code="132026.SH", source_page="page_01.png",
+            page_sequence=1, panel=1)
+        self.assertIsNone(trades[0].side)
+        self.assertTrue(trades[0].review_required)
+
+    def test_malformed_quantity_cannot_be_silently_parsed_as_nine(self):
+        trades, _ = parse_trade_panel([
+            OCRToken(3, 37, "10:22:50", 0.99),
+            OCRToken(92, 37, "136.500", 0.99),
+            OCRToken(179, 37, "S009", 0.99),
+        ], market_date="2026-09-07", code="132026.SH", source_page="page_01.png",
+            page_sequence=1, panel=1)
+        self.assertIsNone(trades[0].hands)
+        self.assertTrue(trades[0].review_required)
+
+    def test_overlap_preserves_new_same_second_trades_and_identical_fills(self):
+        a, b, c = self._trade(135.788), self._trade(135.610), self._trade(135.600, 1000)
+        same_fill = replace(c, source_page="page_02.png", page_sequence=2)
+        rows, removed = _remove_page_overlap([[a, b], [replace(b, buy_order=600), c, same_fill]])
+        self.assertEqual(removed, 1)
+        self.assertEqual([r.price for r in rows], [135.788, 135.610, 135.600, 135.600])
+        self.assertFalse(any(r.review_required for r in rows))
+
+    def test_unresolved_ocr_overlap_is_retained_for_review(self):
+        a=self._trade(136.5, time="10:22:50")
+        b=self._trade(136.4, time="10:23:00")
+        rows, removed = _remove_page_overlap([[a, b], [replace(a, hands=None), b]])
+        self.assertEqual((len(rows), removed), (4, 0))
+        self.assertTrue(all(r.review_required for r in rows[2:]))
+
+    def test_eight_panel_layout_requires_explicit_selection(self):
+        layout = _order_screenshot_layout(2560, 1392, panels=8)
+        self.assertEqual((layout.panels, layout.top, layout.bottom), (8, 50, 1368))
+        self.assertEqual(_order_screenshot_layout(2560, 1392).panels, 10)
+        with self.assertRaises(ValueError):
+            _order_screenshot_layout(1598, 979, panels=8)
+
+    def test_pixel_cache_skips_engine_start_and_invalidates_on_image_change(self):
+        class Pixels:
+            shape = (20, 20, 3)
+            dtype = "uint8"
+            def __init__(self, value): self.value = value
+            def tobytes(self): return self.value
+        factory = Mock(return_value=object())
+        tokens = [OCRToken(1, 2, "100S", 0.99)]
+        with tempfile.TemporaryDirectory() as folder, patch(
+            "zhaiquant.tdx_tape._ocr_tokens", return_value=tokens,
+        ) as recognize, patch("importlib.metadata.version", return_value="test"):
+            first = _PanelOCR(Path(folder), engine_factory=factory)
+            self.assertEqual(first(Pixels(b"one")), tokens)
+            cached_factory = Mock(side_effect=AssertionError("cache must not start OCR"))
+            second = _PanelOCR(Path(folder), engine_factory=cached_factory)
+            self.assertEqual(second(Pixels(b"one")), tokens)
+            self.assertEqual(second.hits, 1)
+            cached_factory.assert_not_called()
+            first(Pixels(b"two"))
+            self.assertEqual(recognize.call_count, 2)
+
     def test_verified_2026_08_13_screenshot_layouts_are_explicit(self) -> None:
         trade = _trade_screenshot_layout(1689, 1015)
         order = _order_screenshot_layout(2560, 1392)

@@ -132,6 +132,9 @@ MODEL_META = {
 }
 
 KIND_LABELS = {
+    "simple_top_cycle": "买卖一循环",
+    "simple_passive_buy": "买一被动买入",
+    "simple_passive_sell": "卖一被动卖出",
     "base": "期初底仓",
     "low_bid_reversion": "低价承接",
     "inventory_replenish": "客户底仓回补",
@@ -529,10 +532,14 @@ def _default_model_meta(
         "queue": "排队",
         "windfall": "超级捡漏",
     }.get(fill_mode)
-    if model_id == "maker_shared_1000_v0_1_candidate":
+    if model_id == "maker_dadao_v0_1_candidate_r2":
+        short = "大道至简0.1（实时修订）"
+    elif model_id == "maker_shared_1000_v0_1_candidate":
         short = "千张第一顺位0.1"
     elif model_id == "maker_shared_1000_v0_13_candidate":
         short = "千张第一顺位0.13"
+    elif model_id == "maker_shared_1000_v0_16_candidate_r2":
+        short = "千张第一顺位0.16（实时修订）"
     elif model_id == "maker_priority_v1_49_candidate_r2":
         short = "第一顺位1.49"
     elif model_id == "maker_priority_v1_50_candidate":
@@ -562,6 +569,8 @@ def _default_model_meta(
         short = "第一顺位2.6"
     elif model_id == "maker_priority_v2_63_candidate":
         short = "第一顺位2.63"
+    elif model_id == "maker_priority_v2_70_candidate_r2":
+        short = "第一顺位2.70"
     else:
         version = str(model_version or "").removesuffix("-candidate")
         short = (
@@ -573,10 +582,11 @@ def _default_model_meta(
         "short": short,
         "status": "模拟盘",
         "branch": (
-            "千张第一顺位"
+            "大道至简" if model_id == "maker_dadao_v0_1_candidate_r2" else "千张第一顺位"
             if model_id in {
                 "maker_shared_1000_v0_1_candidate",
                 "maker_shared_1000_v0_13_candidate",
+                "maker_shared_1000_v0_16_candidate_r2",
             }
             else fill_mode
         ),

@@ -55,6 +55,7 @@ MODE_LABELS = {
     "windfall": "超级捡漏",
 }
 KIND_LABELS = {
+    "simple_top_cycle": "买卖一循环",
     "base": "期初底仓",
     "low_bid_reversion": "低价承接",
     "inventory_replenish": "库存回补",
@@ -73,6 +74,8 @@ KIND_LABELS = {
     "super_windfall_active": "超级捡漏主动吃单",
 }
 REASON_LABELS = {
+    "simple_passive_buy": "买一被动买入",
+    "simple_passive_sell": "卖一被动卖出",
     "passive_buy": "被动承接",
     "passive_sell": "被动卖出",
     "active_tail_sweep": "主动扫尾",
@@ -206,10 +209,14 @@ def _model_display_name(account: dict[str, Any]) -> str:
     """Keep storage IDs auditable without presenting them as model names."""
 
     model_id = str(account.get("model_id") or "")
+    if model_id == "maker_dadao_v0_1_candidate_r2":
+        return "大道至简0.1（实时修订）"
     if model_id == "maker_shared_1000_v0_1_candidate":
         return "千张第一顺位0.1"
     if model_id == "maker_shared_1000_v0_13_candidate":
         return "千张第一顺位0.13"
+    if model_id == "maker_shared_1000_v0_16_candidate_r2":
+        return "千张第一顺位0.16（实时修订）"
     if model_id == "maker_priority_v1_49_candidate_r2":
         return "第一顺位1.49"
     if model_id == "maker_priority_v1_50_candidate":
@@ -245,6 +252,35 @@ def _model_display_name(account: dict[str, Any]) -> str:
         return "第一顺位2.6"
     if model_id == "maker_priority_v2_63_candidate":
         return "第一顺位2.63"
+    if model_id in {
+        "maker_priority_v2_64_candidate",
+        "maker_priority_v2_64_candidate_r2",
+    }:
+        return "第一顺位2.64"
+    if model_id == "maker_priority_v2_65_candidate":
+        return "第一顺位2.65"
+    if model_id == "maker_priority_v2_66_candidate":
+        return "第一顺位2.66首版试验"
+    if model_id == "maker_priority_v2_66_candidate_r2":
+        return "第一顺位2.66 r2试验"
+    if model_id == "maker_priority_v2_66_candidate_r3":
+        return "第一顺位2.66 r3试验"
+    if model_id == "maker_priority_v2_67_candidate":
+        return "第一顺位2.67"
+    if model_id == "maker_priority_v2_68_candidate":
+        return "第一顺位2.68"
+    if model_id == "maker_priority_v2_68_candidate_r2":
+        return "第一顺位2.68修订候选"
+    if model_id == "maker_priority_v2_68_candidate_r3":
+        return "第一顺位2.68 r3候选"
+    if model_id == "maker_priority_v2_69_candidate":
+        return "第一顺位2.69重做候选"
+    if model_id == "maker_priority_v2_70_candidate":
+        return "第一顺位2.70修正候选"
+    if model_id == "maker_priority_v2_70_candidate_r2":
+        return "第一顺位2.70"
+    if model_id == "maker_priority_v2_71_candidate":
+        return "第一顺位2.71"
     fill_mode = str(account.get("fill_mode") or "")
     if model_id.startswith("maker_priority_") or fill_mode == "priority":
         family = "第一顺位"

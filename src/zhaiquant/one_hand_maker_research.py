@@ -8,7 +8,7 @@ import tempfile
 from dataclasses import asdict, dataclass, replace
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 from .config import AppConfig, load_config, maker_underlying_stock_code
 from .database import SQLiteStore
@@ -608,6 +608,9 @@ def replay_one_hand_day(
     priority_policy: MakerPolicyProfile = ONE_HAND_POLICY_V01_CANDIDATE,
     shared_capacity_bonds: float = ONE_HAND_BONDS,
     allocator_class: type[OneHandSharedAllocator] = OneHandSharedAllocator,
+    cutoff_time: str | None = None,
+    observer: Callable[[OneHandSharedAllocator, ReplayTick | None], None] | None = None,
+    engine_class: type[MakerPaperEngine] = MakerPaperEngine,
 ) -> dict[str, Any]:
     """Run one read-only causal day with one shared fixed-size cash slot."""
 
@@ -616,6 +619,8 @@ def replay_one_hand_day(
         f"file:{source_path.as_posix()}?mode=ro", uri=True,
     )
     source.row_factory = sqlite3.Row
+    source.execute("PRAGMA query_only=ON")
+    source.execute("BEGIN")
     try:
         with tempfile.TemporaryDirectory() as temporary:
             replay_config = _small_account_config(
@@ -632,7 +637,7 @@ def replay_one_hand_day(
                         replay_config, code, priority_policy,
                     )
                     strategy_to_code[strategy_id] = code
-                    engines[code] = MakerPaperEngine(
+                    engines[code] = engine_class(
                         replay_config,
                         store,
                         bond_code=code,
@@ -651,8 +656,14 @@ def replay_one_hand_day(
                 ticks = _merged_ticks(
                     source, replay_config, market_date, engines,
                 )
+                if observer is not None:
+                    observer(allocator, None)
                 for tick in ticks:
+                    if cutoff_time is not None and tick.market_time[:8] > cutoff_time:
+                        continue
                     allocator.on_replay_tick(tick)
+                    if observer is not None:
+                        observer(allocator, tick)
                 store.connection.commit()
 
                 fills = _fill_rows(store, market_date, strategy_to_code)

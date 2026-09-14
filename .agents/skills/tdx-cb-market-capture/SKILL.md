@@ -16,6 +16,18 @@ Treat this repository copy as the portable source of truth. Do not assume a Wind
 - Application identity: `通达信金融终端` / `tdxw.exe`
 - Required views: bottom `逐笔委托`; lower-right `细`, meaning `成交明细`
 
+**Fast entry:** `逐笔委托` is a small label on the **lowest tab row, immediately
+right of `资金流向`**. Do not confuse that row with the indicator tabs above it.
+An empty accessibility tree does not establish that this custom-drawn label is
+missing. Inspect the fresh image at full resolution before declaring a blocker.
+
+For a daily run, finish both securities' screenshots first, report the page counts
+and measured capture time immediately, then continue the authorized OCR workflow.
+Do not delay the screenshot milestone while diagnosing OCR. The known-layout
+capture target is roughly one minute; it is a target, not an unmeasured promise.
+See [the maintained incident and optimization record](../../../docs/通达信截图流程复盘与提速.md)
+when troubleshooting; routine runs need only this skill and the full-day reference.
+
 When the user asks for the daily collection without limiting the security, capture both targets. Treat the visible 通达信 display name as authoritative and include it in the security-level output folder.
 
 Never save passwords, account credentials, or authentication screenshots. Do not inspect masked credentials.
@@ -42,7 +54,7 @@ Stop if the desktop is locked, a credential prompt requires user input, the requ
 5. Enter the six-digit target code and verify the result row matches the expected display name and `上海债券`; press `Return` once.
 6. Verify the title/security area shows the requested code and matching display name before continuing.
 7. Ensure the page is `分时`. 通达信 may restore directly to this view. If it opens a 日线/analysis view, press `Return` once and re-observe; continue only after the 分时 chart is visible.
-8. At the bottom of the chart, click `逐笔委托`. Re-observe and verify dense time/price/size rows appear under the chart.
+8. On the lowest tab row, just right of `资金流向`, click `逐笔委托`. Re-observe and verify dense time/price/size rows appear under the chart.
 9. At the lower-right view selector, click the single character `细`. Re-observe and verify `细` is highlighted blue and the right pane shows成交明细.
 
 On the originally verified 1688×1015 window, `逐笔委托` was near `(228, 984)` and `细` near `(1534, 983)`. Never use these coordinates without a fresh screenshot and visual confirmation on the current computer.

@@ -1,0 +1,126 @@
+{
+  "archive_date": "2026-09-07",
+  "model_id": "maker_shared_1000_v0_14_candidate",
+  "public_name": "千张第一顺位0.14候选",
+  "model_version": "0.14-candidate",
+  "parent_model_id": "maker_shared_1000_v0_13_candidate",
+  "status": "implemented_offline_development_only_not_realtime_not_production_not_out_of_sample",
+  "user_authorization": "那你改一下试试，改成0.14版本",
+  "preregistered_sources": ["docs/主观做市策略手册.md#八十二", "docs/做市策略V0.1.md#11.66", "docs/做市模型版本记录.md"],
+  "policy_overrides": {
+    "enable_shared_current_opportunity_reentry": true,
+    "enable_shared_resilient_exit_gap": true
+  },
+  "allocator": "unchanged SharedThousandV013Allocator",
+  "scope_notes": [
+    "matching stalled exit state waiver includes its price cap and associated concentrated-support and retention gates",
+    "recovery requires fresh post-exit buy evidence, current support and visible exit space; not an unconditional cooldown deletion",
+    "native ordinary exits are unchanged; only session_resilient_value_entry receives new post-entry passive order-gap fallback",
+    "other special exit lifecycles and active deep-discount residual-book valuation are unchanged",
+    "first candidate was retained; no result-driven threshold changes or hidden revision"
+  ],
+  "account_contract": {
+    "initial_inventory_bonds": 0,
+    "shared_capacity_bonds": 1000,
+    "capacity_hands": 100,
+    "maximum_simultaneous_buy_orders": 1,
+    "any_partial_inventory_locks_one_bond": true,
+    "cash_is_third_candidate": true,
+    "loss_topups": false,
+    "realtime_matrix_changed": false
+  },
+  "historical_dates": [
+    "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07",
+    "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13", "2026-08-14",
+    "2026-08-17", "2026-08-18", "2026-08-19", "2026-08-20", "2026-08-21",
+    "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28",
+    "2026-08-31", "2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04"
+  ],
+  "historical_results": {
+    "parent_gross_pnl_cny": 91866.15,
+    "candidate_gross_pnl_cny": 93409.10,
+    "delta_cny": 1542.95,
+    "positive_days": 4,
+    "negative_days": 5,
+    "equal_pnl_days": 15,
+    "equal_fill_days": 14,
+    "parent_fills": 904,
+    "candidate_fills": 915,
+    "parent_equivalent_full_slot_seconds": 109417.85,
+    "candidate_equivalent_full_slot_seconds": 111905.03,
+    "parent_losing_fifo_segments": 90,
+    "candidate_losing_fifo_segments": 92,
+    "worst_fifo_segment_cny_both": -308.88,
+    "terminal_inventory_days_both": 9,
+    "terminal_unrealized_pnl_cny_both": -1237.20,
+    "all_inventory_and_buy_order_invariants": true,
+    "aug20_delta_cny": 1964.00,
+    "other_23_days_delta_cny": -421.05,
+    "aug17_delta_cny": -532.47,
+    "aug04_delta_cny": -375.50,
+    "aug12_delta_cny": -266.08
+  },
+  "target": {
+    "date": "2026-09-07",
+    "cutoff": "14:45:00",
+    "parent_gross_pnl_cny": 5881.94,
+    "candidate_gross_pnl_cny": 5895.46,
+    "delta_cny": 13.52,
+    "parent_fills": 66,
+    "candidate_fills": 70,
+    "terminal_inventory_bonds_both": 0,
+    "resilient_post_entry_frames_both": 69,
+    "resilient_missing_sell_frames_parent": 11,
+    "resilient_missing_sell_frames_candidate": 0,
+    "ordinary_missing_sell_frames_both": 0,
+    "first_1021_trade_preserved": true,
+    "second_1028_economic_path_unchanged": false,
+    "candidate_second_trade_loss_cny": -152.00,
+    "native_parent_66_fills_reproduced": true,
+    "observer_and_plain_replay_economic_fills_identical_both": true
+  },
+  "verification": {
+    "old_profile_constants_existing_fields_unchanged": 112,
+    "previous_saved_parent_days_exact_before_development": 21,
+    "frozen_parent_days_exact_after_development": 24,
+    "frozen_parent_checks": ["economic fills", "gross pnl", "order counts"],
+    "focused_tests": 18,
+    "main_tests_passed": 517,
+    "dashboard_tests_passed": 59,
+    "git_diff_check_passed": true,
+    "source_database_readonly": true,
+    "replay_ledger_isolated_temporary": true,
+    "live_collector_restarted": false
+  },
+  "data_limitations": {
+    "level_1_inferred_side_not_exchange_level_2": true,
+    "missing_underlying_stock_code": "600362.SH",
+    "missing_underlying_historical_days": 9,
+    "missing_underlying_date_span": "2026-08-04 through 2026-08-14",
+    "missing_underlying_stock_ticks": 0,
+    "missing_underlying_stock_data_available": false,
+    "some_other_days_have_incomplete_opening_coverage": true,
+    "no_future_or_wrong_underlying_substitution": true,
+    "out_of_sample_gate_passed": false
+  },
+  "source_hashes_sha256": {
+    "src/zhaiquant/maker_paper.py": "ce2fc5a162730851dd231ffe29c79481d94837a4349d7c8a8ef76d66bbd673f2",
+    "src/zhaiquant/shared_thousand_maker_v014_research.py": "70255b954b4e3ec89b215b596e30dd2eb139d49178396ed884230e593c1500c7",
+    "src/zhaiquant/one_hand_maker_research.py": "f5024c7eea1832a94d7cafe8db4ecc76dd90dc7a71c87557d099b0fb7403570a",
+    "src/zhaiquant/shared_thousand_maker_v013_research.py": "22e62844d972223f2a3cd938a1509a5065b4f6dfefd0349e7b52454317ed8d4e",
+    "tests/test_shared_thousand_maker_v014_research.py": "4d10fd50dc181119703e5aa531f5368fdeda7642bdef69b23d50eed16fd558b4"
+  },
+  "unchanged_config_hashes_sha256": {
+    "config.toml": "a75b515ff9e80d761281661cc948f4f1097d7c80490619b67de1dfe92dcaa859",
+    "config.example.toml": "14c1e7e6a647eb89c1fd26e119ae290882ff0aae580e9bb5425a075087fb7cd0"
+  },
+  "local_report_hashes_sha256": {
+    "output/research/shared_v014_parent_freeze_20260907.json": "7eaf5ca573fb811d0b182346ca961deec02b338a56e25be8e7c36371f5f4142b",
+    "output/research/shared_v014_matrix_20260804_20260904.json": "ce8a03c3e751786769d43a646bcf58014cb8d74ad6cd85d41caf5517deadc22e",
+    "output/research/shared_v014_target_20260907_144500.json": "2c316849efc702a8078af97f6db9b869b10d95a0553d9c791af9558a9283d372",
+    "output/research/shared_v014_prominent_days.json": "a1270f52533dedd1f765cd5fbb2744d0f2c15c8158a0ca212d1edae5ea358ac2",
+    "output/research/shared_v014_positive_days.json": "60de315bb197094ffbcdea7257bb35b8656bd8bf0fdaa904c6b61bbb723d47ad",
+    "output/research/shared_v014_result_audit.json": "b63a28350016f8b0bb7b478fc77973464064624a0dedadc1078b4edb5f3798d5",
+    "output/research/shared_v014_data_coverage.json": "2db9354d35e7a3308e1e248d5c6a7b0ded6fc9e63c836ffb363a2e74adfca5e1"
+  }
+}

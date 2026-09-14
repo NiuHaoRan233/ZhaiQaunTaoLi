@@ -4,7 +4,7 @@ import logging
 import os
 import signal
 import time
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 from .config import AppConfig
@@ -76,10 +76,12 @@ class MarketProcessor:
         self, config: AppConfig, store: SQLiteStore, *, enable_paper: bool = True,
         recover_paper: bool = False, deduplicate_ticks: bool = True,
         preload_m0_history: bool = True, synchronize_m0: bool = False,
+        live_market_date: date | None = None,
     ) -> None:
         self.config = config
         self.store = store
         self.enable_paper = enable_paper
+        self.live_market_date = live_market_date
         self.recorder = TickRecorder(
             store, deduplicate=deduplicate_ticks,
             rebuild_changes=synchronize_m0,
@@ -104,6 +106,22 @@ class MarketProcessor:
         self.last_observation_monotonic: float | None = None
 
     def process(self, tick: Tick) -> tuple[RecordedTick, M0Observation | None]:
+        if self.live_market_date is not None:
+            tick_date = tick.market_datetime.date()
+            if tick_date < self.live_market_date:
+                # An overnight startup snapshot may have a new hash while
+                # still quoting yesterday. Preserve the received raw evidence,
+                # but never reset today's engines or overwrite yesterday's
+                # paper accounts/cumulative predecessor with that snapshot.
+                previous = self.recorder.previous.pop(tick.code, None)
+                try:
+                    recorded = self.recorder.record(tick)
+                finally:
+                    self.recorder.previous.pop(tick.code, None)
+                    if previous is not None:
+                        self.recorder.previous[tick.code] = previous
+                return recorded, None
+            self.live_market_date = tick_date
         recorded = self.recorder.record(tick)
         if self.enable_paper:
             self.maker_paper.on_recorded_tick(recorded)
@@ -174,7 +192,9 @@ class LiveRunner:
         self.config = config
         self.store = SQLiteStore(config)
         self.feed = QmtFeed(config)
-        self.processor = MarketProcessor(config, self.store)
+        self.processor = MarketProcessor(
+            config, self.store, live_market_date=datetime.now(SHANGHAI).date(),
+        )
         self.process_lock = LiveProcessLock(config.storage.database.parent / "live.lock")
         self.stop_requested = False
         self.last_heartbeat = 0.0
